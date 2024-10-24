@@ -1,0 +1,2 @@
+1,Aspirin,15,20
+3,Paracetamol,200,50

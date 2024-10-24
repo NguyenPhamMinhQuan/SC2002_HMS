@@ -1,0 +1,5 @@
+1,Aspirin,15,20
+3,Paracetamol,200,50
+1,Aspirin,100,20
+2,Ibuprofen,50,10
+3,Paracetamol,200,50
