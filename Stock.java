@@ -4,6 +4,15 @@ public class Stock {
     private int stockLevel;
     private int lowStockAlertThreshold;
 
+    public Stock() {}
+
+    public Stock(int ID, String medicineName, int stockLevel, int lowStockAlertThreshold) {
+        this.ID = ID;
+        this.medicineName = medicineName;
+        this.stockLevel = stockLevel;
+        this.lowStockAlertThreshold = lowStockAlertThreshold;
+    }
+
     public int getID() {
         return ID;
     }
