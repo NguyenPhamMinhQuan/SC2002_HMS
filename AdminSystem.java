@@ -5,13 +5,13 @@ import data.Staff;
 
 public class AdminSystem {
     private List<Staff> staffList = new ArrayList<>();
-    private List<Patient> patientList = new ArrayList<>();
     private List<AppointmentSchedule> appointmentSchedules = new ArrayList<>();
-    private List<Stock> inventory = new ArrayList<>();
-    private List<StockReplenishRequest> replenishRequests = new ArrayList<>();
+    private StockSystem stockSystem;  // Reference to StockSystem for inventory management
 
     // Constructor
-    public AdminSystem() {}
+    public AdminSystem(StockSystem stockSystem) {
+        this.stockSystem = stockSystem;
+    }
 
     // Methods for Staff Management
     public void addStaff(Staff staff) {
@@ -59,46 +59,44 @@ public class AdminSystem {
         System.out.println("Appointment not found.");
     }
 
-    // Methods for Inventory Management
+    // Methods for Inventory Management via StockSystem
     public void viewInventory() {
+        List<Stock> inventory = stockSystem.getStocks();
         for (Stock stock : inventory) {
             System.out.println(stock);
         }
     }
 
     public void updateInventory(int stockID, int newStockLevel) {
-        for (Stock stock : inventory) {
-            if (stock.getID() == stockID) {
-                stock.setStockLevel(newStockLevel);
-                System.out.println("Stock updated: " + stock.getMedicineName());
-                return;
-            }
+        Stock stock = stockSystem.getStockById(stockID);
+        if (stock != null) {
+            stock.setStockLevel(newStockLevel);
+            stockSystem.updateStock(stock);
+            System.out.println("Stock updated: " + stock.getMedicineName());
+        } else {
+            System.out.println("Stock not found.");
         }
-        System.out.println("Stock not found.");
     }
 
     public void approveReplenishmentRequest(int requestID) {
-        for (StockReplenishRequest request : replenishRequests) {
-            if (request.getID() == requestID && "Pending".equals(request.getStatus())) {
-                Stock stock = getStockById(request.getStockId());
-                if (stock != null) {
-                    stock.setStockLevel(stock.getStockLevel() + request.getIncomingStockLevel());
-                    request.setStatus("Approved");
-                    System.out.println("Replenishment approved for stock ID: " + request.getStockId());
-                    return;
-                }
-            }
-        }
-        System.out.println("Replenishment request not found or already approved.");
-    }
+        StockReplenishRequest request = stockSystem.getReplenishRequests().stream()
+                .filter(r -> r.getID() == requestID && "Pending".equals(r.getStatus()))
+                .findFirst()
+                .orElse(null);
 
-    // Helper method to get Stock by ID
-    private Stock getStockById(int stockID) {
-        for (Stock stock : inventory) {
-            if (stock.getID() == stockID) {
-                return stock;
+        if (request != null) {
+            Stock stock = stockSystem.getStockById(request.getStockId());
+            if (stock != null) {
+                stock.setStockLevel(stock.getStockLevel() + request.getIncomingStockLevel());
+                request.setStatus("Approved");
+                stockSystem.updateStock(stock);
+                stockSystem.updateReplenishRequest(request);
+                System.out.println("Replenishment approved for stock ID: " + request.getStockId());
+            } else {
+                System.out.println("Stock not found for replenishment request.");
             }
+        } else {
+            System.out.println("Replenishment request not found or already approved.");
         }
-        return null;
     }
 }
