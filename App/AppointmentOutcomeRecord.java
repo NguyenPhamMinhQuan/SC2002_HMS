@@ -15,8 +15,8 @@ public class AppointmentOutcomeRecord {
     /**
      * Constructs an AppointmentOutcomeRecord with the specified details.
      *
-     * @param appointmentDate the date of the appointment
-     * @param serviceType the type of service provided (e.g., consultation)
+     * @param appointmentDate   the date of the appointment
+     * @param serviceType       the type of service provided (e.g., consultation)
      * @param consultationNotes any notes from the consultation
      */
     public AppointmentOutcomeRecord(String appointmentDate, String serviceType, String consultationNotes) {
@@ -32,19 +32,36 @@ public class AppointmentOutcomeRecord {
     }
 
     // Getter and Setter methods
+
     public String getAppointmentDate() {
         return appointmentDate;
+    }
+
+    public void setAppointmentDate(String appointmentDate) {
+        this.appointmentDate = appointmentDate;
     }
 
     public String getServiceType() {
         return serviceType;
     }
 
+    public void setServiceType(String serviceType) {
+        this.serviceType = serviceType;
+    }
+
     public List<Medication> getPrescribedMedications() {
         return prescribedMedications;
     }
 
+    public void setPrescribedMedications(List<Medication> prescribedMedications) {
+        this.prescribedMedications = prescribedMedications;
+    }
+
     public String getConsultationNotes() {
         return consultationNotes;
+    }
+
+    public void setConsultationNotes(String consultationNotes) {
+        this.consultationNotes = consultationNotes;
     }
 }

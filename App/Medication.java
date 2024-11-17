@@ -11,7 +11,7 @@ public class Medication {
      * Constructs a Medication object with the specified name and status.
      *
      * @param medicationName the name of the medication
-     * @param status the status of the medication (e.g., "pending")
+     * @param status         the status of the medication (e.g., "pending")
      */
     public Medication(String medicationName, String status) {
         this.medicationName = medicationName;
@@ -19,8 +19,13 @@ public class Medication {
     }
 
     // Getter and Setter methods
+
     public String getMedicationName() {
         return medicationName;
+    }
+
+    public void setMedicationName(String medicationName) {
+        this.medicationName = medicationName;
     }
 
     public String getStatus() {

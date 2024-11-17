@@ -25,34 +25,36 @@ public class Doctor extends User {
             case 1 -> {
                 System.out.println("Viewing patient medical records...");
                 String patientID = choosePatient();
-                viewMedicalRecord(medicalRecord);
+//                viewMedicalRecord(medicalRecord);
 
             }
             case 2 -> {
                 System.out.println("Updating patient medical records...");
                 String patientID = choosePatient();
-                updateBloodType(medicalRecord);
+//                updateBloodType(medicalRecord);
             }
             case 3 -> {
                 System.out.println("Viewing personal schedule...");
-                AppointmentSystem.displayAppointments(getUserId());
+                // Shows all appointments regardless of status
+                AppointmentSystem.displayAppointmentsByDoctor(getUserId(), null);
             }
             case 4 -> {
                 System.out.println("Setting availability for appointments...");
-                AppointmentSystem.setAvailability(getUserId());
+//                AppointmentSystem.setAvailability(getUserId());
             }
             case 5 -> {
                 System.out.println("Accepting or declining appointment requests...");
-                AppointmentSystem.cancelAppointment(getUserId());
+//                AppointmentSystem.cancelAppointment(getUserId());
             }
             case 6 -> {
                 System.out.println("Viewing upcoming appointments...");
-                AppointmentSystem.displayAppointments(getUserId(), "timing");//add timing parameter
+                AppointmentSystem.displayAppointmentsByDoctor(getUserId(), "pending");
+
             }
             case 7 -> {
                 System.out.println("Recording appointment outcome...");
-                appointmentOutcome = new AppointmentOutcome();
-                AppointmentSystem.addAppointmentOutcome(getUserId());
+//                appointmentOutcome = new AppointmentOutcome();
+//                AppointmentSystem.addAppointmentOutcome(getUserId());
             }
             case 8 -> {System.out.println("Logging out..."); return true;}
             default -> System.out.println("Invalid choice. Please try again.");
@@ -132,8 +134,8 @@ public class Doctor extends User {
      * @param prescriptionStatus the status of the prescription (e.g., Approved, Pending).
      */
     public void addDiagnosis(MedicalRecord medicalRecord, String diagnosisCondition, Date diagnosisDate, String treatmentPlan, String prescriptionRequest, String prescriptionStatus) {
-        Diagnosis diagnosis = new Diagnosis(diagnosisCondition, diagnosisDate, treatmentPlan, prescriptionRequest, prescriptionStatus);
-        medicalRecord.addDiagnosis(diagnosis);
-        System.out.println("Added diagnosis: " + diagnosisCondition + " for patient ID: " + medicalRecord.getPatientID());
+//        Diagnosis diagnosis = new Diagnosis(diagnosisCondition, diagnosisDate, treatmentPlan, prescriptionRequest, prescriptionStatus);
+//        medicalRecord.addDiagnosis(diagnosis);
+//        System.out.println("Added diagnosis: " + diagnosisCondition + " for patient ID: " + medicalRecord.getPatientID());
     }
 }
