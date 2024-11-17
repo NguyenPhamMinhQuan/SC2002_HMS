@@ -1,3 +1,4 @@
+
 /**
  * Represents an administrator in the hospital management system.
  * Inherits from User class.
@@ -13,8 +14,8 @@ public class Administrator extends User {
      * @param gender   the gender of the user (Male or Female)
      * @param age      the age of the user 
      */
-    public Administrator(String userId, String password, String name, String gender, int age) {
-        super(userId, password, "Administrator", name, gender, age);
+    public Administrator( String userId, String password, String name, String gender, int age) {
+        super( userId, password, "Administrator", name, gender, age);
     }
 
     @Override

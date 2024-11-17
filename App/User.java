@@ -1,3 +1,4 @@
+
 /**
  * Represents a user in the hospital management system.
  */
@@ -19,7 +20,7 @@ public  class User {
      * @param gender   the gender of the user (Male or Female)
      * @param age      the age of the user 
      */
-    public User(String userId, String password, String role, String name, String gender, int age) {
+    public User( String userId, String password, String role, String name, String gender, int age) {
         this.userId = userId;
         this.password = password;
         this.role = role;

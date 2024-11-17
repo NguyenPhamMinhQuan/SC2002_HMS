@@ -1,4 +1,5 @@
-import java.util.List;
+import java.io.IOException;
+
 import java.util.Scanner;
 
 /**
@@ -7,43 +8,13 @@ import java.util.Scanner;
  */
 public class HMS {
 
-    private static final String USER_DATA_FILE = "users.txt";
-    private UserManagementSystem userManagementSystem;
     private Scanner scanner;
 
     /**
      * Constructor for the HMS class, initializing the User Management System.
      */
     public HMS() {
-        userManagementSystem = new UserManagementSystem();
-    }
-
-    /**
-     * Load users from the data file into the User Management System.
-     */
-    public void loadUsers() {
-        try {
-            List<User> users = TextDB.loadObjects(USER_DATA_FILE, User.class);
-            for (User user : users) {
-                userManagementSystem.addUser(user);
-            }
-            System.out.println("Users loaded successfully.");
-        } catch (Exception e) {
-            System.out.println("Error loading users: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Save users from the User Management System to the data file.
-     */
-    public void saveUsers() {
-        try {
-            List<User> users = userManagementSystem.getAllUsers();
-            TextDB.saveObjects(USER_DATA_FILE, users);
-            System.out.println("Users saved successfully.");
-        } catch (Exception e) {
-            System.out.println("Error saving users: " + e.getMessage());
-        }
+        this.scanner = new Scanner(System.in);
     }
 
     /**
@@ -51,8 +22,12 @@ public class HMS {
      * or register as new patients.
      */
     public void start() {
-        loadUsers(); // Load user data from the file.
-        scanner = new Scanner(System.in);
+        try {
+            UserManagementSystem.loadUsers(); // Load user data from the file.
+            System.out.println("Users loaded successfully.");
+        } catch (IOException e) {
+            System.err.println("An error occurred while loading users: " + e.getMessage());
+        }
 
         User user = null;
 
@@ -71,7 +46,7 @@ public class HMS {
                 System.out.print("Password: ");
                 String password = scanner.nextLine();
 
-                user = userManagementSystem.login(userID, password);
+                user = UserManagementSystem.login(userID, password);
                 if (user == null) {
                     System.out.println("Invalid User ID or Password. Please try again.");
                     return;
@@ -85,7 +60,7 @@ public class HMS {
                 System.out.print("Age: ");
                 int age = scanner.nextInt();
 
-                user = userManagementSystem.createUser("patient", name, gender, age);
+                user = UserManagementSystem.createUser("patient", name, gender, age);
                 System.out.println("Patient registered successfully! Your User ID is: " + user.getUserId());
                 System.out.println("The default password is 'password'");
             } else {
@@ -117,7 +92,13 @@ public class HMS {
         } catch (Exception e) {
             System.out.println("An error occurred. Please restart the application.");
         } finally {
-            saveUsers(); // Save user data back to the file.
+            try {
+                UserManagementSystem.saveUsers(); // save user data from the file.
+                System.out.println("Users saved successfully.");
+            } catch (IOException e) {
+                System.err.println("An error occurred while saving users: " + e.getMessage());
+            }
+    
             scanner.close();
         }
     }

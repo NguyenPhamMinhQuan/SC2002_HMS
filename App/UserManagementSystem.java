@@ -91,7 +91,7 @@ public class UserManagementSystem {
         User user;
         switch (role.toLowerCase()) {
             case "patient":
-                user = new Patient("" + (++patientCount), "password", name, gender, age);
+                user = new Patient( "" + (++patientCount), "password", name, gender, age);
                 break;
             case "doctor":
                 user = new Doctor("D" + (++doctorCount), "password", name, gender, age);
@@ -157,9 +157,9 @@ public class UserManagementSystem {
      */
     private static void displayUserTable(List<User> users) {
         // Print table header
-        System.out.println("+------------+-------------------+-----------+-----------+");
-        System.out.println("| User ID    | Name              | Role      | Gender    |");
-        System.out.println("+------------+-------------------+-----------+-----------+");
+        System.out.println("+------------+-------------------+---------------+-----------+");
+        System.out.println("| User ID    | Name              | Role          | Gender    |");
+        System.out.println("+------------+-------------------+---------------+-----------+");
 
         // Print user details in table format
         for (User user : users) {
@@ -197,7 +197,7 @@ public class UserManagementSystem {
                     user = new Patient(userId, password, name, gender, age);
                     break;
                 case "doctor":
-                    user = new Doctor(userId, password, name, gender, age);
+                    user = new Doctor( userId, password, name, gender, age);
                     break;
                 case "pharmacist":
                     user = new Pharmacist(userId, password, name, gender, age);

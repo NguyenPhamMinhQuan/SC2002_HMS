@@ -1,3 +1,4 @@
+import java.util.Date;
 import java.util.Scanner;
 
 /**
@@ -17,8 +18,8 @@ public class Patient extends User {
      * @param gender   the gender of the user (Male or Female)
      * @param age      the age of the user 
      */
-    public Patient(String userId, String password, String name, String gender, int age) {
-        super(userId, password, "patient", name, gender, age);  // Patient's role is "patient"
+    public Patient( String userId, String password, String name, String gender, int age) {
+        super( userId, password, "patient", name, gender, age);  // Patient's role is "patient"
         this.medicalRecord = new MedicalRecord(userId);
         updatePersonalInformation();
     }
@@ -38,33 +39,49 @@ public class Patient extends User {
             }
             case 3 -> {
                 System.out.println("Viewing available appointment slots...");
-                AppointmentSystem.viewAvailableAppointments();
+                // todo
             }
             case 4 -> {
                 System.out.println("Scheduling an appointment...");
-                AppointmentSystem.scheduleAppointment(getUserId());
+                System.out.print("Enter Doctor ID: ");
+                String doctorID = scanner.nextLine();
+                System.out.print("Enter Appointment Date (YYYY-MM-DD): ");
+                Date appointmentDate = AppointmentSystem.parseDate(scanner.nextLine());
+                AppointmentSystem.scheduleAppointment(getUserId(), doctorID, appointmentDate);
             }
             case 5 -> {
                 System.out.println("Rescheduling an appointment...");
-                AppointmentSystem.updateAppointment(getUserId());
+                System.out.print("Enter Appointment ID to Reschedule: ");
+                int appointmentID = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+                System.out.print("Enter New Appointment Date (YYYY-MM-DD): ");
+                Date newDate = AppointmentSystem.parseDate(scanner.nextLine());
+                AppointmentSystem.updateAppointment(appointmentID, newDate);
             }
             case 6 -> {
                 System.out.println("Cancelling an appointment...");
-                AppointmentSystem.cancelAppointment(getUserId());
+                System.out.print("Enter Appointment ID to Cancel: ");
+                int appointmentID = scanner.nextInt();
+                scanner.nextLine(); // Consume newline
+                AppointmentSystem.cancelAppointment(appointmentID);
             }
             case 7 -> {
                 System.out.println("Viewing scheduled appointments...");
-                AppointmentSystem.displayAppointments(getUserId());
+                AppointmentSystem.displayAppointmentsByPatient(getUserId(), "pending");
             }
             case 8 -> {
                 System.out.println("Viewing past appointment outcomes...");
-                AppointmentSystem.displayPastAppointmentsOutcome(getUserId());
+                AppointmentSystem.displayAppointmentsByPatient(getUserId(), "completed");
             }
-            case 9 -> {System.out.println("Logging out..."); return true;}
+            case 9 -> {
+                System.out.println("Logging out...");
+                return true;
+            }
             default -> System.out.println("Invalid choice. Please try again.");
         }
         return false;
     }
+
 
     /**
      * Allow patients to view their medical record
@@ -90,7 +107,6 @@ public class Patient extends User {
          * patient.updatePersonalInformationInteractive();
          * </pre>
          */
-        Scanner scanner = new Scanner(System.in);
     
         System.out.println("Updating Personal Information");
     
