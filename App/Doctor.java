@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 /**
  * Represents a doctor in the hospital management system.
  * Inherits from User class.
@@ -25,13 +26,23 @@ public class Doctor extends User {
             case 1 -> {
                 System.out.println("Viewing patient medical records...");
                 String patientID = choosePatient();
-//                viewMedicalRecord(medicalRecord);
-
+                viewMedicalRecord(patientID);
             }
             case 2 -> {
                 System.out.println("Updating patient medical records...");
                 String patientID = choosePatient();
-//                updateBloodType(medicalRecord);
+
+                System.out.println("What would you like to update?");
+                System.out.println("1. Blood Type");
+                System.out.println("2. Add Diagnosis");
+                int choice = InputHandler.nextInt();
+                if (choice == 1){
+                    updateBloodType(patientID);
+                } else if (choice ==2){
+                    addDiagnosis(patientID);
+                } else {
+                    System.out.println("Invalid Option, please try again!");
+                }
             }
             case 3 -> {
                 System.out.println("Viewing personal schedule...");
@@ -68,15 +79,13 @@ public class Doctor extends User {
      * @return userID of the patient.
      */
     public String choosePatient() {
-        Scanner scanner = new Scanner(System.in);
         System.out.println("Please choose among the available Patients:");
 
         // Filter and display patients only
         UserManagementSystem.filterPatients();
 
         System.out.print("PatientID chosen: ");
-        String patientID = scanner.next();
-        scanner.close();
+        String patientID = InputHandler.nextLine();
 
         // Check if the patientID exists in the users map and if it's a patient
         if (UserManagementSystem.users.containsKey(patientID)) {
@@ -100,42 +109,66 @@ public class Doctor extends User {
      * 
      * @param medicalRecord the medical record to view.
      */
-    public void viewMedicalRecord(MedicalRecord medicalRecord) {
+    public void viewMedicalRecord(String patientID) {
+        MedicalRecord medicalRecord = MedicalRecordSystem.loadMedicalRecord(patientID);
         medicalRecord.displayMedicalRecord();
     }
 
     /**
-     * Updates the blood type in a patient's medical record.
+     * Updates the blood type in a patient's medical record and save it 
      * 
-     * @param medicalRecord the medical record to update.
-     * @param newBloodType  the new blood type to set.
+     * @param patientID the userID of the patient chosen.
      */
-    public void updateBloodType(MedicalRecord medicalRecord) {
+    public void updateBloodType(String patientID) {
         Scanner scanner = new Scanner(System.in);
-
+        MedicalRecord medicalRecord = MedicalRecordSystem.loadMedicalRecord(patientID);
         System.out.print("Enter patient's updated BloodType: ");
         String newBloodType = scanner.next();
         medicalRecord.setBloodType(newBloodType);
         System.out.println("Blood type updated to " + newBloodType + " for patient ID: " + medicalRecord.getPatientID());
-
         System.out.println("Please review the updated changes: ");
         medicalRecord.displayMedicalRecord();
-
+        MedicalRecordSystem.saveMedicalRecord(medicalRecord);
         scanner.close();
     }
 
     /**
      * Adds a new diagnosis to a patient's medical record.
      * 
-     * @param medicalRecord      the medical record to update.
-     * @param diagnosisCondition the condition diagnosed.
-     * @param diagnosisDate      the date of the diagnosis.
-     * @param treatmentPlan      the treatment plan for the condition.
-     * @param prescriptionStatus the status of the prescription (e.g., Approved, Pending).
+     * @param patientID     the userID of the chosen patient
      */
-    public void addDiagnosis(MedicalRecord medicalRecord, String diagnosisCondition, Date diagnosisDate, String treatmentPlan, String prescriptionRequest, String prescriptionStatus) {
-//        Diagnosis diagnosis = new Diagnosis(diagnosisCondition, diagnosisDate, treatmentPlan, prescriptionRequest, prescriptionStatus);
-//        medicalRecord.addDiagnosis(diagnosis);
-//        System.out.println("Added diagnosis: " + diagnosisCondition + " for patient ID: " + medicalRecord.getPatientID());
+    public void addDiagnosis(String patientID) {
+        Scanner scanner = new Scanner(System.in);
+        
+        try {
+            // Prompt for diagnosis condition
+            System.out.print("Enter Diagnosis Condition: ");
+            String diagnosisCondition = scanner.nextLine();
+
+            // Get today's date
+            Date today = new Date();
+
+            // Format the date as desired
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String diagnosisDate = dateFormat.format(today);
+
+            // Prompt for prescription
+            System.out.print("Enter Prescription: ");
+            String prescription = scanner.nextLine();
+
+            // Prompt for prescription status
+            System.out.print("Enter Prescription Status: ");
+            String prescriptionStatus = scanner.nextLine();
+            MedicalRecord medicalRecord = MedicalRecordSystem.loadMedicalRecord(patientID);
+            Diagnosis diagnosis = new Diagnosis(diagnosisCondition, diagnosisDate, prescription, prescriptionStatus);
+            medicalRecord.addDiagnosis(diagnosis);
+            System.out.println("Added diagnosis: " + diagnosisCondition + " for patient ID: " + medicalRecord.getPatientID());
+            medicalRecord.displayMedicalRecord();
+            MedicalRecordSystem.saveMedicalRecord(medicalRecord);
+        } catch (Exception e) {
+            System.out.println("An error occurred while processing input: " + e.getMessage());
+        } finally {
+            scanner.close();
+        }
     }
 }

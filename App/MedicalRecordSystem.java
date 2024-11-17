@@ -1,9 +1,7 @@
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 
 /**
  * Manages the reading and saving of medical records for patients.
@@ -27,7 +25,7 @@ public class MedicalRecordSystem {
      * 
      * @param medicalRecord the medical record to save.
      */
-    public void saveMedicalRecord(MedicalRecord medicalRecord) {
+    public static void saveMedicalRecord(MedicalRecord medicalRecord) {
         String fileName = DIRECTORY_PATH + File.separator + medicalRecord.getPatientID() + ".txt";
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
             writer.write("Medical Record for Patient ID: " + medicalRecord.getPatientID() + "\n");
@@ -62,7 +60,7 @@ public class MedicalRecordSystem {
      * @param patientID the patient ID of the record to load.
      * @return the MedicalRecord object if found; otherwise, null.
      */
-    public MedicalRecord loadMedicalRecord(String patientID) {
+    public static MedicalRecord loadMedicalRecord(String patientID) {
         String fileName = DIRECTORY_PATH + File.separator + patientID + ".txt";
         File file = new File(fileName);
 
@@ -91,11 +89,8 @@ public class MedicalRecordSystem {
                         
                         String[] diagnosisDetails = line.split("\\|");
                         if (diagnosisDetails.length >= 4) {
-                            // Parse the second element as a Date object
-                            Date diagnosisDate = parseDate(diagnosisDetails[1]);
-                        
                             // Create a Diagnosis object with the parsed data
-                            Diagnosis diagnosis = new Diagnosis(diagnosisDetails[0], diagnosisDate, diagnosisDetails[2], diagnosisDetails[3]);
+                            Diagnosis diagnosis = new Diagnosis(diagnosisDetails[0], diagnosisDetails[1], diagnosisDetails[2], diagnosisDetails[3]);
                             // Add the diagnosis to the patient's record
                             record.addDiagnosis(diagnosis);
                         } else {
@@ -129,16 +124,4 @@ public class MedicalRecordSystem {
         return records;
     }
 
-    /**
-     * Parses a date string into a Date object. The date format must be consistent with "dd-MM-yyyy".
-     */
-    private Date parseDate(String dateString) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            return sdf.parse(dateString);
-        } catch (ParseException e) {
-            System.out.println("Error parsing date: " + dateString);
-            return null; // Return null if date parsing fails
-        }
-    }
 }

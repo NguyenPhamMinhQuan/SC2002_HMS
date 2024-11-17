@@ -1,11 +1,11 @@
-import java.util.Scanner;
+
 /**
  * Represents the menu interface for pharmacists.
  */
 public class PharmacistMenu extends Menu {
 
-    public PharmacistMenu(User user, Scanner scanner) {
-        super(user, scanner);
+    public PharmacistMenu(User user) {
+        super(user);
     }
 
     @Override
@@ -19,8 +19,8 @@ public class PharmacistMenu extends Menu {
             System.out.println("5. Logout");
             System.out.print("Choose an option: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline character
+            int choice = InputHandler.nextInt();
+            InputHandler.nextLine(); // Consume newline character
 
            
             return choice;

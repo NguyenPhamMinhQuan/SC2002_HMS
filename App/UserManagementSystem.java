@@ -50,6 +50,7 @@ public class UserManagementSystem {
 
     /**
      * Authenticates a user's login.
+     * If the user is using the default password (their first time logging in), ask the user to change password
      *
      * @param userId   the user ID.
      * @param password the password.
@@ -58,6 +59,12 @@ public class UserManagementSystem {
     public static User login(String userId, String password) {
         User user = users.get(userId);
         if (user != null && user.validatePassword(password)) {
+            if (user.getPassword() == "password"){
+                System.out.println("Please change your password (ie. Don't use the default password)");
+                System.out.print("New Password:");
+                String newPassword = InputHandler.nextLine();
+                changePassword(user, "password", newPassword);
+            };
             return user;
         }
         return null; // Invalid credentials

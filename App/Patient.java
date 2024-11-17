@@ -1,5 +1,4 @@
 import java.util.Date;
-import java.util.Scanner;
 
 /**
  * Represents a patient in the Hospital Management System.
@@ -21,7 +20,7 @@ public class Patient extends User {
     public Patient( String userId, String password, String name, String gender, int age) {
         super( userId, password, "patient", name, gender, age);  // Patient's role is "patient"
         this.medicalRecord = new MedicalRecord(userId);
-        updatePersonalInformation();
+        MedicalRecordSystem.saveMedicalRecord(this.medicalRecord);
     }
 
     @Override
@@ -44,25 +43,23 @@ public class Patient extends User {
             case 4 -> {
                 System.out.println("Scheduling an appointment...");
                 System.out.print("Enter Doctor ID: ");
-                String doctorID = scanner.nextLine();
+                String doctorID = InputHandler.nextLine();
                 System.out.print("Enter Appointment Date (YYYY-MM-DD): ");
-                Date appointmentDate = AppointmentSystem.parseDate(scanner.nextLine());
+                Date appointmentDate = AppointmentSystem.parseDate(InputHandler.nextLine());
                 AppointmentSystem.scheduleAppointment(getUserId(), doctorID, appointmentDate);
             }
             case 5 -> {
                 System.out.println("Rescheduling an appointment...");
                 System.out.print("Enter Appointment ID to Reschedule: ");
-                int appointmentID = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
+                int appointmentID = InputHandler.nextInt();
                 System.out.print("Enter New Appointment Date (YYYY-MM-DD): ");
-                Date newDate = AppointmentSystem.parseDate(scanner.nextLine());
+                Date newDate = AppointmentSystem.parseDate(InputHandler.nextLine());
                 AppointmentSystem.updateAppointment(appointmentID, newDate);
             }
             case 6 -> {
                 System.out.println("Cancelling an appointment...");
                 System.out.print("Enter Appointment ID to Cancel: ");
-                int appointmentID = scanner.nextInt();
-                scanner.nextLine(); // Consume newline
+                int appointmentID = InputHandler.nextInt();
                 AppointmentSystem.cancelAppointment(appointmentID);
             }
             case 7 -> {
@@ -112,13 +109,13 @@ public class Patient extends User {
     
         // Prompting the user for each attribute
         System.out.print("Enter new Date of Birth (YYYY-MM-DD): ");
-        String newDateOfBirth = scanner.nextLine();
+        String newDateOfBirth = InputHandler.nextLine();
     
         System.out.print("Enter new Phone Number: ");
-        String newPhoneNumber = scanner.nextLine();
+        String newPhoneNumber = InputHandler.nextLine();
     
         System.out.print("Enter new Email Address: ");
-        String newEmailAddress = scanner.nextLine();
+        String newEmailAddress = InputHandler.nextLine();
     
         // Update the medical record with the provided inputs
         this.medicalRecord.setDateOfBirth(newDateOfBirth);
@@ -126,7 +123,6 @@ public class Patient extends User {
         this.medicalRecord.setEmailAddress(newEmailAddress);
     
         System.out.println("Personal information updated successfully!");
-        scanner.close();
     }
 
 }

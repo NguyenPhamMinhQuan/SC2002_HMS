@@ -1,12 +1,12 @@
-import java.util.Scanner;
+
 
 /**
  * Represents the menu interface for administrators.
  */
 public class AdministratorMenu extends Menu {
 
-    public AdministratorMenu(User user, Scanner scanner) {
-        super(user, scanner);
+    public AdministratorMenu(User user) {
+        super(user);
     }
 
     @Override
@@ -20,8 +20,8 @@ public class AdministratorMenu extends Menu {
             System.out.println("5. Logout");
             System.out.print("Choose an option: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline character
+            int choice = InputHandler.nextInt();
+            InputHandler.nextLine(); // Consume newline character
             return choice;
         }
     }

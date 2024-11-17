@@ -1,6 +1,6 @@
 import java.io.IOException;
 
-import java.util.Scanner;
+
 
 /**
  * Hospital Management System (HMS) that manages user login, patient registration,
@@ -8,14 +8,7 @@ import java.util.Scanner;
  */
 public class HMS {
 
-    private Scanner scanner;
-
-    /**
-     * Constructor for the HMS class, initializing the User Management System.
-     */
-    public HMS() {
-        this.scanner = new Scanner(System.in);
-    }
+    public HMS() {}
 
     /**
      * Start the Hospital Management System interface, allowing users to log in
@@ -37,14 +30,13 @@ public class HMS {
         System.out.println("2. Register as a new patient");
 
         try {
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume the newline character.
+            int choice = InputHandler.nextInt();
 
             if (choice == 1) {
                 System.out.print("User ID: ");
-                String userID = scanner.nextLine();
+                String userID = InputHandler.nextLine();
                 System.out.print("Password: ");
-                String password = scanner.nextLine();
+                String password = InputHandler.nextLine();
 
                 user = UserManagementSystem.login(userID, password);
                 if (user == null) {
@@ -54,11 +46,11 @@ public class HMS {
             } else if (choice == 2) {
                 System.out.println("Registering a new patient...");
                 System.out.print("Name: ");
-                String name = scanner.nextLine();
+                String name = InputHandler.nextLine();
                 System.out.print("Gender: ");
-                String gender = scanner.nextLine();
+                String gender = InputHandler.nextLine();
                 System.out.print("Age: ");
-                int age = scanner.nextInt();
+                int age = InputHandler.nextInt();
 
                 user = UserManagementSystem.createUser("patient", name, gender, age);
                 System.out.println("Patient registered successfully! Your User ID is: " + user.getUserId());
@@ -72,10 +64,10 @@ public class HMS {
             System.out.println("How can I help you today?");
             Menu menu;
             switch (user.getRole().toLowerCase()) {
-            case "patient" -> menu = new PatientMenu(user, scanner);
-            case "doctor" -> menu = new DoctorMenu(user, scanner);
-            case "pharmacist" -> menu = new PharmacistMenu(user, scanner);
-            case "administrator" -> menu = new AdministratorMenu(user, scanner);
+            case "patient" -> menu = new PatientMenu(user);
+            case "doctor" -> menu = new DoctorMenu(user);
+            case "pharmacist" -> menu = new PharmacistMenu(user);
+            case "administrator" -> menu = new AdministratorMenu(user);
             default -> {
                 System.out.println("Invalid role. Exiting...");
                 return;
@@ -99,7 +91,7 @@ public class HMS {
                 System.err.println("An error occurred while saving users: " + e.getMessage());
             }
     
-            scanner.close();
+            InputHandler.close();
         }
     }
 

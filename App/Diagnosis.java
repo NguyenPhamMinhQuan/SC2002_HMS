@@ -1,11 +1,11 @@
-import java.util.Date;
+
 
 /**
  * Represents a diagnosis with detailed medical information.
  */
 class Diagnosis {
     private String condition;
-    private Date diagnosisDate;
+    private String diagnosisDate;
     private String prescription;
     private String prescriptionStatus;
 
@@ -17,7 +17,7 @@ class Diagnosis {
      * @param prescription        the requested prescription.
      * @param prescriptionStatus  the status of the prescription request.
      */
-    public Diagnosis(String condition, Date diagnosisDate, String prescription,String prescriptionStatus) {
+    public Diagnosis(String condition,String diagnosisDate, String prescription,String prescriptionStatus) {
         this.condition = condition;
         this.diagnosisDate = diagnosisDate;
         this.prescription = prescription;
@@ -28,7 +28,7 @@ class Diagnosis {
         return condition;
     }
 
-    public Date getDiagnosisDate() {
+    public String getDiagnosisDate() {
         return diagnosisDate;
     }
 

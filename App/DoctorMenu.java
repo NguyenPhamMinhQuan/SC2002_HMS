@@ -1,10 +1,10 @@
-import java.util.Scanner;
+
 /**
  * Represents the menu interface for doctors.
  */
 public class DoctorMenu extends Menu {
-    public DoctorMenu(User user, Scanner scanner) {
-        super(user, scanner);
+    public DoctorMenu(User user) {
+        super(user);
     }
 
     @Override
@@ -21,8 +21,8 @@ public class DoctorMenu extends Menu {
             System.out.println("8. Logout");
             System.out.print("Choose an option: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline character
+            int choice = InputHandler.nextInt();
+            InputHandler.nextLine(); // Consume newline character
 
             return choice;
         }
