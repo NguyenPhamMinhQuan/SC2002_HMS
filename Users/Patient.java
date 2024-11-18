@@ -4,9 +4,9 @@ import Systems.AppointmentSystem;
 import Models.MedicalRecord;
 import Models.User;
 import Systems.InputHandler;
-import Systems.MedicalRecordSystem;
-import Systems.UserManagementSystem;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 
 /**
@@ -62,11 +62,11 @@ public class Patient extends User {
             }
             case 7 -> {
                 System.out.println("Viewing scheduled appointments...");
-                AppointmentSystem.displayAppointmentsByPatient(getUserId(), "confirmed");
+                AppointmentSystem.displayAppointmentsByPatient(getUserId(), Collections.singletonList("confirmed"));
             }
             case 8 -> {
                 System.out.println("Viewing past appointment outcomes...");
-                AppointmentSystem.displayAppointmentsByPatient(getUserId(), "completed");
+                AppointmentSystem.displayAppointmentsByPatient(getUserId(), Collections.singletonList("completed"));
             }
             case 9 -> {
                 System.out.println("Logging out...");
@@ -95,18 +95,14 @@ public class Patient extends User {
         medicalRecord.setPhoneNumber(newPhoneNumber);
         medicalRecord.setEmailAddress(newEmailAddress);
 
-        // Auto-save the updated medical record
-        MedicalRecordSystem.saveMedicalRecord(medicalRecord);
-
-        System.out.println("Personal information updated and saved successfully!");
+        System.out.println("Personal information updated successfully!");
     }
-
 
     /**
      * Allows the patient to schedule an appointment.
      */
     private void scheduleAppointment() {
-        UserManagementSystem.filterDoctor();
+        AppointmentSystem.displayAvailableSlots();
         System.out.print("Enter Doctor ID: ");
         String doctorID = InputHandler.nextLine();
         System.out.print("Enter Appointment Date and Time (YYYY-MM-DD HH:mm): ");
@@ -124,10 +120,11 @@ public class Patient extends User {
      */
     private void rescheduleAppointment() {
         System.out.println("Your Scheduled Appointments:");
-        AppointmentSystem.displayAppointmentsByPatient(getUserId(), "confirmed");
+        AppointmentSystem.displayAppointmentsByPatient(getUserId(), Arrays.asList("confirmed", "pending"));
 
         System.out.print("Enter Appointment ID to reschedule: ");
         int appointmentID = InputHandler.nextInt();
+        AppointmentSystem.displayAvailableSlots();
         System.out.print("Enter new Appointment Date and Time (YYYY-MM-DD HH:mm): ");
         Date newDate = AppointmentSystem.parseDate(InputHandler.nextLine());
 
@@ -143,7 +140,7 @@ public class Patient extends User {
      */
     private void cancelAppointment() {
         System.out.println("Your Scheduled Appointments:");
-        AppointmentSystem.displayAppointmentsByPatient(getUserId(), "confirmed");
+        AppointmentSystem.displayAppointmentsByPatient(getUserId(), Arrays.asList("confirmed", "pending"));
 
         System.out.print("Enter Appointment ID to cancel: ");
         int appointmentID = InputHandler.nextInt();

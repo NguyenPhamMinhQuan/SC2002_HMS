@@ -1,13 +1,18 @@
 package Users;
 
-import Models.*;
+import Models.Appointment;
+import Models.Diagnosis;
+import Models.MedicalRecord;
+import Models.User;
+import Systems.AppointmentSystem;
 import Systems.InputHandler;
+import Systems.MedicalRecordSystem;
 import Systems.UserManagementSystem;
 
-import java.util.List;
-import java.util.Scanner;
-import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Represents a doctor in the hospital management system.
@@ -31,85 +36,14 @@ public class Doctor extends User {
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
-            case 1 -> {
-                System.out.println("Viewing patient medical records...");
-                String patientID = choosePatient();
-                viewMedicalRecord(patientID);
-            }
-            case 2 -> {
-                System.out.println("Updating patient medical records...");
-                String patientID = choosePatient();
-
-                System.out.println("What would you like to update?");
-                System.out.println("1. Blood Type");
-                System.out.println("2. Add Diagnosis");
-                int choice = InputHandler.nextInt();
-                if (choice == 1) {
-                    updateBloodType(patientID);
-                } else if (choice == 2) {
-                    addDiagnosis(patientID);
-                } else {
-                    System.out.println("Invalid Option, please try again!");
-                }
-            }
-            case 3 -> {
-                System.out.println("Viewing personal schedule...");
-                // Shows all appointments regardless of status
-//                AppointmentSystem.displayAppointmentsByDoctorpointmentsByDoctor(getUserId(), null);
-            }
-            case 4 -> {
-                System.out.println("Setting availability for appointments...");
-//                Systems.AppointmentSystem.setAvailability(getUserId());
-            }
-
-            case 5 -> {
-//                System.out.println("Viewing all scheduled appointments...");
-//                // Retrieve the doctor's confirmed appointments
-//                List<Appointment> doctorAppointments = AppointmentSystem.getAppointmentsByDoctor(getUserId(), "confirmed");
-//
-//                if (doctorAppointments.isEmpty()) {
-//                    System.out.println("You have no scheduled appointments.");
-//                } else {
-//                    // Display all scheduled appointments
-//                    System.out.println("Your scheduled appointments:");
-//                    int index = 1;
-//                    for (Appointment appointment : doctorAppointments) {
-//                        System.out.println(index + ". Appointment ID: " + appointment.getID()
-//                                + ", Patient ID: " + appointment.getPatientID()
-//                                + ", Date: " + AppointmentSystem.formatDate(appointment.getAppointmentDate()));
-//                        index++;
-//                    }
-//
-//                    // Allow the doctor to choose an appointment to cancel
-//                    System.out.print("Enter the number of the appointment to cancel (0 to exit): ");
-//                    int choice = InputHandler.nextInt();
-//
-//                    if (choice == 0) {
-//                        System.out.println("Cancellation process aborted.");
-//                    } else if (choice > 0 && choice <= doctorAppointments.size()) {
-//                        Appointment appointmentToCancel = doctorAppointments.get(choice - 1);
-//                        AppointmentSystem.cancelAppointment(appointmentToCancel.getID());
-//                        System.out.println("Appointment ID " + appointmentToCancel.getID() + " has been canceled.");
-//                    } else {
-//                        System.out.println("Invalid choice. Please try again.");
-//                    }
-//                }
-            }
-
-
-            case 6 -> {
-                System.out.println("Viewing upcoming appointments...");
-//                AppointmentSystem.displayAppointmentsByDoctor(getUserId(), "pending");
-
-            }
-            case 7 -> {
-                System.out.println("Recording appointment outcome...");
-//                appointmentOutcome = new AppointmentOutcome();
-//                Systems.AppointmentSystem.addAppointmentOutcome(getUserId());
-
-            }
+            case 1 -> viewMedicalRecord();
+            case 2 -> updateMedicalRecord();
+            case 3 -> viewPersonalSchedule();
+            case 4 -> setAvailability();
+            case 5 -> manageAppointmentRequests();
+            case 6 -> viewUpcomingAppointments();
+            case 7 -> recordAppointmentOutcome();
             case 8 -> {
-                System.out.println("Logging out...");
                 return true;
             }
             default -> System.out.println("Invalid choice. Please try again.");
@@ -124,14 +58,11 @@ public class Doctor extends User {
      */
     public String choosePatient() {
         System.out.println("Please choose among the available Patients:");
-
-        // Filter and display patients only
         UserManagementSystem.filterPatients();
 
         System.out.print("PatientID chosen: ");
         String patientID = InputHandler.nextLine();
 
-        // Check if the patientID exists in the users map and if it's a patient
         if (UserManagementSystem.users.containsKey(patientID)) {
             User chosenUser = UserManagementSystem.users.get(patientID);
 
@@ -140,79 +71,139 @@ public class Doctor extends User {
                 return patientID;
             } else {
                 System.out.println("The chosen ID does not belong to a patient. Please choose a valid patient ID.");
-                return choosePatient();  // Recursively ask again if the ID doesn't belong to a patient
             }
         } else {
             System.out.println("The Patient ID does not exist. Please try again.");
-            return choosePatient();  // Recursively ask again if the ID doesn't exist
         }
+        return choosePatient(); // Retry if invalid
     }
 
     /**
      * Views a patient's medical record.
-     *
-     * @param medicalRecord the medical record to view.
      */
-    public void viewMedicalRecord(String patientID) {
+    public void viewMedicalRecord() {
+        System.out.println("Viewing patient medical records...");
+        String patientID = choosePatient();
+
         MedicalRecord medicalRecord = MedicalRecordSystem.loadMedicalRecord(patientID);
-        medicalRecord.displayMedicalRecord();
-    }
-
-    /**
-     * Updates the blood type in a patient's medical record and save it
-     *
-     * @param patientID the userID of the patient chosen.
-     */
-    public void updateBloodType(String patientID) {
-        Scanner scanner = new Scanner(System.in);
-        MedicalRecord medicalRecord = MedicalRecordSystem.loadMedicalRecord(patientID);
-        System.out.print("Enter patient's updated BloodType: ");
-        String newBloodType = scanner.next();
-        medicalRecord.setBloodType(newBloodType);
-        System.out.println("Blood type updated to " + newBloodType + " for patient ID: " + medicalRecord.getPatientID());
-        System.out.println("Please review the updated changes: ");
-        medicalRecord.displayMedicalRecord();
-        MedicalRecordSystem.saveMedicalRecord(medicalRecord);
-        scanner.close();
-    }
-
-    /**
-     * Adds a new diagnosis to a patient's medical record.
-     *
-     * @param patientID the userID of the chosen patient
-     */
-    public void addDiagnosis(String patientID) {
-        Scanner scanner = new Scanner(System.in);
-
-        try {
-            // Prompt for diagnosis condition
-            System.out.print("Enter Diagnosis Condition: ");
-            String diagnosisCondition = scanner.nextLine();
-
-            // Get today's date
-            Date today = new Date();
-
-            // Format the date as desired
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String diagnosisDate = dateFormat.format(today);
-
-            // Prompt for prescription
-            System.out.print("Enter Prescription: ");
-            String prescription = scanner.nextLine();
-
-            // Prompt for prescription status
-            System.out.print("Enter Prescription Status: ");
-            String prescriptionStatus = scanner.nextLine();
-            MedicalRecord medicalRecord = MedicalRecordSystem.loadMedicalRecord(patientID);
-            Diagnosis diagnosis = new Diagnosis(diagnosisCondition, diagnosisDate, prescription, prescriptionStatus);
-            medicalRecord.addDiagnosis(diagnosis);
-            System.out.println("Added diagnosis: " + diagnosisCondition + " for patient ID: " + medicalRecord.getPatientID());
+        if (medicalRecord != null) {
             medicalRecord.displayMedicalRecord();
-            MedicalRecordSystem.saveMedicalRecord(medicalRecord);
-        } catch (Exception e) {
-            System.out.println("An error occurred while processing input: " + e.getMessage());
-        } finally {
-            scanner.close();
+        } else {
+            System.out.println("Medical record for Patient ID " + patientID + " not found.");
         }
+    }
+
+    /**
+     * Updates a patient's medical record.
+     */
+    public void updateMedicalRecord() {
+        String patientID = choosePatient();
+
+        System.out.println("What would you like to update?");
+        System.out.println("1. Blood Type");
+        System.out.println("2. Add Diagnosis");
+        int choice = InputHandler.nextInt();
+
+        if (choice == 1) {
+            System.out.print("Enter the updated Blood Type: ");
+            String bloodType = InputHandler.nextLine();
+            MedicalRecord medicalRecord = MedicalRecordSystem.loadMedicalRecord(patientID);
+            if (medicalRecord != null) {
+                medicalRecord.setBloodType(bloodType);
+                MedicalRecordSystem.saveMedicalRecord(medicalRecord);
+                System.out.println("Blood Type updated successfully.");
+            } else {
+                System.out.println("Failed to update Blood Type. Medical record not found.");
+            }
+        } else if (choice == 2) {
+            System.out.print("Enter Diagnosis Condition: ");
+            String condition = InputHandler.nextLine();
+
+            String diagnosisDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+
+            System.out.print("Enter Prescription: ");
+            String prescription = InputHandler.nextLine();
+
+            System.out.print("Enter Prescription Status: ");
+            String status = InputHandler.nextLine();
+
+            MedicalRecord medicalRecord = MedicalRecordSystem.loadMedicalRecord(patientID);
+            if (medicalRecord != null) {
+                Diagnosis diagnosis = new Diagnosis(condition, diagnosisDate, prescription, status);
+                medicalRecord.addDiagnosis(diagnosis);
+                MedicalRecordSystem.saveMedicalRecord(medicalRecord);
+                System.out.println("Diagnosis added successfully.");
+            } else {
+                System.out.println("Failed to add Diagnosis. Medical record not found.");
+            }
+        } else {
+            System.out.println("Invalid choice.");
+        }
+    }
+
+    /**
+     * Displays the doctor's personal schedule, including availability and scheduled appointments.
+     */
+    public void viewPersonalSchedule() {
+        List<String> availability = AppointmentSystem.getDoctorAvailability(getUserId());
+        if (availability != null && !availability.isEmpty()) {
+            System.out.println("Available Slots:");
+            for (String slot : availability) {
+                System.out.println("  " + slot);
+            }
+        } else {
+            System.out.println("No available slots set.");
+        }
+        AppointmentSystem.displayAppointmentsByDoctor(getUserId(), null);
+    }
+
+    /**
+     * Sets the availability for appointments.
+     */
+    public void setAvailability() {
+        AppointmentSystem.setAvailability(getUserId());
+    }
+
+    /**
+     * Manages appointment requests (accept or decline).
+     */
+    public void manageAppointmentRequests() {
+        List<Appointment> pendingAppointments = AppointmentSystem.getAppointmentsByDoctor(getUserId(), "pending");
+
+        if (pendingAppointments.isEmpty()) {
+            System.out.println("No pending appointment requests.");
+            return;
+        }
+
+        for (Appointment appointment : pendingAppointments) {
+            System.out.println("Appointment ID: " + appointment.getID());
+            System.out.println("Patient ID: " + appointment.getPatientID());
+            System.out.println("Date: " + AppointmentSystem.formatDate(appointment.getAppointmentDate()));
+            System.out.print("Accept or Decline (A/D)? ");
+            String decision = InputHandler.nextLine();
+
+            if (decision.equalsIgnoreCase("A")) {
+                AppointmentSystem.updateAppointmentStatus(appointment.getID(), "confirmed");
+                System.out.println("Appointment confirmed.");
+            } else if (decision.equalsIgnoreCase("D")) {
+                AppointmentSystem.updateAppointmentStatus(appointment.getID(), "declined");
+                System.out.println("Appointment declined.");
+            } else {
+                System.out.println("Invalid input. Skipping appointment.");
+            }
+        }
+    }
+
+    /**
+     * View upcoming confirmed appointments.
+     */
+    public void viewUpcomingAppointments() {
+        AppointmentSystem.displayAppointmentsByDoctor(getUserId(), "confirmed");
+    }
+
+    private void recordAppointmentOutcome() {
+        // Logic for recording appointment outcomes
+        System.out.println("Recording appointment outcome...");
+        // TODO: Implement functionality
     }
 }

@@ -92,4 +92,57 @@ public class MedicalRecordSystem {
 
         return recordLine.toString();
     }
+
+    public static MedicalRecord loadMedicalRecord(String patientID) {
+        File file = new File(MEDICAL_RECORD_CSV);
+        if (!file.exists()) {
+            System.out.println("Medical record file not found.");
+            return null;
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            String header = reader.readLine(); // Skip the header line
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] fields = line.split(",");
+                if (fields.length < 5) {
+                    System.err.println("Invalid record: " + line);
+                    continue;
+                }
+
+                if (fields[0].equals(patientID)) {
+                    MedicalRecord record = new MedicalRecord(patientID);
+                    record.setDateOfBirth(fields[1]);
+                    record.setPhoneNumber(fields[2]);
+                    record.setEmailAddress(fields[3]);
+                    record.setBloodType(fields[4]);
+
+                    if (fields.length > 5) {
+                        String[] diagnoses = fields[5].split(";");
+                        for (String diagnosisStr : diagnoses) {
+                            String[] diagnosisFields = diagnosisStr.split("\\|");
+                            if (diagnosisFields.length == 4) {
+                                Diagnosis diagnosis = new Diagnosis(
+                                        diagnosisFields[0],
+                                        diagnosisFields[1],
+                                        diagnosisFields[2],
+                                        diagnosisFields[3]
+                                );
+                                record.addDiagnosis(diagnosis);
+                            }
+                        }
+                    }
+
+                    return record;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading medical record file: " + e.getMessage());
+        }
+
+        System.out.println("Medical record for Patient ID " + patientID + " not found.");
+        return null;
+    }
+
 }

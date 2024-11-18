@@ -1,6 +1,6 @@
 D1,password,Dr.John,Male,45,doctor
 A1,password,John,Male,45,administrator
-D1,password,Smith,Female,50,doctor
+D2,password,Smith,Female,50,doctor
 P1,password,Anna,Female,35,pharmacist
 PT1,password,Mike,Male,30,patient
 PT2,password,Jane,Female,25,patient
