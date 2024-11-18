@@ -97,8 +97,20 @@ public class StockSystem {
      * StockReplenishRequest Methods
      */
     public StockReplenishRequest createReplenishRequest(StockReplenishRequest stockRequest) {
+        // Check for an existing request with the same stockId and status = "pending"
+        for (StockReplenishRequest existingRequest : this.replenishRequests) {
+            if (existingRequest.getStockId() == stockRequest.getStockId() &&
+                    existingRequest.getStatus().equalsIgnoreCase("pending")) {
+                // Update the existing request
+                existingRequest.setIncomingStockLevel(stockRequest.getIncomingStockLevel());
+                saveReplenishRequests(); // Save the updated request to the file
+                return existingRequest;
+            }
+        }
+
+        // If no matching request is found, add the new request
         this.replenishRequests.add(stockRequest);
-        saveReplenishRequests();
+        saveReplenishRequests(); // Save the new request to the file
         return stockRequest;
     }
 
