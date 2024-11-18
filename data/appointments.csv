@@ -1,0 +1,3 @@
+ID,PatientID,DoctorID,AppointmentStatus,AppointmentDate,OutcomeNotes,ServiceType,PrescribedMedications
+1,1,5,canceled,2003-10-20,
+2,1,2,confirmed,2003-12-20,
