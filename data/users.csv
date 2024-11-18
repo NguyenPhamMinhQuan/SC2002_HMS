@@ -1,4 +1,6 @@
-1,password,Quan,male,22,patient
-2,password,John,Female,29,patient
-3,password,Quan,Male,20,patient
 D1,password,Dr.John,Male,45,doctor
+A1,password,John,Male,45,administrator
+D1,password,Smith,Female,50,doctor
+P1,password,Anna,Female,35,pharmacist
+PT1,password,Mike,Male,30,patient
+PT2,password,Jane,Female,25,patient

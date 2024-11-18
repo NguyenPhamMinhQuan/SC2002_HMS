@@ -4,6 +4,7 @@ import Models.AppointmentSystem;
 import Models.MedicalRecord;
 import Models.User;
 import Systems.InputHandler;
+import Systems.MedicalRecordSystem;
 import Systems.UserManagementSystem;
 
 import java.util.Date;
@@ -94,8 +95,12 @@ public class Patient extends User {
         medicalRecord.setPhoneNumber(newPhoneNumber);
         medicalRecord.setEmailAddress(newEmailAddress);
 
-        System.out.println("Personal information updated successfully!");
+        // Auto-save the updated medical record
+        MedicalRecordSystem.saveMedicalRecord(medicalRecord);
+
+        System.out.println("Personal information updated and saved successfully!");
     }
+
 
     /**
      * Allows the patient to schedule an appointment.
