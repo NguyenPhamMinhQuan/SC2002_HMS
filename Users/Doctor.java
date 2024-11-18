@@ -55,7 +55,7 @@ public class Doctor extends User {
             case 3 -> {
                 System.out.println("Viewing personal schedule...");
                 // Shows all appointments regardless of status
-                AppointmentSystem.displayAppointmentsByDoctor(getUserId(), null);
+//                AppointmentSystem.displayAppointmentsByDoctorpointmentsByDoctor(getUserId(), null);
             }
             case 4 -> {
                 System.out.println("Setting availability for appointments...");
@@ -63,43 +63,43 @@ public class Doctor extends User {
             }
 
             case 5 -> {
-                System.out.println("Viewing all scheduled appointments...");
-                // Retrieve the doctor's confirmed appointments
-                List<Appointment> doctorAppointments = AppointmentSystem.getAppointmentsByDoctor(getUserId(), "confirmed");
-
-                if (doctorAppointments.isEmpty()) {
-                    System.out.println("You have no scheduled appointments.");
-                } else {
-                    // Display all scheduled appointments
-                    System.out.println("Your scheduled appointments:");
-                    int index = 1;
-                    for (Appointment appointment : doctorAppointments) {
-                        System.out.println(index + ". Appointment ID: " + appointment.getID()
-                                + ", Patient ID: " + appointment.getPatientID()
-                                + ", Date: " + AppointmentSystem.formatDate(appointment.getAppointmentDate()));
-                        index++;
-                    }
-
-                    // Allow the doctor to choose an appointment to cancel
-                    System.out.print("Enter the number of the appointment to cancel (0 to exit): ");
-                    int choice = InputHandler.nextInt();
-
-                    if (choice == 0) {
-                        System.out.println("Cancellation process aborted.");
-                    } else if (choice > 0 && choice <= doctorAppointments.size()) {
-                        Appointment appointmentToCancel = doctorAppointments.get(choice - 1);
-                        AppointmentSystem.cancelAppointment(appointmentToCancel.getID());
-                        System.out.println("Appointment ID " + appointmentToCancel.getID() + " has been canceled.");
-                    } else {
-                        System.out.println("Invalid choice. Please try again.");
-                    }
-                }
+//                System.out.println("Viewing all scheduled appointments...");
+//                // Retrieve the doctor's confirmed appointments
+//                List<Appointment> doctorAppointments = AppointmentSystem.getAppointmentsByDoctor(getUserId(), "confirmed");
+//
+//                if (doctorAppointments.isEmpty()) {
+//                    System.out.println("You have no scheduled appointments.");
+//                } else {
+//                    // Display all scheduled appointments
+//                    System.out.println("Your scheduled appointments:");
+//                    int index = 1;
+//                    for (Appointment appointment : doctorAppointments) {
+//                        System.out.println(index + ". Appointment ID: " + appointment.getID()
+//                                + ", Patient ID: " + appointment.getPatientID()
+//                                + ", Date: " + AppointmentSystem.formatDate(appointment.getAppointmentDate()));
+//                        index++;
+//                    }
+//
+//                    // Allow the doctor to choose an appointment to cancel
+//                    System.out.print("Enter the number of the appointment to cancel (0 to exit): ");
+//                    int choice = InputHandler.nextInt();
+//
+//                    if (choice == 0) {
+//                        System.out.println("Cancellation process aborted.");
+//                    } else if (choice > 0 && choice <= doctorAppointments.size()) {
+//                        Appointment appointmentToCancel = doctorAppointments.get(choice - 1);
+//                        AppointmentSystem.cancelAppointment(appointmentToCancel.getID());
+//                        System.out.println("Appointment ID " + appointmentToCancel.getID() + " has been canceled.");
+//                    } else {
+//                        System.out.println("Invalid choice. Please try again.");
+//                    }
+//                }
             }
 
 
             case 6 -> {
                 System.out.println("Viewing upcoming appointments...");
-                AppointmentSystem.displayAppointmentsByDoctor(getUserId(), "pending");
+//                AppointmentSystem.displayAppointmentsByDoctor(getUserId(), "pending");
 
             }
             case 7 -> {

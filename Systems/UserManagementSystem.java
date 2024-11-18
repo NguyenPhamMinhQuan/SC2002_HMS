@@ -166,6 +166,19 @@ public class UserManagementSystem {
         displayUserTable(staff);
     }
 
+    public static void filterDoctor() {
+        List<User> staff = new ArrayList<>();
+
+
+        // Filter users into patients and staff
+        for (User user : users.values()) {
+            if (user.getRole().equalsIgnoreCase("doctor"))
+                staff.add(user);
+        }
+
+        displayUserTable(staff);
+    }
+
     /**
      * Helper method to display a list of users as a table in CLI.
      *

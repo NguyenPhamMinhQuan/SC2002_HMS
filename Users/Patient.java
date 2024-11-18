@@ -2,9 +2,9 @@ package Users;
 
 import Models.AppointmentSystem;
 import Models.MedicalRecord;
-import Models.MedicalRecordSystem;
 import Models.User;
 import Systems.InputHandler;
+import Systems.UserManagementSystem;
 
 import java.util.Date;
 
@@ -17,18 +17,17 @@ public class Patient extends User {
     private final MedicalRecord medicalRecord;
 
     /**
-     * Constructs a new Patient with the specified details and an empty medical records
+     * Constructs a new Patient with the specified details and an empty medical record.
      *
      * @param userId   the unique ID of the patient.
      * @param password the password of the patient.
      * @param name     the name of the patient.
-     * @param gender   the gender of the user (Male or Female)
-     * @param age      the age of the user
+     * @param gender   the gender of the patient (Male or Female).
+     * @param age      the age of the patient.
      */
     public Patient(String userId, String password, String name, String gender, int age) {
-        super(userId, password, "patient", name, gender, age);  // Patient's role is "patient"
+        super(userId, password, "patient", name, gender, age);
         this.medicalRecord = new MedicalRecord(userId);
-//        MedicalRecordSystem.saveMedicalRecord(this.medicalRecord);
     }
 
     @Override
@@ -41,38 +40,28 @@ public class Patient extends User {
             case 2 -> {
                 System.out.println("Updating personal information...");
                 updatePersonalInformation();
-                System.out.println("Your medical record is updated below:");
+                System.out.println("Your updated personal information:");
                 medicalRecord.displayMedicalRecord();
             }
             case 3 -> {
                 System.out.println("Viewing available appointment slots...");
-                // todo
+                AppointmentSystem.displayAvailableSlots();
             }
             case 4 -> {
                 System.out.println("Scheduling an appointment...");
-                System.out.print("Enter Doctor ID: ");
-                String doctorID = InputHandler.nextLine();
-                System.out.print("Enter Appointment Date (YYYY-MM-DD): ");
-                Date appointmentDate = AppointmentSystem.parseDate(InputHandler.nextLine());
-                AppointmentSystem.scheduleAppointment(getUserId(), doctorID, appointmentDate);
+                scheduleAppointment();
             }
             case 5 -> {
                 System.out.println("Rescheduling an appointment...");
-                System.out.print("Enter Appointment ID to Reschedule: ");
-                int appointmentID = InputHandler.nextInt();
-                System.out.print("Enter New Appointment Date (YYYY-MM-DD): ");
-                Date newDate = AppointmentSystem.parseDate(InputHandler.nextLine());
-                AppointmentSystem.updateAppointment(appointmentID, newDate);
+                rescheduleAppointment();
             }
             case 6 -> {
                 System.out.println("Cancelling an appointment...");
-                System.out.print("Enter Appointment ID to Cancel: ");
-                int appointmentID = InputHandler.nextInt();
-                AppointmentSystem.cancelAppointment(appointmentID);
+                cancelAppointment();
             }
             case 7 -> {
                 System.out.println("Viewing scheduled appointments...");
-                AppointmentSystem.displayAppointmentsByPatient(getUserId(), "pending");
+                AppointmentSystem.displayAppointmentsByPatient(getUserId(), "confirmed");
             }
             case 8 -> {
                 System.out.println("Viewing past appointment outcomes...");
@@ -87,34 +76,11 @@ public class Patient extends User {
         return false;
     }
 
-
     /**
-     * Allow patients to view their medical record
+     * Updates the personal information of the patient interactively.
      */
-    public void viewMedicalRecord() {
-        medicalRecord.displayMedicalRecord();
-    }
-
     public void updatePersonalInformation() {
-        /**
-         * Updates the personal information of the patient interactively by prompting the user for inputs.
-         * This method allows updating the date of birth, phone number, and email address of the patient.
-         *
-         * User inputs are collected via a Scanner instance.
-         *
-         * Precondition: This method should only be called for a patient with an initialized medical record.
-         *
-         * Postcondition: The patient's medical record is updated with the new personal information.
-         *
-         * Example Usage:
-         * <pre>
-         * patient.updatePersonalInformationInteractive();
-         * </pre>
-         */
-
-        System.out.println("Updating Personal Information");
-
-        // Prompting the user for each attribute
+        System.out.println("Updating Personal Information...");
         System.out.print("Enter new Date of Birth (YYYY-MM-DD): ");
         String newDateOfBirth = InputHandler.nextLine();
 
@@ -124,12 +90,58 @@ public class Patient extends User {
         System.out.print("Enter new Email Address: ");
         String newEmailAddress = InputHandler.nextLine();
 
-        // Update the medical record with the provided inputs
-        this.medicalRecord.setDateOfBirth(newDateOfBirth);
-        this.medicalRecord.setPhoneNumber(newPhoneNumber);
-        this.medicalRecord.setEmailAddress(newEmailAddress);
+        medicalRecord.setDateOfBirth(newDateOfBirth);
+        medicalRecord.setPhoneNumber(newPhoneNumber);
+        medicalRecord.setEmailAddress(newEmailAddress);
 
         System.out.println("Personal information updated successfully!");
     }
 
+    /**
+     * Allows the patient to schedule an appointment.
+     */
+    private void scheduleAppointment() {
+        UserManagementSystem.filterDoctor();
+        System.out.print("Enter Doctor ID: ");
+        String doctorID = InputHandler.nextLine();
+        System.out.print("Enter Appointment Date and Time (YYYY-MM-DD HH:mm): ");
+        Date appointmentDate = AppointmentSystem.parseDate(InputHandler.nextLine());
+
+        if (appointmentDate != null) {
+            AppointmentSystem.scheduleAppointment(getUserId(), doctorID, appointmentDate);
+        } else {
+            System.out.println("Invalid date format. Please try again.");
+        }
+    }
+
+    /**
+     * Allows the patient to reschedule an appointment.
+     */
+    private void rescheduleAppointment() {
+        System.out.println("Your Scheduled Appointments:");
+        AppointmentSystem.displayAppointmentsByPatient(getUserId(), "confirmed");
+
+        System.out.print("Enter Appointment ID to reschedule: ");
+        int appointmentID = InputHandler.nextInt();
+        System.out.print("Enter new Appointment Date and Time (YYYY-MM-DD HH:mm): ");
+        Date newDate = AppointmentSystem.parseDate(InputHandler.nextLine());
+
+        if (newDate != null) {
+            AppointmentSystem.updateAppointment(appointmentID, newDate);
+        } else {
+            System.out.println("Invalid date format. Please try again.");
+        }
+    }
+
+    /**
+     * Allows the patient to cancel an appointment.
+     */
+    private void cancelAppointment() {
+        System.out.println("Your Scheduled Appointments:");
+        AppointmentSystem.displayAppointmentsByPatient(getUserId(), "confirmed");
+
+        System.out.print("Enter Appointment ID to cancel: ");
+        int appointmentID = InputHandler.nextInt();
+        AppointmentSystem.cancelAppointment(appointmentID);
+    }
 }
