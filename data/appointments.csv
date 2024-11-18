@@ -1,4 +1,4 @@
 ID,PatientID,DoctorID,Status,Date
 1,1,D1,confirmed,0203-10-13 10:11
 2,1,D1,canceled,2000-11-11 23:23
-3,PT2,D2,pending,2024-12-01 00:00
+3,PT2,D2,canceled,2024-12-01 00:00

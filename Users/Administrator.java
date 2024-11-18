@@ -1,6 +1,7 @@
 package Users;
 
 import Models.User;
+import Systems.AppointmentSystem;
 import Systems.UserManagementSystem;
 
 /**
@@ -28,11 +29,10 @@ public class Administrator extends User {
             case 1 -> {
                 System.out.println("Viewing and managing hospital staff...");
                 UserManagementSystem.filterStaff();
-
             }
             case 2 -> {
                 System.out.println("Viewing appointment details...");
-
+                AppointmentSystem.displayAppointments();
             }
             case 3 -> {
                 System.out.println("Viewing and managing medication inventory...");

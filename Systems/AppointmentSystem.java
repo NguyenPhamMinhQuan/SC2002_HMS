@@ -22,6 +22,28 @@ public class AppointmentSystem {
     /**
      * Displays appointments by doctor.
      */
+    public static void displayAppointments() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        // Correct the headers and the line separator
+        System.out.printf("%-15s %-15s %-15s %-25s %-15s%n", "Appointment ID", "DoctorID", "Patient ID", "Date", "Status");
+        System.out.println("-------------------------------------------------------------------------------------------");
+
+        for (Appointment appointment : appointments) {
+            // Ensure the placeholders match the headers
+            System.out.printf("%-15d %-15s %-15s %-25s %-15s%n",
+                    appointment.getID(),
+                    appointment.getDoctorID(),
+                    appointment.getPatientID(),
+                    sdf.format(appointment.getAppointmentDate()),
+                    appointment.getAppointmentStatus());
+        }
+    }
+
+
+    /**
+     * Displays appointments by doctor.
+     */
     public static void displayAppointmentsByDoctor(String doctorID, String status) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         boolean found = false;
