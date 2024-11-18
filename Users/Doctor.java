@@ -59,7 +59,7 @@ public class Doctor extends User {
             }
             case 4 -> {
                 System.out.println("Setting availability for appointments...");
-//                Models.AppointmentSystem.setAvailability(getUserId());
+//                Systems.AppointmentSystem.setAvailability(getUserId());
             }
 
             case 5 -> {
@@ -105,7 +105,7 @@ public class Doctor extends User {
             case 7 -> {
                 System.out.println("Recording appointment outcome...");
 //                appointmentOutcome = new AppointmentOutcome();
-//                Models.AppointmentSystem.addAppointmentOutcome(getUserId());
+//                Systems.AppointmentSystem.addAppointmentOutcome(getUserId());
 
             }
             case 8 -> {

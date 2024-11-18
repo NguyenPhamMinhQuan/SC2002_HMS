@@ -6,7 +6,7 @@ package Models;
 public class User {
     private final String userId;
     private String password;
-    private final String role; // e.g., "Users.Patient", "Users.Doctor", "Users.Pharmacist", "Users.Administrator"
+    private final String role; // e.g., "Patient", "Doctor", "Pharmacist", "Administrator"
     private final String name; // The name of the user
     private final String gender;
     private final int age;

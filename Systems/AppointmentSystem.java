@@ -1,4 +1,6 @@
-package Models;
+package Systems;
+
+import Models.Appointment;
 
 import java.io.*;
 import java.text.SimpleDateFormat;

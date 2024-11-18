@@ -1,6 +1,6 @@
 package Users;
 
-import Models.AppointmentSystem;
+import Systems.AppointmentSystem;
 import Models.MedicalRecord;
 import Models.User;
 import Systems.InputHandler;
