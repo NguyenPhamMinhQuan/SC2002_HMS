@@ -2,6 +2,7 @@ package Users;
 
 import Models.User;
 import Systems.AppointmentSystem;
+import Systems.StockSystem;
 import Systems.UserManagementSystem;
 
 /**
@@ -36,9 +37,10 @@ public class Administrator extends User {
             }
             case 3 -> {
                 System.out.println("Viewing and managing medication inventory...");
+                manageMedicationInventory();
             }
             case 4 -> {
-                System.out.println("Approving replenishment requests...");
+                handleReplenishRequests();
             }
             case 5 -> {
                 System.out.println("Logging out...");
@@ -47,5 +49,21 @@ public class Administrator extends User {
             default -> System.out.println("Invalid choice. Please try again.");
         }
         return false;
+    }
+
+    /**
+     * Allows the administrator to view and manage medication inventory.
+     */
+    private void manageMedicationInventory() {
+        StockSystem stockSystem = new StockSystem();
+        stockSystem.printStocks();
+    }
+
+    /**
+     * Allows the administrator to handle replenish requests interactively.
+     */
+    private void handleReplenishRequests() {
+        StockSystem stockSystem = new StockSystem();
+        stockSystem.handleReplenishRequests();
     }
 }

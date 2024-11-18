@@ -166,7 +166,7 @@ public class StockSystem {
             String line;
 
             // Skip header
-            br.readLine();
+//            br.readLine();
 
 
             while ((line = br.readLine()) != null) {
@@ -210,7 +210,7 @@ public class StockSystem {
             String line;
 
             // Skip header
-            br.readLine();
+//            br.readLine();
 
 
             while ((line = br.readLine()) != null) {
@@ -256,5 +256,67 @@ public class StockSystem {
             System.err.println("Failed to save replenish requests: " + e.getMessage());
         }
     }
+
+
+        /**
+         * Allows the admin to approve or reject replenish requests.
+         */
+        public void handleReplenishRequests() {
+            if (replenishRequests.isEmpty()) {
+                System.out.println("No replenish requests available.");
+                return;
+            }
+
+            for (StockReplenishRequest request : new ArrayList<>(replenishRequests)) {
+                if ("pending".equalsIgnoreCase(request.getStatus())) {
+                    System.out.println("Request ID: " + request.getID());
+                    System.out.println("Stock ID: " + request.getStockId());
+                    System.out.println("Incoming Stock Level: " + request.getIncomingStockLevel());
+                    System.out.println("Status: " + request.getStatus());
+                    System.out.print("Approve or Reject this request (A/R)? ");
+                    String decision = new java.util.Scanner(System.in).nextLine();
+
+                    if ("A".equalsIgnoreCase(decision)) {
+                        approveReplenishRequest(request);
+                        System.out.println("Request approved and stock updated.");
+                    } else if ("R".equalsIgnoreCase(decision)) {
+                        rejectReplenishRequest(request);
+                        System.out.println("Request rejected.");
+                    } else {
+                        System.out.println("Invalid input. Skipping this request.");
+                    }
+                }
+            }
+        }
+
+        /**
+         * Approves a replenish request by updating stock levels and marking the request as approved.
+         *
+         * @param request the replenish request to approve.
+         */
+        private void approveReplenishRequest(StockReplenishRequest request) {
+            Stock stock = getStockById(request.getStockId());
+            if (stock != null) {
+                // Increase the stock level by the incoming amount
+                stock.setStockLevel(stock.getStockLevel() + request.getIncomingStockLevel());
+                saveStocks();
+            } else {
+                System.out.println("Stock not found for Stock ID: " + request.getStockId());
+            }
+
+            // Update request status
+            request.setStatus("approved");
+            saveReplenishRequests();
+        }
+
+        /**
+         * Rejects a replenish request by updating its status to rejected.
+         *
+         * @param request the replenish request to reject.
+         */
+        private void rejectReplenishRequest(StockReplenishRequest request) {
+            request.setStatus("rejected");
+            saveReplenishRequests();
+        }
 
 }
