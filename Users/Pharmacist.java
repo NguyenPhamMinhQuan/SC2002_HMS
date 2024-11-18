@@ -62,7 +62,6 @@ public class Pharmacist extends User {
                 }
             }
             case 5 -> {
-                System.out.println("Logging out...");
                 return true;
             }
             default -> System.out.println("Invalid choice. Please try again.");

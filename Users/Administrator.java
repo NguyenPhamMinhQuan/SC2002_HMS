@@ -2,6 +2,7 @@ package Users;
 
 import Models.User;
 import Systems.AppointmentSystem;
+import Systems.InputHandler;
 import Systems.StockSystem;
 import Systems.UserManagementSystem;
 
@@ -27,28 +28,37 @@ public class Administrator extends User {
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
-            case 1 -> {
-                System.out.println("Viewing and managing hospital staff...");
-                UserManagementSystem.filterStaff();
-            }
-            case 2 -> {
-                System.out.println("Viewing appointment details...");
-                AppointmentSystem.displayAppointments();
-            }
-            case 3 -> {
-                System.out.println("Viewing and managing medication inventory...");
-                manageMedicationInventory();
-            }
-            case 4 -> {
-                handleReplenishRequests();
-            }
+            case 1 -> manageUsers();
+            case 2 -> AppointmentSystem.displayAppointments();
+            case 3 -> manageMedicationInventory();
+            case 4 -> handleReplenishRequests();
             case 5 -> {
-                System.out.println("Logging out...");
+                // Logout
                 return true;
             }
             default -> System.out.println("Invalid choice. Please try again.");
         }
         return false;
+    }
+
+    private void manageUsers() {
+        System.out.println("Viewing and managing hospital staff...");
+        UserManagementSystem.filterStaff();
+
+        System.out.println("Choose an action:");
+        System.out.println("1. Add a user");
+        System.out.println("2. Update a user");
+        System.out.println("3. Delete a user");
+        System.out.println("4. Back to main menu");
+
+        int action = Integer.parseInt(InputHandler.nextLine());
+        switch (action) {
+            case 1 -> UserManagementSystem.addNewUser();
+            case 2 -> UserManagementSystem.updateUser();
+            case 3 -> UserManagementSystem.deleteUser();
+            case 4 -> System.out.println("Returning to main menu...");
+            default -> System.out.println("Invalid choice. Returning to main menu...");
+        }
     }
 
     /**

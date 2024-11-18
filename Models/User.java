@@ -4,12 +4,12 @@ package Models;
  * Represents a user in the hospital management system.
  */
 public class User {
-    private final String userId;
+    private final String userId; // User ID is final, as it should not change
     private String password;
-    private final String role; // e.g., "Patient", "Doctor", "Pharmacist", "Administrator"
-    private final String name; // The name of the user
-    private final String gender;
-    private final int age;
+    private final String role; // Role is final, as it should not change after creation
+    private String name; // The name of the user
+    private String gender; // Gender can be updated
+    private int age; // Age can be updated
 
     /**
      * Constructs a new User.
@@ -29,6 +29,8 @@ public class User {
         this.gender = gender;
         this.age = age;
     }
+
+    // Getters and Setters
 
     /**
      * Gets the user ID.
@@ -51,10 +53,19 @@ public class User {
     /**
      * Gets the user's password.
      *
-     * @return the user's role.
+     * @return the user's password.
      */
     public String getPassword() {
         return password;
+    }
+
+    /**
+     * Sets the user's password.
+     *
+     * @param password the new password.
+     */
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**
@@ -67,6 +78,15 @@ public class User {
     }
 
     /**
+     * Sets the user's name.
+     *
+     * @param name the new name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Gets the user's gender.
      *
      * @return the user's gender.
@@ -76,12 +96,30 @@ public class User {
     }
 
     /**
+     * Sets the user's gender.
+     *
+     * @param gender the new gender.
+     */
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    /**
      * Gets the user's age.
      *
      * @return the user's age.
      */
     public int getAge() {
         return age;
+    }
+
+    /**
+     * Sets the user's age.
+     *
+     * @param age the new age.
+     */
+    public void setAge(int age) {
+        this.age = age;
     }
 
     /**
@@ -100,7 +138,7 @@ public class User {
      * @param newPassword the new password.
      */
     public void updatePassword(String newPassword) {
-        this.password = newPassword;
+        setPassword(newPassword); // Use the setter for consistency
     }
 
     /**
@@ -109,7 +147,6 @@ public class User {
      * @param feature the choice number on the user's menu
      */
     public boolean functionCall(int feature) {
-        return false; //default log out value
+        return false; // Default log-out value
     }
-
 }

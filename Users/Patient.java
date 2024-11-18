@@ -69,7 +69,6 @@ public class Patient extends User {
                 AppointmentSystem.displayAppointmentsByPatient(getUserId(), Collections.singletonList("completed"));
             }
             case 9 -> {
-                System.out.println("Logging out...");
                 return true;
             }
             default -> System.out.println("Invalid choice. Please try again.");

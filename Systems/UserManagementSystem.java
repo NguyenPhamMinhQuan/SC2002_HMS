@@ -48,6 +48,92 @@ public class UserManagementSystem {
     }
 
     /**
+     * Adds a new user to the system interactively.
+     */
+    public static void addNewUser() {
+        System.out.println("Enter role (patient, doctor, pharmacist, administrator): ");
+        String role = InputHandler.nextLine();
+
+        System.out.println("Enter name: ");
+        String name = InputHandler.nextLine();
+
+        System.out.println("Enter gender (Male/Female): ");
+        String gender = InputHandler.nextLine();
+
+        System.out.println("Enter age: ");
+        int age = Integer.parseInt(InputHandler.nextLine());
+
+        User user = createUser(role, name, gender, age);
+        System.out.println("User added successfully: " + user);
+
+        saveUsers(); // Save users to file after adding
+    }
+
+
+    /**
+     * Updates an existing user's details.
+     */
+    public static void updateUser() {
+        System.out.println("Enter the User ID of the user to update: ");
+        String userId = InputHandler.nextLine();
+
+        User user = users.get(userId);
+        if (user == null) {
+            System.out.println("User not found.");
+            return;
+        }
+
+        System.out.println("Enter new name (leave blank to keep unchanged): ");
+        String name = InputHandler.nextLine();
+        if (!name.isEmpty()) user.setName(name);
+
+        System.out.println("Enter new gender (leave blank to keep unchanged): ");
+        String gender = InputHandler.nextLine();
+        if (!gender.isEmpty()) user.setGender(gender);
+
+        System.out.println("Enter new age (or press Enter to keep unchanged): ");
+        String ageInput = InputHandler.nextLine();
+        if (!ageInput.isEmpty()) user.setAge(Integer.parseInt(ageInput));
+
+        System.out.println("User updated successfully: " + user);
+
+        saveUsers(); // Save users to file after updating
+    }
+
+    /**
+     * Deletes a user from the system.
+     */
+    public static void deleteUser() {
+        System.out.println("Enter the User ID of the user to delete: ");
+        String userId = InputHandler.nextLine();
+
+        User user = users.remove(userId);
+        if (user == null) {
+            System.out.println("User not found.");
+        } else {
+            System.out.println("User deleted successfully: " + user);
+            // Decrement the relevant counter
+            switch (user.getRole().toLowerCase()) {
+                case "patient":
+                    patientCount--;
+                    break;
+                case "doctor":
+                    doctorCount--;
+                    break;
+                case "administrator":
+                    adminCount--;
+                    break;
+                case "pharmacist":
+                    pharmacistCount--;
+                    break;
+            }
+
+            saveUsers(); // Save users to file after deleting
+        }
+    }
+
+
+    /**
      * Retrieves all users in the system.
      *
      * @return a list of all users.
@@ -244,14 +330,35 @@ public class UserManagementSystem {
      * Saves all users to the file.
      * This method writes all user data to the CSV file for persistence.
      */
-    public static void saveUsers() throws IOException {
-        BufferedWriter bw = new BufferedWriter(new FileWriter(USERS_FILE));
-        for (User user : users.values()) {
-            String userLine = String.join(",", user.getUserId(), user.getPassword(), user.getName(),
-                    user.getGender(), String.valueOf(user.getAge()), user.getRole());
-            bw.write(userLine);
+    public static void saveUsers() {
+        File file = new File(USERS_FILE);
+
+        // Ensure the directory exists
+        file.getParentFile().mkdirs();
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+            // Write a header row for clarity
+            bw.write("UserID,Password,Name,Gender,Age,Role");
             bw.newLine();
+
+            // Write user data
+            for (User user : users.values()) {
+                String userLine = String.join(",",
+                        user.getUserId(),
+                        user.getPassword(),
+                        user.getName(),
+                        user.getGender(),
+                        String.valueOf(user.getAge()),
+                        user.getRole()
+                );
+                bw.write(userLine);
+                bw.newLine();
+            }
+
+            System.out.println("Users saved successfully to " + USERS_FILE);
+        } catch (IOException e) {
+            System.err.println("Failed to save users: " + e.getMessage());
+            e.printStackTrace();
         }
-        bw.close();
     }
 }
