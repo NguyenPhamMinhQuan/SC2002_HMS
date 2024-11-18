@@ -94,55 +94,70 @@ public class MedicalRecordSystem {
     }
 
     public static MedicalRecord loadMedicalRecord(String patientID) {
-        File file = new File(MEDICAL_RECORD_CSV);
-        if (!file.exists()) {
-            System.out.println("Medical record file not found.");
-            return null;
-        }
+        String filePath = "data/medical_records.csv"; // Ensure the correct file path
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-            String header = reader.readLine(); // Skip the header line
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
 
-            while ((line = reader.readLine()) != null) {
-                String[] fields = line.split(",");
-                if (fields.length < 5) {
+            while ((line = br.readLine()) != null) {
+                // Skip the header row
+                if (line.startsWith("PatientID")) continue;
+
+                // Split on commas but handle embedded commas and missing fields
+                String[] recordDetails = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+
+                if (recordDetails.length < 5) { // Ensure all required fields are present
                     System.err.println("Invalid record: " + line);
                     continue;
                 }
 
-                if (fields[0].equals(patientID)) {
-                    MedicalRecord record = new MedicalRecord(patientID);
-                    record.setDateOfBirth(fields[1]);
-                    record.setPhoneNumber(fields[2]);
-                    record.setEmailAddress(fields[3]);
-                    record.setBloodType(fields[4]);
+                // Match the patient ID
+                if (recordDetails[0].equalsIgnoreCase(patientID)) {
+                    String dateOfBirth = recordDetails[1].isEmpty() ? "Unknown" : recordDetails[1];
+                    String phoneNumber = recordDetails[2].isEmpty() ? "Unknown" : recordDetails[2];
+                    String emailAddress = recordDetails[3].isEmpty() ? "Unknown" : recordDetails[3];
+                    String bloodType = recordDetails[4].isEmpty() ? "Unknown" : recordDetails[4];
 
-                    if (fields.length > 5) {
-                        String[] diagnoses = fields[5].split(";");
-                        for (String diagnosisStr : diagnoses) {
-                            String[] diagnosisFields = diagnosisStr.split("\\|");
-                            if (diagnosisFields.length == 4) {
+                    // Create and populate the medical record
+                    MedicalRecord medicalRecord = new MedicalRecord(patientID);
+                    medicalRecord.setDateOfBirth(dateOfBirth);
+                    medicalRecord.setPhoneNumber(phoneNumber);
+                    medicalRecord.setEmailAddress(emailAddress);
+                    medicalRecord.setBloodType(bloodType);
+
+                    // Parse diagnoses if present and not `None`
+                    if (recordDetails.length > 5 && !recordDetails[5].equalsIgnoreCase("None") && !recordDetails[5].isEmpty()) {
+                        String[] diagnoses = recordDetails[5].split(";");
+                        for (String diagnosisDetail : diagnoses) {
+                            String[] diagnosisParts = diagnosisDetail.split(";");
+                            if (diagnosisParts.length == 4) {
                                 Diagnosis diagnosis = new Diagnosis(
-                                        diagnosisFields[0],
-                                        diagnosisFields[1],
-                                        diagnosisFields[2],
-                                        diagnosisFields[3]
+                                        diagnosisParts[0], // Condition
+                                        diagnosisParts[1], // Date
+                                        diagnosisParts[2], // Prescription
+                                        diagnosisParts[3]  // Status
                                 );
-                                record.addDiagnosis(diagnosis);
+                                medicalRecord.addDiagnosis(diagnosis);
+                            } else {
+                                System.err.println("Invalid diagnosis entry: " + diagnosisDetail);
                             }
                         }
                     }
 
-                    return record;
+                    return medicalRecord; // Return the loaded record
                 }
             }
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + filePath);
         } catch (IOException e) {
-            System.err.println("Error reading medical record file: " + e.getMessage());
+            System.err.println("Error reading file: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
         }
 
-        System.out.println("Medical record for Patient ID " + patientID + " not found.");
-        return null;
+        System.err.println("Medical record not found for Patient ID: " + patientID);
+        return null; // Return null if not found
     }
+
 
 }

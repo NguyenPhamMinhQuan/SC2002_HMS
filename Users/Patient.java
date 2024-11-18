@@ -4,6 +4,7 @@ import Systems.AppointmentSystem;
 import Models.MedicalRecord;
 import Models.User;
 import Systems.InputHandler;
+import Systems.MedicalRecordSystem;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -67,6 +68,14 @@ public class Patient extends User {
             case 8 -> {
                 System.out.println("Viewing past appointment outcomes...");
                 AppointmentSystem.displayAppointmentsByPatient(getUserId(), Collections.singletonList("completed"));
+//                medicalRecord.displayAppointmentOutcomes();
+                MedicalRecord patientRecord = MedicalRecordSystem.loadMedicalRecord(getUserId());
+
+                if (patientRecord != null) {
+                    patientRecord.displayAppointmentOutcomes();
+                } else {
+                    System.out.println("Medical record not found for Patient ID: " + getUserId());
+                }
             }
             case 9 -> {
                 return true;

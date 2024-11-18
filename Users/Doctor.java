@@ -1,13 +1,8 @@
 package Users;
 
-import Models.Appointment;
-import Models.Diagnosis;
-import Models.MedicalRecord;
-import Models.User;
-import Systems.AppointmentSystem;
-import Systems.InputHandler;
+import Models.*;
+import Systems.*;
 import Systems.MedicalRecordSystem;
-import Systems.UserManagementSystem;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -201,9 +196,115 @@ public class Doctor extends User {
         AppointmentSystem.displayAppointmentsByDoctor(getUserId(), "confirmed");
     }
 
+    /**
+     * Records the outcome of an appointment.
+     */
     private void recordAppointmentOutcome() {
-        // Logic for recording appointment outcomes
         System.out.println("Recording appointment outcome...");
-        // TODO: Implement functionality
+
+        // Get the list of confirmed appointments
+        List<Appointment> confirmedAppointments = AppointmentSystem.getAppointmentsByDoctor(getUserId(), "confirmed");
+
+        if (confirmedAppointments.isEmpty()) {
+            System.out.println("No confirmed appointments available to record outcomes for.");
+            return;
+        }
+
+        // Display confirmed appointments
+        System.out.println("Select an appointment to record the outcome:");
+        for (int i = 0; i < confirmedAppointments.size(); i++) {
+            Appointment appointment = confirmedAppointments.get(i);
+            System.out.printf("[%d] Appointment ID: %s, Patient ID: %s, Date: %s%n",
+                    i + 1,
+                    appointment.getID(),
+                    appointment.getPatientID(),
+                    AppointmentSystem.formatDate(appointment.getAppointmentDate()));
+        }
+
+        // Input selection
+        System.out.print("Enter the number of the appointment: ");
+        int choice = InputHandler.nextInt() - 1;
+
+        if (choice < 0 || choice >= confirmedAppointments.size()) {
+            System.out.println("Invalid choice. Returning to menu.");
+            return;
+        }
+
+        Appointment selectedAppointment = confirmedAppointments.get(choice);
+
+        // Record details for the appointment outcome
+        System.out.print("Enter Service Type (e.g., Consultation, X-ray): ");
+        String serviceType = InputHandler.nextLine();
+
+        System.out.print("Enter Consultation Notes: ");
+        String consultationNotes = InputHandler.nextLine();
+
+        AppointmentOutcomeRecord outcomeRecord = new AppointmentOutcomeRecord(
+                AppointmentSystem.formatDate(selectedAppointment.getAppointmentDate()),
+                serviceType,
+                consultationNotes
+        );
+
+        // Prescribe Medications
+        StockSystem stockSystem = new StockSystem(); // Load the stock system
+        System.out.println("Do you want to prescribe medications? (yes/no): ");
+        String prescribeMedications = InputHandler.nextLine();
+
+        if (prescribeMedications.equalsIgnoreCase("yes")) {
+            while (true) {
+                // Display available stocks
+                System.out.println("Available medicines:");
+                List<Stock> availableStocks = stockSystem.getStocks();
+                for (Stock stock : availableStocks) {
+                    System.out.printf("ID: %d, Name: %s, Stock Level: %d%n",
+                            stock.getID(),
+                            stock.getMedicineName(),
+                            stock.getStockLevel());
+                }
+
+                System.out.print("Enter medicine ID (or type '0' to finish): ");
+                int medicineID = InputHandler.nextInt();
+                if (medicineID == 0) break;
+
+                Stock selectedStock = stockSystem.getStockById(medicineID);
+                if (selectedStock == null) {
+                    System.out.println("Invalid medicine ID. Please try again.");
+                    continue;
+                }
+
+                System.out.print("Enter quantity to prescribe: ");
+                int quantity = InputHandler.nextInt();
+
+                if (selectedStock.getStockLevel() < quantity) {
+                    System.out.println("Insufficient stock for " + selectedStock.getMedicineName() + ". Available: " + selectedStock.getStockLevel());
+                    continue;
+                }
+
+                // Deduct the prescribed quantity from the stock
+                selectedStock.setStockLevel(selectedStock.getStockLevel() - quantity);
+                stockSystem.saveStocks(); // Save updated stock levels
+
+                // Add to the outcome record
+                Stock prescribedMedication = new Stock(selectedStock.getMedicineName(), quantity);
+                outcomeRecord.addMedication(prescribedMedication);
+
+                System.out.println("Added " + quantity + " of " + selectedStock.getMedicineName() + " to the prescription.");
+            }
+        }
+
+        // Save the outcome to the system
+        MedicalRecord patientRecord = MedicalRecordSystem.loadMedicalRecord(String.format("%s",selectedAppointment.getPatientID()));
+        if (patientRecord != null) {
+            patientRecord.addAppointmentOutcome(outcomeRecord);
+            MedicalRecordSystem.saveMedicalRecord(patientRecord);
+            System.out.println("Appointment outcome recorded successfully.");
+        } else {
+            System.out.println("Failed to record outcome. Patient's medical record not found.");
+            return;
+        }
+
+        // Update the appointment status to "complete"
+        AppointmentSystem.updateAppointmentStatus(selectedAppointment.getID(), "completed");
+        System.out.println("Appointment status updated to 'complete'.");
     }
 }

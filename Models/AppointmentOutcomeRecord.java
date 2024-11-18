@@ -11,7 +11,7 @@ public class AppointmentOutcomeRecord {
 
     private String appointmentDate;
     private String serviceType; // e.g., consultation, X-ray, etc.
-    private List<Medication> prescribedMedications;
+    private List<Stock> prescribedMedications;
     private String consultationNotes;
 
     /**
@@ -29,7 +29,7 @@ public class AppointmentOutcomeRecord {
     }
 
     // Add a medication to the list of prescribed medications
-    public void addMedication(Medication medication) {
+    public void addMedication(Stock medication) {
         prescribedMedications.add(medication);
     }
 
@@ -51,11 +51,11 @@ public class AppointmentOutcomeRecord {
         this.serviceType = serviceType;
     }
 
-    public List<Medication> getPrescribedMedications() {
+    public List<Stock> getPrescribedMedications() {
         return prescribedMedications;
     }
 
-    public void setPrescribedMedications(List<Medication> prescribedMedications) {
+    public void setPrescribedMedications(List<Stock> prescribedMedications) {
         this.prescribedMedications = prescribedMedications;
     }
 

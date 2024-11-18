@@ -1,2 +1,2 @@
 PatientID,DateOfBirth,PhoneNumber,EmailAddress,BloodType,Diagnoses
-PT1,2000-10-10,12312312,123123,,
+PT1,2000-10-10,12345678,patient@example.com,A+,

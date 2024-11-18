@@ -338,8 +338,8 @@ public class UserManagementSystem {
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
             // Write a header row for clarity
-            bw.write("UserID,Password,Name,Gender,Age,Role");
-            bw.newLine();
+//            bw.write("UserID,Password,Name,Gender,Age,Role");
+//            bw.newLine();
 
             // Write user data
             for (User user : users.values()) {

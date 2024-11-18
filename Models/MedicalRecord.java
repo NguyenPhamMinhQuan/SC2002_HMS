@@ -1,6 +1,7 @@
 package Models;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -12,6 +13,7 @@ public class MedicalRecord {
     private final String patientID;
     private String bloodType;
     private final List<Diagnosis> pastDiagnoses;
+    private final List<AppointmentOutcomeRecord> appointmentOutcomes;
 
     // Personal Information
     private String dateOfBirth;
@@ -28,6 +30,7 @@ public class MedicalRecord {
         this.patientID = patientID;
         this.bloodType = "";
         this.pastDiagnoses = new ArrayList<>();
+        this.appointmentOutcomes = new ArrayList<>();
         this.dateOfBirth = "";
         this.phoneNumber = "";
         this.emailAddress = "";
@@ -55,9 +58,13 @@ public class MedicalRecord {
         return emailAddress;
     }
 
-    // Setter methods for mutable fields
+    // Setter methods with validation
     public void setBloodType(String bloodType) {
-        this.bloodType = bloodType;
+        if (bloodType.matches("^(A|B|AB|O)[+-]$")) {
+            this.bloodType = bloodType;
+        } else {
+            throw new IllegalArgumentException("Invalid blood type. Use format: A+, A-, B+, etc.");
+        }
     }
 
     public void setDateOfBirth(String dateOfBirth) {
@@ -65,12 +72,22 @@ public class MedicalRecord {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+        if (phoneNumber.matches("\\d{8,10}")) {
+            this.phoneNumber = phoneNumber;
+        } else {
+            throw new IllegalArgumentException("Invalid phone number. Must contain 10-15 digits.");
+        }
     }
 
     public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+        if (emailAddress.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$")) {
+            this.emailAddress = emailAddress;
+        } else {
+            throw new IllegalArgumentException("Invalid email address format.");
+        }
     }
+
+    // Diagnosis Management
 
     /**
      * Adds a new diagnosis to the medical record.
@@ -83,16 +100,40 @@ public class MedicalRecord {
 
     /**
      * Retrieves all diagnoses in the medical record.
+     * Returns an unmodifiable list to prevent external modification.
      *
      * @return a list of all past diagnoses.
      */
     public List<Diagnosis> getPastDiagnoses() {
-        return pastDiagnoses;
+        return Collections.unmodifiableList(pastDiagnoses);
+    }
+
+    // Appointment Outcome Management
+
+    /**
+     * Adds an appointment outcome to the medical record.
+     *
+     * @param outcome the appointment outcome to add.
+     */
+    public void addAppointmentOutcome(AppointmentOutcomeRecord outcome) {
+        appointmentOutcomes.add(outcome);
     }
 
     /**
-     * Displays the patient's medical record, including personal information
-     * and a detailed table of diagnoses with associated details.
+     * Retrieves all appointment outcomes.
+     * Returns an unmodifiable list to prevent external modification.
+     *
+     * @return a list of appointment outcomes.
+     */
+    public List<AppointmentOutcomeRecord> getAppointmentOutcomes() {
+        return Collections.unmodifiableList(appointmentOutcomes);
+    }
+
+    // Display and Summary Methods
+
+    /**
+     * Displays the patient's medical record, including personal information,
+     * diagnoses, and appointment outcomes.
      */
     public void displayMedicalRecord() {
         System.out.println("Medical Record for Patient ID: " + patientID);
@@ -101,6 +142,7 @@ public class MedicalRecord {
         System.out.println("Email: " + emailAddress);
         System.out.println("Blood Type: " + bloodType);
 
+        // Display diagnoses
         System.out.println("\nDiagnoses and Treatments:");
         System.out.println("-------------------------------------------------------------------------------");
         System.out.printf("%-20s %-15s %-25s %-20s\n", "Diagnosis", "Date", "Prescription", "Prescription Status");
@@ -113,6 +155,75 @@ public class MedicalRecord {
                     diagnosis.getPrescription(),
                     diagnosis.getPrescriptionStatus());
         }
+
+        // Display appointment outcomes
+        System.out.println("\nAppointment Outcomes:");
+        System.out.println("-------------------------------------------------------------------------------");
+        System.out.printf("%-15s %-20s %-25s %-20s\n", "Date", "Service Type", "Prescribed Medications", "Notes");
+        System.out.println("-------------------------------------------------------------------------------");
+
+        for (AppointmentOutcomeRecord outcome : appointmentOutcomes) {
+            String medications = outcome.getPrescribedMedications().stream()
+                    .map(med -> med.getMedicineName() + " (" + med.getStockLevel() + ")")
+                    .reduce("", (a, b) -> a.isEmpty() ? b : a + ", " + b);
+
+            System.out.printf("%-15s %-20s %-25s %-20s\n",
+                    outcome.getAppointmentDate(),
+                    outcome.getServiceType(),
+                    medications,
+                    outcome.getConsultationNotes());
+        }
+
         System.out.println("-------------------------------------------------------------------------------");
     }
+
+    /**
+     * Retrieves the most recent diagnosis.
+     *
+     * @return the latest diagnosis, or null if no diagnoses exist.
+     */
+    public Diagnosis getMostRecentDiagnosis() {
+        if (pastDiagnoses.isEmpty()) return null;
+        return pastDiagnoses.get(pastDiagnoses.size() - 1);
+    }
+
+    /**
+     * Retrieves the most recent appointment outcome.
+     *
+     * @return the latest appointment outcome, or null if none exist.
+     */
+    public AppointmentOutcomeRecord getMostRecentAppointmentOutcome() {
+        if (appointmentOutcomes.isEmpty()) return null;
+        return appointmentOutcomes.get(appointmentOutcomes.size() - 1);
+    }
+
+    /**
+     * Displays all appointment outcomes for this patient.
+     */
+    public void displayAppointmentOutcomes() {
+        if (appointmentOutcomes.isEmpty()) {
+            System.out.println("No appointment outcomes recorded for this patient.");
+            return;
+        }
+
+        System.out.println("\nAppointment Outcomes for Patient ID: " + patientID);
+        System.out.println("-------------------------------------------------------------------------------");
+        System.out.printf("%-15s %-20s %-25s %-20s\n", "Date", "Service Type", "Prescribed Medications", "Notes");
+        System.out.println("-------------------------------------------------------------------------------");
+
+        for (AppointmentOutcomeRecord outcome : appointmentOutcomes) {
+            String medications = outcome.getPrescribedMedications().stream()
+                    .map(med -> med.getMedicineName() + " (" + med.getStockLevel() + ")")
+                    .reduce("", (a, b) -> a.isEmpty() ? b : a + ", " + b);
+
+            System.out.printf("%-15s %-20s %-25s %-20s\n",
+                    outcome.getAppointmentDate(),
+                    outcome.getServiceType(),
+                    medications,
+                    outcome.getConsultationNotes());
+        }
+
+        System.out.println("-------------------------------------------------------------------------------");
+    }
+
 }
