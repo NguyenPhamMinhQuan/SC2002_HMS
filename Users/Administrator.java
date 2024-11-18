@@ -10,7 +10,7 @@ import Systems.UserManagementSystem;
 public class Administrator extends User {
 
     /**
-     * Constructs a new Users.Administrator.
+     * Constructs a new Administrator.
      *
      * @param userId   the unique identifier of the user.
      * @param password the password of the user.

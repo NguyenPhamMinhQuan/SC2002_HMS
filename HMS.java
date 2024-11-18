@@ -89,6 +89,7 @@ public class HMS {
         } catch (Exception e) {
             System.out.println("An error occurred. Please restart the application.");
         } finally {
+
 //            try {
 ////                UserManagementSystem.saveUsers(); // save user data from the file.
 //                System.out.println("Users saved successfully.");

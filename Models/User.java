@@ -16,7 +16,7 @@ public class User {
      *
      * @param userId   the unique identifier of the user.
      * @param password the password of the user.
-     * @param role     the role of the user (e.g., "Users.Patient", "Users.Doctor", etc.).
+     * @param role     the role of the user (e.g., "Patient", "Doctor", etc.).
      * @param name     the name of the user.
      * @param gender   the gender of the user (Male or Female)
      * @param age      the age of the user
