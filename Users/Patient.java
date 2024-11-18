@@ -62,7 +62,7 @@ public class Patient extends User {
             }
             case 7 -> {
                 System.out.println("Viewing scheduled appointments...");
-                AppointmentSystem.displayAppointmentsByPatient(getUserId(), Collections.singletonList("confirmed"));
+                AppointmentSystem.displayAppointmentsByPatient(getUserId(), Arrays.asList("confirmed", "pending"));
             }
             case 8 -> {
                 System.out.println("Viewing past appointment outcomes...");
