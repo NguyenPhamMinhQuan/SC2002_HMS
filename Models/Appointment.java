@@ -1,5 +1,7 @@
 package Models;
 
+import Enums.AppointmentStatus;
+
 import java.util.Date;
 
 /**
@@ -12,7 +14,7 @@ public class Appointment {
     private int ID;
     private final String patientID;
     private String doctorID;
-    private String appointmentStatus; // e.g., "confirmed", "canceled", "completed"
+    private AppointmentStatus appointmentStatus; // e.g., "confirmed", "canceled", "completed"
     private Date appointmentDate;
     private final AppointmentOutcomeRecord outcomeRecord;
 
@@ -25,7 +27,7 @@ public class Appointment {
      * @param appointmentStatus the status of the appointment (e.g., "confirmed", "canceled")
      * @param appointmentDate   the date and time of the appointment
      */
-    public Appointment(int ID, String patientID, String doctorID, String appointmentStatus, Date appointmentDate) {
+    public Appointment(int ID, String patientID, String doctorID, AppointmentStatus appointmentStatus, Date appointmentDate) {
         this.ID = ID;
         this.patientID = patientID;
         this.doctorID = doctorID;
@@ -54,11 +56,11 @@ public class Appointment {
         this.doctorID = doctorID;
     }
 
-    public String getAppointmentStatus() {
+    public AppointmentStatus getAppointmentStatus() {
         return appointmentStatus;
     }
 
-    public void setAppointmentStatus(String appointmentStatus) {
+    public void setAppointmentStatus(AppointmentStatus appointmentStatus) {
         this.appointmentStatus = appointmentStatus;
     }
 

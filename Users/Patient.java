@@ -1,5 +1,6 @@
 package Users;
 
+import Enums.AppointmentStatus;
 import Enums.UserRole;
 import Models.User;
 import Systems.AppointmentOutcomeSystem;
@@ -37,7 +38,7 @@ public class Patient extends User implements UserMenuInterface {
             case 4 -> scheduleAppointment();
             case 5 -> AppointmentSystem.rescheduleAppointment(getUserId());
             case 6 -> cancelAppointment();
-            case 7 -> AppointmentSystem.displayAppointmentsByPatient(getUserId(), Arrays.asList("pending", "confirmed"));
+            case 7 -> AppointmentSystem.displayAppointmentsByPatient(getUserId(), Arrays.asList(AppointmentStatus.PENDING, AppointmentStatus.APPROVED));
             case 8 -> AppointmentOutcomeSystem.displayOutcomesForPatient(getUserId());
             case 9 -> {
                 return true;
@@ -73,7 +74,7 @@ public class Patient extends User implements UserMenuInterface {
         String patientID = getUserId();
 
         System.out.println("--- Your Appointments ---");
-        AppointmentSystem.displayAppointmentsByPatient(patientID, Arrays.asList("pending", "confirmed"));
+        AppointmentSystem.displayAppointmentsByPatient(patientID, Arrays.asList(AppointmentStatus.PENDING, AppointmentStatus.APPROVED));
 
         String input = InputHandler.getValidatedInputWithExit(
                 "Enter the Appointment ID to cancel: ",
@@ -83,7 +84,7 @@ public class Patient extends User implements UserMenuInterface {
                         int id = Integer.parseInt(value);
                         return AppointmentSystem.getAppointmentsByPatient(patientID, null)
                                 .stream()
-                                .anyMatch(appointment -> appointment.getID() == id && !appointment.getAppointmentStatus().equalsIgnoreCase("canceled"));
+                                .anyMatch(appointment -> appointment.getID() == id && !(appointment.getAppointmentStatus() == AppointmentStatus.CANCELLED));
                     } catch (NumberFormatException e) {
                         return false;
                     }

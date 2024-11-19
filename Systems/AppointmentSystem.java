@@ -1,5 +1,6 @@
 package Systems;
 
+import Enums.AppointmentStatus;
 import Models.Appointment;
 
 import java.io.*;
@@ -103,7 +104,7 @@ public class AppointmentSystem {
             if (slots.isEmpty()) {
                 System.out.printf("| %-10s | %-44s |\n", doctorID, "No slots available");
             } else {
-                System.out.printf("| %-10s | %-44s |\n", doctorID, slots.get(0));
+                System.out.printf("| %-10s | %-44s |\n", doctorID, slots.getFirst());
                 for (int i = 1; i < slots.size(); i++) {
                     System.out.printf("| %-10s | %-44s |\n", "", slots.get(i));
                 }
@@ -132,8 +133,8 @@ public class AppointmentSystem {
         System.out.println("Select a slot to remove:");
         displaySlots(slots);
 
-        String input = InputHandler.getValidatedInput(
-                "Enter the number of the slot to remove: ",
+        String input = InputHandler.getValidatedInputWithExit(
+                "Enter the number of the slot to remove or 'exit' to cancel: ",
                 "Invalid selection.",
                 value -> isValidSlotSelection(value, slots.size())
         );
@@ -155,7 +156,7 @@ public class AppointmentSystem {
      * @param statuses  the list of statuses to filter by (nullable for all statuses).
      * @return a list of matching appointments.
      */
-    public static List<Appointment> getAppointmentsByPatient(String patientID, List<String> statuses) {
+    public static List<Appointment> getAppointmentsByPatient(String patientID, List<AppointmentStatus> statuses) {
         List<Appointment> result = new ArrayList<>();
 
         for (Appointment appointment : appointments) {
@@ -201,7 +202,7 @@ public class AppointmentSystem {
      * @param patientID the ID of the patient.
      * @param statuses  the list of statuses to filter by (nullable for all statuses).
      */
-    public static void displayAppointmentsByPatient(String patientID, List<String> statuses) {
+    public static void displayAppointmentsByPatient(String patientID, List<AppointmentStatus> statuses) {
         List<Appointment> appointmentsForPatient = getAppointmentsByPatient(patientID, statuses);
 
         if (appointmentsForPatient.isEmpty()) {
@@ -287,7 +288,7 @@ public class AppointmentSystem {
                 appointments.size() + 1,
                 patientID,
                 doctorID,
-                "pending",
+                AppointmentStatus.PENDING,
                 appointmentDate
         );
         appointments.add(appointment);
@@ -314,8 +315,8 @@ public class AppointmentSystem {
         displayAppointmentsByPatient(patientID, null);
 
         // Step 2: Prompt the patient to select an appointment to reschedule
-        String selectedAppointmentID = InputHandler.getValidatedInput(
-                "Enter the Appointment ID to reschedule: ",
+        String selectedAppointmentID = InputHandler.getValidatedInputWithExit(
+                "Enter the Appointment ID to reschedule or 'cancel' to exit: ",
                 "Invalid input. Please enter a valid appointment ID.",
                 input -> {
                     try {
@@ -429,7 +430,7 @@ public class AppointmentSystem {
         System.out.println("-------------------------------------------------------------------");
 
         for (Appointment appointment : appointments) {
-            if (appointment.getDoctorID().equalsIgnoreCase(doctorID) && "pending".equalsIgnoreCase(appointment.getAppointmentStatus())) {
+            if (appointment.getDoctorID().equalsIgnoreCase(doctorID) && appointment.getAppointmentStatus() == AppointmentStatus.PENDING) {
                 System.out.printf("%-15d %-15s %-25s %-15s%n",
                         appointment.getID(),
                         appointment.getPatientID(),
@@ -453,7 +454,7 @@ public class AppointmentSystem {
                         return appointments.stream().anyMatch(app ->
                                 app.getID() == appointmentID &&
                                         app.getDoctorID().equalsIgnoreCase(doctorID) &&
-                                        "pending".equalsIgnoreCase(app.getAppointmentStatus()));
+                                        app.getAppointmentStatus() == AppointmentStatus.PENDING);
                     } catch (NumberFormatException e) {
                         return false;
                     }
@@ -468,7 +469,7 @@ public class AppointmentSystem {
         int appointmentID = Integer.parseInt(inputID);
         for (Appointment appointment : appointments) {
             if (appointment.getID() == appointmentID) {
-                appointment.setAppointmentStatus("approved");
+                appointment.setAppointmentStatus(AppointmentStatus.APPROVED);
                 saveAppointments();
                 System.out.println("Appointment ID " + appointmentID + " has been approved successfully.");
                 break;
@@ -503,13 +504,13 @@ public class AppointmentSystem {
         String slot = DATE_FORMAT.format(appointmentToCancel.getAppointmentDate());
 
         if (!isSlotAvailable(doctorID, slot)) {
-            doctorAvailability.computeIfAbsent(doctorID, k -> new ArrayList<>()).add(slot);
+            doctorAvailability.computeIfAbsent(doctorID, _ -> new ArrayList<>()).add(slot);
             saveDoctorAvailability();
             System.out.println("Slot " + slot + " has been returned to availability for Doctor ID: " + doctorID);
         }
 
         // Mark the appointment as canceled
-        appointmentToCancel.setAppointmentStatus("canceled");
+        appointmentToCancel.setAppointmentStatus(AppointmentStatus.CANCELLED);
         saveAppointments(); // Save the updated appointments to the file
 
         System.out.println("Appointment ID " + appointmentID + " has been canceled successfully.");
@@ -554,12 +555,12 @@ public class AppointmentSystem {
      * @param status   (optional) the status of the appointments to filter by. Pass `null` to retrieve all statuses.
      * @return a list of appointments for the specified doctor.
      */
-    public static List<Appointment> getAppointmentsByDoctor(String doctorID, String status) {
+    public static List<Appointment> getAppointmentsByDoctor(String doctorID, AppointmentStatus status) {
         List<Appointment> result = new ArrayList<>();
 
         for (Appointment appointment : appointments) {
             boolean matchesDoctor = appointment.getDoctorID().equalsIgnoreCase(doctorID);
-            boolean matchesStatus = (status == null) || appointment.getAppointmentStatus().equalsIgnoreCase(status);
+            boolean matchesStatus = (status == null) || appointment.getAppointmentStatus() == status;
 
             if (matchesDoctor && matchesStatus) {
                 result.add(appointment);
@@ -574,7 +575,7 @@ public class AppointmentSystem {
      *
      * @param doctorID the ID of the doctor whose appointments will be displayed.
      */
-    public static void displayAppointmentsByDoctor(String doctorID, String status) {
+    public static void displayAppointmentsByDoctor(String doctorID, AppointmentStatus status) {
         List<Appointment> doctorAppointments = getAppointmentsByDoctor(doctorID, status);
 
         if (doctorAppointments.isEmpty()) {
@@ -707,7 +708,7 @@ public class AppointmentSystem {
                 int id = Integer.parseInt(parts[0]);
                 String patientID = parts[1];
                 String doctorID = parts[2];
-                String status = parts[3];
+                AppointmentStatus status = AppointmentStatus.valueOf(parts[3]);
                 Date date = DATE_FORMAT.parse(parts[4]);
                 appointments.add(new Appointment(id, patientID, doctorID, status, date));
             }
@@ -725,7 +726,7 @@ public class AppointmentSystem {
                         String.valueOf(appointment.getID()),
                         appointment.getPatientID(),
                         appointment.getDoctorID(),
-                        appointment.getAppointmentStatus(),
+                        appointment.getAppointmentStatus().toString(),
                         DATE_FORMAT.format(appointment.getAppointmentDate())));
                 bw.newLine();
             }
