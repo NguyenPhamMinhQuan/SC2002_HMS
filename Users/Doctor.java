@@ -75,10 +75,10 @@ public class Doctor extends User implements UserMenuInterface {
 
         switch (choice) {
             case "1":
-                MedicalRecordSystem.updateBloodType(patientID);
+                MedicalRecordSystem.upsertBloodType(patientID);
                 break;
             case "2":
-                MedicalRecordSystem.updateDiagnosis(patientID);
+                MedicalRecordSystem.upsertDiagnosis(patientID);
                 break;
             default:
                 System.out.println("Invalid choice.");

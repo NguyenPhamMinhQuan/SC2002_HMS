@@ -1,13 +1,11 @@
 package Users;
 
-import Models.MedicalRecord;
 import Models.User;
 import Systems.AppointmentOutcomeSystem;
 import Systems.AppointmentSystem;
 import Systems.InputHandler;
 import Systems.MedicalRecordSystem;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -33,7 +31,7 @@ public class Patient extends User implements UserMenuInterface {
     public boolean functionCall(int feature) {
         switch (feature) {
             case 1 -> MedicalRecordSystem.showOrCreateMedicalRecord(getUserId());
-            case 2 -> MedicalRecordSystem.updateOrAddMedicalRecord(getUserId());
+            case 2 -> MedicalRecordSystem.upsertMedicalRecord(getUserId());
             case 3 -> AppointmentSystem.displayAllDoctorsAvailability();
             case 4 -> scheduleAppointment();
             case 5 -> AppointmentSystem.rescheduleAppointment(getUserId());
