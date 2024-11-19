@@ -41,7 +41,7 @@ public class Administrator extends User implements UserMenuInterface {
     }
 
     private void manageUsers() {
-        System.out.println("Viewing and managing hospital staff...");
+        System.out.println("\n--- Viewing and Managing Hospital Staff ---");
         UserManagementSystem.displayStaff();
 
         System.out.println("Choose an action:");
@@ -50,15 +50,24 @@ public class Administrator extends User implements UserMenuInterface {
         System.out.println("3. Delete a user");
         System.out.println("4. Back to main menu");
 
-        int action = Integer.parseInt(InputHandler.nextLine());
+        String action = InputHandler.getValidatedInputWithExit(
+                "Choose an action (1-4) or type 'exit' to go back: ",
+                "Invalid input. Please choose a value from 1 to 4 or type 'exit'.",
+                input -> input.matches("[1-4]")
+        );
+
+        if (action == null) {
+            System.out.println("Returning to main menu...");
+            return;
+        }
+
         switch (action) {
-            case 1 -> UserManagementSystem.addNewUser(null);
-            case 2 -> UserManagementSystem.updateUser();
-            case 3 -> UserManagementSystem.deleteUser();
-            case 4 -> System.out.println("Returning to main menu...");
+            case "1" ->
+                UserManagementSystem.addNewUser(null);
+            case "2" -> UserManagementSystem.updateUser();
+            case "3" -> UserManagementSystem.deleteUser();
+            case "4" -> System.out.println("Returning to main menu...");
             default -> System.out.println("Invalid choice. Returning to main menu...");
         }
     }
-
-
 }

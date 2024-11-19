@@ -42,7 +42,6 @@ public class Pharmacist extends User implements UserMenuInterface {
     }
 
     private void handleDispensing() {
-        // Check if there are any outcomes to dispense
         if (AppointmentOutcomeSystem.getOutcomes().isEmpty()) {
             System.out.println("No appointment outcomes available for dispensing.");
             return;

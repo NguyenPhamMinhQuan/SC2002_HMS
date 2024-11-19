@@ -51,9 +51,6 @@ public class Patient extends User implements UserMenuInterface {
     /**
      * Allows the patient to schedule an appointment.
      */
-    /**
-     * Allows the patient to schedule an appointment.
-     */
     private void scheduleAppointment() {
         String doctorID = AppointmentSystem.selectDoctorWithAvailableSlots();
         if (doctorID == null) {

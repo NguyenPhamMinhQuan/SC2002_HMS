@@ -1,9 +1,7 @@
 package Users;
 
-import Models.*;
+import Models.User;
 import Systems.*;
-
-import java.util.List;
 
 /**
  * Represents a doctor in the hospital management system.
@@ -27,7 +25,11 @@ public class Doctor extends User implements UserMenuInterface {
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
-            case 1 -> viewMedicalRecord();
+            case 1 -> MedicalRecordSystem.showOrCreateMedicalRecord(
+                            UserManagementSystem.selectUserID(
+                                    UserManagementSystem.getUsersByRole("patient")
+                            )
+                    );
             case 2 -> updateMedicalRecord();
             case 3 -> {
                 AppointmentSystem.displayDoctorAvailability(getUserId());
@@ -43,14 +45,6 @@ public class Doctor extends User implements UserMenuInterface {
             default -> System.out.println("Invalid choice. Please try again.");
         }
         return false;
-    }
-
-    /**
-     * Views a patient's medical record.
-     */
-    public void viewMedicalRecord() {
-        String patientID = UserManagementSystem.selectUserID(UserManagementSystem.getUsersByRole("patient"));
-        MedicalRecordSystem.showOrCreateMedicalRecord(patientID);
     }
 
     /**
@@ -74,7 +68,7 @@ public class Doctor extends User implements UserMenuInterface {
                 input -> input.matches("[12]")
         );
 
-        if ((choice == null) || choice.equalsIgnoreCase("exit")) {
+        if (choice == null) {
             System.out.println("Update cancelled. Exiting...");
             return;
         }
