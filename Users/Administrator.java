@@ -29,13 +29,10 @@ public class Administrator extends User implements UserMenuInterface {
     public boolean functionCall(int feature) {
         switch (feature) {
             case 1 -> manageUsers();
-            case 2 -> {
-//                AppointmentSystem.displayAppointments();
-            }
-            case 3 -> manageMedicationInventory();
-            case 4 -> handleReplenishRequests();
+            case 2 -> AppointmentSystem.displayAllAppointments();
+            case 3 -> StockSystem.printStocks();
+            case 4 -> StockSystem.handleReplenishRequests();
             case 5 -> {
-                // Logout
                 return true;
             }
             default -> System.out.println("Invalid choice. Please try again.");
@@ -63,19 +60,5 @@ public class Administrator extends User implements UserMenuInterface {
         }
     }
 
-    /**
-     * Allows the administrator to view and manage medication inventory.
-     */
-    private void manageMedicationInventory() {
-        StockSystem stockSystem = new StockSystem();
-        stockSystem.printStocks();
-    }
 
-    /**
-     * Allows the administrator to handle replenish requests interactively.
-     */
-    private void handleReplenishRequests() {
-        StockSystem stockSystem = new StockSystem();
-        stockSystem.handleReplenishRequests();
-    }
 }

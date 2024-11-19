@@ -16,13 +16,13 @@ public class AppointmentOutcomeRecord {
     private String consultationNotes;
     private boolean dispensed;
 
-    public AppointmentOutcomeRecord(int appointmentID, String appointmentDate, String serviceType, String consultationNotes) {
+    public AppointmentOutcomeRecord(int appointmentID, String appointmentDate, String serviceType, String consultationNotes, boolean dispensed) {
         this.appointmentID = appointmentID;
         this.appointmentDate = appointmentDate;
         this.serviceType = serviceType;
         this.prescribedMedications = new ArrayList<>();
         this.consultationNotes = consultationNotes;
-        this.dispensed = false;
+        this.dispensed = dispensed;
     }
 
     // Add a medication to the list of prescribed medications

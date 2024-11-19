@@ -171,6 +171,31 @@ public class AppointmentSystem {
     }
 
     /**
+     * Displays all appointments regardless of status or person.
+     */
+    public static void displayAllAppointments() {
+        List<Appointment> allAppointments = getAppointments();  // Assuming getAppointments() returns all appointments
+
+        if (allAppointments.isEmpty()) {
+            System.out.println("No appointments found.");
+            return;
+        }
+
+        System.out.println("\n--- All Appointments ---");
+        System.out.printf("%-15s %-15s %-25s %-15s%n", "Appointment ID", "Doctor ID", "Date", "Status");
+        System.out.println("------------------------------------------------------------");
+
+        for (Appointment appointment : allAppointments) {
+            System.out.printf("%-15d %-15s %-25s %-15s%n",
+                    appointment.getID(),
+                    appointment.getDoctorID(),
+                    formatDate(appointment.getAppointmentDate()),
+                    appointment.getAppointmentStatus());
+        }
+        System.out.println("------------------------------------------------------------");
+    }
+
+    /**
      * Displays appointments for a specific patient filtered by status.
      *
      * @param patientID the ID of the patient.

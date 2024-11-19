@@ -1,11 +1,11 @@
 package Users;
 
-import Models.Stock;
-import Models.StockReplenishRequest;
 import Models.User;
+import Systems.AppointmentOutcomeSystem;
+import Systems.InputHandler;
 import Systems.StockSystem;
 
-import java.util.List;
+import static Systems.AppointmentOutcomeSystem.isValidOutcomeSelection;
 
 
 /**
@@ -13,9 +13,6 @@ import java.util.List;
  * Inherits from User class.
  */
 public class Pharmacist extends User implements UserMenuInterface {
-
-    private final StockSystem stockSystem = new StockSystem();
-
     /**
      * Constructs a new Pharmacist.
      *
@@ -32,40 +29,34 @@ public class Pharmacist extends User implements UserMenuInterface {
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
-            case 1 -> {
-                System.out.println("Viewing appointment outcome record...");
-            }
-            case 2 -> {
-                System.out.println("Updating prescription status...");
-            }
-            case 3 -> {
-                System.out.println("Viewing medication inventory...");
-                stockSystem.printStocks();
-            }
-            case 4 -> {
-                System.out.println("Submitting replenishment request...");
-                List<Stock> lowLevelStocks = stockSystem.getLowLevelStocks();
-
-                if (!lowLevelStocks.isEmpty()) {
-                    for (Stock stock : lowLevelStocks) {
-                        StockReplenishRequest replenishRequest = new StockReplenishRequest();
-                        replenishRequest.setStockId(stock.getID());
-                        replenishRequest.setIncomingStockLevel(100); // Example value for replenishment
-                        replenishRequest.setStatus("Pending");
-                        stockSystem.createReplenishRequest(replenishRequest);
-                        System.out.println("Replenish request submitted for medicine: " + stock.getMedicineName());
-                    }
-                    return true;
-                } else {
-                    System.out.println("No stocks are below the threshold level.");
-                    return false;
-                }
-            }
+            case 1 -> AppointmentOutcomeSystem.displayAllOutcomes();
+            case 2 -> handleDispensing();
+            case 3 -> StockSystem.printStocks();
+            case 4 -> StockSystem.showLowStockItemsAndCreateReplenishRequest();
             case 5 -> {
                 return true;
             }
             default -> System.out.println("Invalid choice. Please try again.");
         }
         return false;
+    }
+
+    private void handleDispensing() {
+        AppointmentOutcomeSystem.displayAllAppointmentOutcomes();
+
+        // Step 2: Ask the pharmacist to select an outcome to dispense medication
+        String selectedOutcomeID = InputHandler.getValidatedInput(
+                "Enter the Appointment ID to dispense medications or type 'exit' to cancel: ",
+                "Invalid input. Please enter a valid Appointment ID or 'exit'.",
+                input -> input.equalsIgnoreCase("exit") || isValidOutcomeSelection(input)
+        );
+
+        if (selectedOutcomeID.equalsIgnoreCase("exit")) {
+            System.out.println("Exiting pharmacist menu.");
+            return;
+        }
+
+        int outcomeID = Integer.parseInt(selectedOutcomeID);
+        AppointmentOutcomeSystem.dispenseMedication(outcomeID);
     }
 }

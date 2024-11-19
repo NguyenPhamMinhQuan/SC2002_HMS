@@ -6,11 +6,7 @@ public class StockReplenishRequest {
     private int incomingStockLevel;
     private String status;
 
-    public StockReplenishRequest() {
-    }
-
-    public StockReplenishRequest(int ID, int stockId, int incomingStockLevel, String status) {
-        this.ID = ID;
+    public StockReplenishRequest(int stockId, int incomingStockLevel, String status) {
         this.stockId = stockId;
         this.incomingStockLevel = incomingStockLevel;
         this.status = status;

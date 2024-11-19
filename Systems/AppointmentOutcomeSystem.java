@@ -1,22 +1,21 @@
 package Systems;
 
-import Models.Appointment;
-import Models.AppointmentOutcomeRecord;
-import Models.Medication;
-import Models.Stock;
+import Models.*;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+
+import static Systems.StockSystem.getStocks;
 
 public class AppointmentOutcomeSystem {
     private static final String OUTCOMES_FILE = "data/appointment_outcomes.csv";
     private static final List<AppointmentOutcomeRecord> outcomes = new ArrayList<>();
 
     static {
-
         loadOutcomes();
     }
+
     public AppointmentOutcomeSystem() {
         loadOutcomes();
     }
@@ -43,13 +42,11 @@ public class AppointmentOutcomeSystem {
      * @param appointmentID the ID of the appointment.
      * @return the corresponding outcome, or null if not found.
      */
-    public AppointmentOutcomeRecord getOutcomeByAppointmentID(int appointmentID) {
-        for (AppointmentOutcomeRecord outcome : outcomes) {
-            if (outcome.getAppointmentID() == appointmentID) {
-                return outcome;
-            }
-        }
-        return null;
+    public static AppointmentOutcomeRecord getOutcomeByAppointmentID(int appointmentID) {
+        return outcomes.stream()
+                .filter(outcome -> outcome.getAppointmentID() == appointmentID)
+                .findFirst()
+                .orElse(null);
     }
 
     /**
@@ -58,42 +55,14 @@ public class AppointmentOutcomeSystem {
     private static void loadOutcomes() {
         File file = new File(OUTCOMES_FILE);
         if (!file.exists()) {
-            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-                bw.write("AppointmentID,Date,ServiceType,Medications,ConsultationNotes");
-                bw.newLine();
-            } catch (IOException e) {
-                System.err.println("Error creating outcomes file: " + e.getMessage());
-            }
-            return;
+            createOutcomesFile(file);
         }
 
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            String line = br.readLine(); // Skip header
+            br.readLine(); // Skip header
+            String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",", 5);
-                if (parts.length < 5) continue;
-
-                int appointmentID = Integer.parseInt(parts[0]);
-                String appointmentDate = parts[1];
-                String serviceType = parts[2];
-                String medicationsStr = parts[3];
-                String consultationNotes = parts[4];
-
-                AppointmentOutcomeRecord outcome = new AppointmentOutcomeRecord(
-                        appointmentID, appointmentDate, serviceType, consultationNotes
-                );
-
-                if (!medicationsStr.isEmpty()) {
-                    String[] medications = medicationsStr.split(";");
-                    for (String med : medications) {
-                        String[] medParts = med.split(" \\("); // Name and quantity
-                        String name = medParts[0].trim();
-                        int quantity = Integer.parseInt(medParts[1].replace(")", "").trim());
-                        outcome.addMedication(new Medication(name, "pending", quantity));
-                    }
-                }
-
-                outcomes.add(outcome);
+                parseAndAddOutcome(line);
             }
         } catch (Exception e) {
             System.err.println("Error loading outcomes: " + e.getMessage());
@@ -101,11 +70,56 @@ public class AppointmentOutcomeSystem {
     }
 
     /**
+     * Creates an empty outcomes file with headers.
+     *
+     * @param file the file to create.
+     */
+    private static void createOutcomesFile(File file) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+            bw.write("AppointmentID,Date,ServiceType,Medications,ConsultationNotes,Dispensed");
+            bw.newLine();
+        } catch (IOException e) {
+            System.err.println("Error creating outcomes file: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Parses a CSV line and adds it to the outcomes list.
+     */
+    private static void parseAndAddOutcome(String line) {
+        String[] parts = line.split(",", 6);
+        if (parts.length < 6) return;
+
+        int appointmentID = Integer.parseInt(parts[0]);
+        String appointmentDate = parts[1];
+        String serviceType = parts[2];
+        String medicationsStr = parts[3];
+        String consultationNotes = parts[4];
+        boolean dispensed = Boolean.parseBoolean(parts[5]);
+
+        AppointmentOutcomeRecord outcome = new AppointmentOutcomeRecord(
+                appointmentID, appointmentDate, serviceType, consultationNotes, dispensed
+        );
+
+        if (!medicationsStr.isEmpty()) {
+            String[] medications = medicationsStr.split(";");
+            for (String med : medications) {
+                String[] medParts = med.split(" \\("); // Name and quantity
+                String name = medParts[0].trim();
+                int quantity = Integer.parseInt(medParts[1].replace(")", "").trim());
+                outcome.addMedication(new Medication(name, "pending", quantity));
+            }
+        }
+
+        outcomes.add(outcome);
+    }
+
+    /**
      * Saves all outcomes to the CSV file.
      */
     private static void saveOutcomes() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(OUTCOMES_FILE))) {
-            bw.write("AppointmentID,Date,ServiceType,Medications,ConsultationNotes");
+            bw.write("AppointmentID,Date,ServiceType,Medications,ConsultationNotes,Dispensed");
             bw.newLine();
 
             for (AppointmentOutcomeRecord outcome : outcomes) {
@@ -114,7 +128,9 @@ public class AppointmentOutcomeSystem {
                         outcome.getAppointmentDate(),
                         outcome.getServiceType(),
                         outcome.getMedicationsAsString(),
-                        outcome.getConsultationNotes()));
+                        outcome.getConsultationNotes(),
+                        String.valueOf(outcome.isDispensed()) // Save the dispensed field
+                ));
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -122,6 +138,101 @@ public class AppointmentOutcomeSystem {
         }
     }
 
+    /**
+     * Displays all outcomes for a doctor by doctor ID.
+     *
+     * @param doctorID the doctor's ID.
+     */
+    public static void displayOutcomesForDoctor(String doctorID) {
+        List<AppointmentOutcomeRecord> doctorOutcomes = new ArrayList<>();
+
+        for (AppointmentOutcomeRecord outcome : outcomes) {
+            Appointment appointment = getAppointmentByID(outcome.getAppointmentID());
+            if (appointment != null && appointment.getDoctorID().equalsIgnoreCase(doctorID)) {
+                doctorOutcomes.add(outcome);
+            }
+        }
+
+        if (doctorOutcomes.isEmpty()) {
+            System.out.println("No outcomes found for Doctor ID: " + doctorID);
+            return;
+        }
+
+        displayOutcomeTable(doctorOutcomes);
+    }
+
+    /**
+     * Displays all outcomes for a patient by patient ID.
+     *
+     * @param patientID the patient's ID.
+     */
+    public static void displayOutcomesForPatient(String patientID) {
+        List<AppointmentOutcomeRecord> patientOutcomes = new ArrayList<>();
+
+        for (AppointmentOutcomeRecord outcome : outcomes) {
+            Appointment appointment = getAppointmentByID(outcome.getAppointmentID());
+            if (appointment != null && appointment.getPatientID().equalsIgnoreCase(patientID)) {
+                patientOutcomes.add(outcome);
+            }
+        }
+
+        if (patientOutcomes.isEmpty()) {
+            System.out.println("No outcomes found for Patient ID: " + patientID);
+            return;
+        }
+
+        displayOutcomeTable(patientOutcomes);
+    }
+
+    /**
+     * Displays all appointment outcomes.
+     */
+    public static void displayAllOutcomes() {
+        if (outcomes.isEmpty()) {
+            System.out.println("No outcomes recorded.");
+            return;
+        }
+
+        displayOutcomeTable(outcomes);
+    }
+
+    /**
+     * Displays outcomes in a tabular format.
+     *
+     * @param outcomesList the list of outcomes to display.
+     */
+    private static void displayOutcomeTable(List<AppointmentOutcomeRecord> outcomesList) {
+        System.out.println("+---------------+-------------------+-------------------+---------------------------------+-----------------------+-------------------+");
+        System.out.println("| AppointmentID | Date              | Service Type      | Medications                     | Consultation Notes     | Dispensed          |");
+        System.out.println("+---------------+-------------------+-------------------+---------------------------------+-----------------------+-------------------+");
+
+        for (AppointmentOutcomeRecord outcome : outcomesList) {
+            System.out.printf("| %-13d | %-17s | %-17s | %-31s | %-21s | %-17s |\n",
+                    outcome.getAppointmentID(),
+                    outcome.getAppointmentDate(),
+                    outcome.getServiceType(),
+                    outcome.getMedicationsAsString(),
+                    outcome.getConsultationNotes(),
+                    outcome.isDispensed() ? "Yes" : "No");
+        }
+
+        System.out.println("+---------------+-------------------+-------------------+---------------------------------+-----------------------+-------------------+");
+    }
+
+    /**
+     * Validates if the user input corresponds to a valid outcome ID.
+     *
+     * @param input the user input.
+     * @return true if the input is a valid outcome ID, false otherwise.
+     */
+    public static boolean isValidOutcomeSelection(String input) {
+        try {
+            int outcomeID = Integer.parseInt(input);
+            return outcomes.stream().anyMatch(outcome -> outcome.getAppointmentID() == outcomeID);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 
     /**
      * Allows a doctor to add outcomes for their approved appointments.
@@ -188,7 +299,8 @@ public class AppointmentOutcomeSystem {
                 appointmentID,
                 AppointmentSystem.formatDate(appointment.getAppointmentDate()),
                 serviceType,
-                consultationNotes
+                consultationNotes,
+                false
         );
 
         // Add medications (optional)
@@ -213,7 +325,7 @@ public class AppointmentOutcomeSystem {
 
         while (addMore) {
             // Display available stock in a table format
-            List<Stock> availableStocks = stockSystem.getStocks();
+            List<Stock> availableStocks = getStocks();
             if (availableStocks.isEmpty()) {
                 System.out.println("No available stock found.");
                 return;
@@ -280,86 +392,100 @@ public class AppointmentOutcomeSystem {
         }
     }
 
-
-    public static void displayOutcomesForDoctor(String doctorID) {
-        List<AppointmentOutcomeRecord> doctorOutcomes = new ArrayList<>();
-
-        for (AppointmentOutcomeRecord outcome : outcomes) {
-            Appointment appointment = getAppointmentByID(outcome.getAppointmentID());
-            if (appointment != null && appointment.getDoctorID().equalsIgnoreCase(doctorID)) {
-                doctorOutcomes.add(outcome);
-            }
+    private static boolean isValidStockSelection(String input, int size) {
+        try {
+            int index = Integer.parseInt(input);  // Try to parse the input to an integer
+            return index > 0 && index <= size;   // Ensure the index is within the valid range (1 to size)
+        } catch (NumberFormatException e) {
+            return false; // If the input is not a valid number, return false
         }
-
-        if (doctorOutcomes.isEmpty()) {
-            System.out.println("No outcomes found for Doctor ID: " + doctorID);
-            return;
-        }
-
-        System.out.println("\n--- Appointment Outcomes for Doctor ID: " + doctorID + " ---");
-        displayOutcomeTable(doctorOutcomes);
     }
 
-    public static void displayOutcomesForPatient(String patientID) {
-        List<AppointmentOutcomeRecord> patientOutcomes = new ArrayList<>();
-
-        for (AppointmentOutcomeRecord outcome : outcomes) {
-            Appointment appointment = getAppointmentByID(outcome.getAppointmentID());
-            if (appointment != null && appointment.getPatientID().equalsIgnoreCase(patientID)) {
-                patientOutcomes.add(outcome);
-            }
-        }
-
-        if (patientOutcomes.isEmpty()) {
-            System.out.println("No outcomes found for Patient ID: " + patientID);
-            return;
-        }
-
-        System.out.println("\n--- Appointment Outcomes for Patient ID: " + patientID + " ---");
-        displayOutcomeTable(patientOutcomes);
-    }
-
-    public static void displayAllOutcomes() {
+    public static void displayAllAppointmentOutcomes() {
         if (outcomes.isEmpty()) {
-            System.out.println("No outcomes recorded.");
+            System.out.println("No appointment outcomes available.");
             return;
         }
 
-        System.out.println("\n--- All Appointment Outcomes ---");
-        displayOutcomeTable(outcomes);
-    }
+        // Displaying the table header
+        System.out.println("+-------------------+-------------------+-------------------+-----------------------+-------------------+");
+        System.out.println("| Appointment ID    | Date              | Service Type      | Medications           | Dispensed          |");
+        System.out.println("+-------------------+-------------------+-------------------+-----------------------+-------------------+");
 
-    private static void displayOutcomeTable(List<AppointmentOutcomeRecord> outcomesList) {
-        System.out.println("+---------------+-------------------+-------------------+---------------------------------+-----------------------+");
-        System.out.println("| AppointmentID | Date              | Service Type      | Medications                     | Consultation Notes     |");
-        System.out.println("+---------------+-------------------+-------------------+---------------------------------+-----------------------+");
-
-        for (AppointmentOutcomeRecord outcome : outcomesList) {
-            System.out.printf("| %-13d | %-17s | %-17s | %-31s | %-21s |\n",
+        // Displaying each outcome in the table
+        for (AppointmentOutcomeRecord outcome : outcomes) {
+            System.out.printf("| %-17d | %-17s | %-17s | %-21s | %-17s |\n",
                     outcome.getAppointmentID(),
                     outcome.getAppointmentDate(),
                     outcome.getServiceType(),
                     outcome.getMedicationsAsString(),
-                    outcome.getConsultationNotes());
+                    outcome.isDispensed() ? "Yes" : "No");
         }
 
-        System.out.println("+---------------+-------------------+-------------------+---------------------------------+-----------------------+");
+        System.out.println("+-------------------+-------------------+-------------------+-----------------------+-------------------+");
     }
 
+    public static void dispenseMedication(int outcomeID) {
+        AppointmentOutcomeRecord outcome = getOutcomeByAppointmentID(outcomeID);
 
-    /**
-     * Validates if the user input corresponds to a valid stock selection.
-     *
-     * @param input the user input.
-     * @param size  the total number of available stocks.
-     * @return true if the input is valid, false otherwise.
-     */
-    private static boolean isValidStockSelection(String input, int size) {
-        try {
-            int index = Integer.parseInt(input);
-            return index > 0 && index <= size;
-        } catch (NumberFormatException e) {
-            return false;
+        if (outcome == null) {
+            System.out.println("Outcome record not found.");
+            return;
         }
+
+        // Step 1: Loop through each medication in the outcome and attempt to dispense
+        for (Medication medication : outcome.getPrescribedMedications()) {
+            Stock stock = findStockByMedicineName(medication.getMedicationName());
+
+            if (stock == null) {
+                System.out.println("Stock for medication " + medication.getMedicationName() + " not found.");
+                continue;
+            }
+
+            if (stock.getStockLevel() < medication.getQuantity()) {
+                System.out.println("Insufficient stock for " + medication.getMedicationName() + ". Available: "
+                        + stock.getStockLevel() + ", Requested: " + medication.getQuantity());
+                System.out.println("Dispensing stopped due to insufficient stock.");
+                return; // Stop dispensing if not enough stock
+            }
+
+            // Step 2: Deduct the stock balance
+            stock.setStockLevel(stock.getStockLevel() - medication.getQuantity());
+
+            // Step 3: If stock is low, create a replenish request
+            if (stock.getStockLevel() <= stock.getLowStockAlertThreshold()) {
+                String replenishChoice = InputHandler.getValidatedInput(
+                        "Stock for " + medication.getMedicationName() + " is low. Do you want to create a replenish request? (yes/no): ",
+                        "Please enter 'yes' or 'no'.",
+                        input -> input.equalsIgnoreCase("yes") || input.equalsIgnoreCase("no")
+                );
+
+                if (replenishChoice.equalsIgnoreCase("yes")) {
+                    // Create replenish request
+                    StockReplenishRequest replenishRequest = new StockReplenishRequest(
+                            stock.getID(), 100, "pending" // Replenish with 100 units
+                    );
+                    new StockSystem().createReplenishRequest(replenishRequest);
+                    System.out.println("Replenish request created for " + medication.getMedicationName() + ".");
+                }
+            }
+
+            // Step 4: Mark the medication as dispensed
+            medication.setStatus("dispensed");
+            System.out.println("Dispensed " + medication.getQuantity() + " units of " + medication.getMedicationName());
+        }
+
+        // Step 5: Update the outcome to dispensed
+        outcome.setDispensed(true);
+        saveOutcomes();
+        System.out.println("All medications dispensed and outcome updated.");
+    }
+
+    private static Stock findStockByMedicineName(String medicationName) {
+        return getStocks()
+                .stream()
+                .filter(stock -> stock.getMedicineName().equalsIgnoreCase(medicationName))
+                .findFirst()
+                .orElse(null);
     }
 }
