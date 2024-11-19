@@ -63,7 +63,7 @@ public class Administrator extends User implements UserMenuInterface {
 
         switch (action) {
             case "1" ->
-                UserManagementSystem.addNewUser(null);
+                UserManagementSystem.addNewUserMenu(null);
             case "2" -> UserManagementSystem.updateUser();
             case "3" -> UserManagementSystem.deleteUser();
             case "4" -> System.out.println("Returning to main menu...");

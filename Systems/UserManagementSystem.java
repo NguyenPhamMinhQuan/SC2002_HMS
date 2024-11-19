@@ -23,6 +23,8 @@ public class UserManagementSystem {
     private static int adminCount = 0;
     private static int pharmacistCount = 0;
 
+    // Getters --
+
     /**
      * Retrieves all users in the system.
      *
@@ -54,29 +56,7 @@ public class UserManagementSystem {
                 .toList();
     }
 
-    /**
-     * Displays a user in the formatted display table
-     * @param user the user object
-     */
-    public static void displayUser(User user) {
-        displayUserTable(Collections.singletonList(user));
-    }
-
-    /**
-     * Displays all users with the "doctor" role in a table format.
-     */
-    public static void displayDoctors() {
-        displayUserTable(getUsersByRole("doctor"));
-    }
-
-
-    /**
-     * Displays all users with the "patient" role in a table format.
-     */
-    public static void displayPatients() {
-        displayUserTable(getUsersByRole("patient"));
-    }
-
+    // Displays --
 
     /**
      * Displays all users with "patient", "doctor", or "admin" roles in a table format.
@@ -84,7 +64,6 @@ public class UserManagementSystem {
     public static void displayStaff() {
         displayUserTable(getUsersByRoles(Arrays.asList("patient", "doctor", "admin")));
     }
-
 
     /**
      * Helper method to display a list of users as a table in CLI.
@@ -107,82 +86,7 @@ public class UserManagementSystem {
         System.out.println("+------------+-------------------+---------------+-----------+");
     }
 
-    /**
-     * Generates an input picker for selecting a user ID from a list of users.
-     *
-     * @param userList the list of users to pick from.
-     * @return the selected user ID, or {@code null} if the user cancels the selection.
-     */
-    public static String selectUserID(List<User> userList) {
-        if (userList == null || userList.isEmpty()) {
-            System.out.println("No users available to select.");
-            return null;
-        }
-
-        System.out.println("\n--- Select a User ---");
-        System.out.println("+-----+------------+-------------------+---------------+");
-        System.out.println("| No. | User ID    | Name              | Role          |");
-        System.out.println("+-----+------------+-------------------+---------------+");
-
-        // Display the user list in a table format
-        for (int i = 0; i < userList.size(); i++) {
-            User user = userList.get(i);
-            System.out.printf("| %-3d | %-10s | %-17s | %-13s |\n",
-                    i + 1,
-                    user.getUserId(),
-                    user.getName(),
-                    user.getRole());
-        }
-        System.out.println("+-----+------------+-------------------+---------------+");
-        System.out.println("Enter the number corresponding to the user, or type 'exit' to cancel.");
-
-        // Prompt the user for input
-        String input = InputHandler.getValidatedInput(
-                "Select a user by number: ",
-                "Invalid input. Please enter a valid number or 'exit'.",
-                value -> value.equalsIgnoreCase("exit") || (value.matches("\\d+") && Integer.parseInt(value) >= 1 && Integer.parseInt(value) <= userList.size())
-        );
-
-        if (input == null || input.equalsIgnoreCase("exit")) {
-            System.out.println("Selection cancelled.");
-            return null;
-        }
-
-        int selectedIndex = Integer.parseInt(input) - 1;
-        String selectedUserID = userList.get(selectedIndex).getUserId();
-        System.out.println("You selected User ID: " + selectedUserID);
-        return selectedUserID;
-    }
-
-    /**
-     * Authenticates a user's login.
-     * If the user is using the default password (their first time logging in), ask the user to change password
-     *
-     * @param userId   the user ID.
-     * @param password the password.
-     * @return the authenticated user if credentials are valid; otherwise, null.
-     */
-    public static User login(String userId, String password) {
-        User user = users.get(userId);
-
-        if (user != null) {
-            if (user.getPassword().equals("password")) {
-                System.out.println("Please change your password (ie. Do not use the default password)");
-                String newPassword = InputHandler.getValidatedInput(
-                        "New Password:",
-                        "Invalid password, do not use 'password'.",
-                        input -> !input.trim().isEmpty() && !input.equals("password")
-                );
-                user.updatePassword(newPassword);
-                saveUsers();
-            }
-
-            return user;
-        }
-
-        return null; // Invalid credentials
-    }
-
+    // Modifiers --
 
     /**
      * Adds a new user to the system and increments the relevant role-specific counter.
@@ -209,105 +113,37 @@ public class UserManagementSystem {
         }
     }
 
-
     /**
-     * Interactively adds a new patient.
+     * Creates a user based on their role and registers them in the system with a default password of "password"
      *
-     * @return the created Patient object.
+     * @param role   the role of the user (e.g., "patient", "doctor").
+     * @param name   the name of the user.
+     * @param gender the gender of the user (Male or Female).
+     * @param age    the age of the user.
+     * @return the created User object.
      */
-    public static User addNewPatient() {
-        return addNewUser("patient");
-    }
-
-
-    /**
-     * Adds a new user to the system interactively.
-     *
-     * @param role (nullable)
-     */
-    public static User addNewUser(String role) {
-        if (role == null) {
-            role = InputHandler.getValidatedInput(
-                    "Enter role (patient, doctor, pharmacist, administrator, or 'exit' to cancel): ",
-                    "Invalid role. Please enter one of: patient, doctor, pharmacist, administrator.",
-                    input -> input.toLowerCase().matches("(?i)patient|doctor|pharmacist|administrator")
-            );
-        }
-
-
-        if (role == null) {
-            System.out.println("Exiting...");
-            return null;
-        }
-
-        String name = InputHandler.getValidatedInput(
-                "Enter name: ",
-                "Invalid name. Name cannot be empty.",
-                input -> !input.trim().isEmpty()
-        );
-
-        if (name == null) {
-            System.out.println("Exiting...");
-            return null;
-        }
-
-        String gender = InputHandler.getValidatedInput(
-                "Enter gender (Male/Female): ",
-                "Invalid gender. Please enter 'Male' or 'Female'.",
-                input -> input.equalsIgnoreCase("male") || input.equalsIgnoreCase("female")
-        );
-
-        if (gender == null) {
-            System.out.println("Exiting...");
-            return null;
-        }
-
-        String ageStr = InputHandler.getValidatedInput(
-                "Enter age",
-                "Invalid age. Please enter a positive number.",
-                input -> {
-                    try {
-                        int age = Integer.parseInt(input);
-                        return age > 0 && age <= 100;
-                    } catch (NumberFormatException e) {
-                        return false;
-                    }
-                }
-        );
-
-        if (ageStr == null) {
-            System.out.println("Exiting...");
-            return null;
-        }
-
-        int age = Integer.parseInt(ageStr);
-
-        User user = createUser(role, name, gender.toLowerCase(), age);
-        saveUsers();
-
-        System.out.println("User added successfully.\n" + user);
-        displayUser(user);
-
+    public static User createUser(String role, String name, String gender, int age) {
+        User user = switch (role.toLowerCase()) {
+            case "patient" -> new Patient("PT" + (++patientCount), "password", name, gender, age);
+            case "doctor" -> new Doctor("D" + (++doctorCount), "password", name, gender, age);
+            case "pharmacist" -> new Pharmacist("P" + (++pharmacistCount), "password", name, gender, age);
+            case "administrator" -> new Administrator("A" + (++adminCount), "password", name, gender, age);
+            default -> throw new IllegalArgumentException("Invalid role: " + role);
+        };
+        addUser(user);
         return user;
     }
-
 
     /**
      * Updates an existing user's details.
      */
     public static void updateUser() {
-
-        System.out.println("Enter the User ID of the user to update (or type 'exit' to cancel): ");
+        System.out.println("Enter the User ID of the user to update: ");
         String userId = InputHandler.getValidatedInput(
-                "Enter the User ID of the user to update (or 'exit' to cancel): ",
+                "Enter the User ID of the user to update: ",
                 "Invalid User ID. Please try again.",
                 input -> !input.trim().isEmpty()
         );
-
-        if (userId == null || userId.equalsIgnoreCase("exit")) {
-            System.out.println("Exiting...");
-            return;
-        }
 
         User user = users.get(userId);
         if (user == null) {
@@ -317,35 +153,29 @@ public class UserManagementSystem {
 
         // Update name
         String name = InputHandler.getValidatedInput(
-                "Enter new name (leave blank to keep unchanged, or 'exit' to cancel): ",
+                "Enter new name (leave blank to keep unchanged): ",
                 "Invalid name. Please try again.",
-                input -> true // Allow blank input to skip updating the name
+                input -> input.isEmpty() || !input.trim().isEmpty() // Allow blank input to skip updating the name
         );
-        if (name == null || name.equalsIgnoreCase("exit")) {
-            System.out.println("Exiting...");
-            return;
-        }
+
         if (!name.trim().isEmpty()) {
             user.setName(name.trim());
         }
 
         // Update gender
         String gender = InputHandler.getValidatedInput(
-                "Enter new gender (Male/Female, leave blank to keep unchanged, or 'exit' to cancel): ",
+                "Enter new gender (Male/Female, leave blank to keep unchanged): ",
                 "Invalid gender. Please enter 'Male' or 'Female'.",
                 input -> input.isEmpty() || input.equalsIgnoreCase("male") || input.equalsIgnoreCase("female")
         );
-        if (gender == null || gender.equalsIgnoreCase("exit")) {
-            System.out.println("Exiting...");
-            return;
-        }
+
         if (!gender.trim().isEmpty()) {
             user.setGender(gender.trim());
         }
 
         // Update age
         String ageInput = InputHandler.getValidatedInput(
-                "Enter new age (or leave blank to keep unchanged, or 'exit' to cancel): ",
+                "Enter new age (or leave blank to keep unchanged): ",
                 "Invalid age. Please enter a positive number.",
                 input -> {
                     try {
@@ -355,18 +185,14 @@ public class UserManagementSystem {
                     }
                 }
         );
-        if (ageInput == null || ageInput.equalsIgnoreCase("exit")) {
-            System.out.println("Exiting...");
-            return;
-        }
+
         if (!ageInput.trim().isEmpty()) {
             user.setAge(Integer.parseInt(ageInput.trim()));
         }
 
         System.out.println("User updated successfully: " + user);
-        saveUsers(); // Save users to file after updating
+        saveUsers();
     }
-
 
     /**
      * Deletes a user from the system.
@@ -398,28 +224,139 @@ public class UserManagementSystem {
         saveUsers(); // Save users to file after deleting
     }
 
+    // Helpers --
 
     /**
-     * Creates a user based on their role and registers them in the system with a default password of "password"
+     * Adds a new user to the system interactively.
      *
-     * @param role   the role of the user (e.g., "patient", "doctor").
-     * @param name   the name of the user.
-     * @param gender the gender of the user (Male or Female).
-     * @param age    the age of the user.
-     * @return the created User object.
+     * @param role (nullable)
      */
-    public static User createUser(String role, String name, String gender, int age) {
-        User user = switch (role.toLowerCase()) {
-            case "patient" -> new Patient("PT" + (++patientCount), "password", name, gender, age);
-            case "doctor" -> new Doctor("D" + (++doctorCount), "password", name, gender, age);
-            case "pharmacist" -> new Pharmacist("P" + (++pharmacistCount), "password", name, gender, age);
-            case "administrator" -> new Administrator("A" + (++adminCount), "password", name, gender, age);
-            default -> throw new IllegalArgumentException("Invalid role: " + role);
-        };
-        addUser(user);
+    public static User addNewUserMenu(String role) {
+        if (role == null) {
+            role = InputHandler.getValidatedInput(
+                    "Enter role (patient, doctor, pharmacist, administrator, or 'exit' to cancel): ",
+                    "Invalid role. Please enter one of: patient, doctor, pharmacist, administrator.",
+                    input -> input.toLowerCase().matches("(?i)patient|doctor|pharmacist|administrator")
+            );
+        }
+
+
+        String name = InputHandler.getValidatedInput(
+                "Enter name: ",
+                "Invalid name. Name cannot be empty.",
+                input -> !input.trim().isEmpty()
+        );
+
+
+        String gender = InputHandler.getValidatedInput(
+                "Enter gender (Male/Female): ",
+                "Invalid gender. Please enter 'Male' or 'Female'.",
+                input -> input.equalsIgnoreCase("male") || input.equalsIgnoreCase("female")
+        );
+
+
+        String ageStr = InputHandler.getValidatedInput(
+                "Enter age",
+                "Invalid age. Please enter a positive number.",
+                input -> {
+                    try {
+                        int age = Integer.parseInt(input);
+                        return age > 0 && age <= 100;
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
+                }
+        );
+
+
+        int age = Integer.parseInt(ageStr);
+
+        User user = createUser(role, name, gender.toLowerCase(), age);
+        saveUsers();
+
+        System.out.println("User added successfully.\n" + user);
+        displayUserTable(Collections.singletonList(user));
+
         return user;
     }
 
+    /**
+     * Generates an input picker for selecting a user ID from a list of users.
+     *
+     * @param userList the list of users to pick from.
+     * @return the selected user ID, or {@code null} if the user cancels the selection.
+     */
+    public static String selectUserIDMenu(List<User> userList) {
+        if (userList == null || userList.isEmpty()) {
+            System.out.println("No users available to select.");
+            return null;
+        }
+
+        System.out.println("\n--- Select a User ---");
+        System.out.println("+-----+------------+-------------------+---------------+");
+        System.out.println("| No. | User ID    | Name              | Role          |");
+        System.out.println("+-----+------------+-------------------+---------------+");
+
+        // Display the user list in a table format
+        for (int i = 0; i < userList.size(); i++) {
+            User user = userList.get(i);
+            System.out.printf("| %-3d | %-10s | %-17s | %-13s |\n",
+                    i + 1,
+                    user.getUserId(),
+                    user.getName(),
+                    user.getRole());
+        }
+        System.out.println("+-----+------------+-------------------+---------------+");
+        System.out.println("Enter the number corresponding to the user, or type 'exit' to cancel.");
+
+        // Prompt the user for input
+        String input = InputHandler.getValidatedInputWithExit(
+                "Select a user by number: ",
+                "Invalid input. Please enter a valid number or 'exit'.",
+                value -> value.equalsIgnoreCase("exit") || (value.matches("\\d+") && Integer.parseInt(value) >= 1 && Integer.parseInt(value) <= userList.size())
+        );
+
+        if (input == null) {
+            System.out.println("Selection cancelled.");
+            return null;
+        }
+
+        int selectedIndex = Integer.parseInt(input) - 1;
+        String selectedUserID = userList.get(selectedIndex).getUserId();
+        System.out.println("You selected User ID: " + selectedUserID);
+        return selectedUserID;
+    }
+
+    /**
+     * Authenticates a user's login.
+     * If the user is using the default password (their first time logging in), ask the user to change password
+     *
+     * @param userId   the user ID.
+     * @param password the password.
+     * @return the authenticated user if credentials are valid; otherwise, null.
+     */
+    public static User login(String userId, String password) {
+        User user = users.get(userId);
+
+        if (user != null && user.getPassword().equals(password)) {
+            if (user.getPassword().equals("password")) {
+                System.out.println("Please change your password (ie. Do not use the default password)");
+                String newPassword = InputHandler.getValidatedInput(
+                        "New Password:",
+                        "Invalid password, do not use 'password'.",
+                        input -> !input.trim().isEmpty() && !input.equals("password")
+                );
+                user.updatePassword(newPassword);
+                saveUsers();
+            }
+
+            return user;
+        }
+
+        return null; // Invalid credentials
+    }
+
+    // Data --
 
     /**
      * Loads users from the saved file.
@@ -450,7 +387,6 @@ public class UserManagementSystem {
         }
         br.close();
     }
-
 
     /**
      * Saves all users to the file.

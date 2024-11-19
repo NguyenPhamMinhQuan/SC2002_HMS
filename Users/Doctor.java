@@ -26,7 +26,7 @@ public class Doctor extends User implements UserMenuInterface {
     public boolean functionCall(int feature) {
         switch (feature) {
             case 1 -> MedicalRecordSystem.showOrCreateMedicalRecord(
-                            UserManagementSystem.selectUserID(
+                            UserManagementSystem.selectUserIDMenu(
                                     UserManagementSystem.getUsersByRole("patient")
                             )
                     );
@@ -51,7 +51,7 @@ public class Doctor extends User implements UserMenuInterface {
      * Updates a patient's medical record.
      */
     public void updateMedicalRecord() {
-        String patientID = UserManagementSystem.selectUserID(UserManagementSystem.getUsersByRole("patient"));
+        String patientID = UserManagementSystem.selectUserIDMenu(UserManagementSystem.getUsersByRole("patient"));
 
         if (patientID == null) {
             System.out.println("No patient selected. Exiting...");

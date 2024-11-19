@@ -62,7 +62,7 @@ public class HMS {
                         }
                     }
                 } else if (choice == 2) {
-                    user = UserManagementSystem.addNewPatient();
+                    user = UserManagementSystem.addNewUserMenu("patient");
                     System.out.println("Patient registered successfully! Your User ID is: " + user.getUserId());
                     System.out.println("The default password is 'password'.");
                 } else {
