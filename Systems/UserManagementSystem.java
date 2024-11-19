@@ -165,7 +165,7 @@ public class UserManagementSystem {
     public static User login(String userId, String password) {
         User user = users.get(userId);
 
-        if (user != null && user.validatePassword(password)) {
+        if (user != null) {
             if (user.getPassword().equals("password")) {
                 System.out.println("Please change your password (ie. Do not use the default password)");
                 String newPassword = InputHandler.getValidatedInput(

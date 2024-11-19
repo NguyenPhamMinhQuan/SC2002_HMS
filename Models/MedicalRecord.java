@@ -11,23 +11,17 @@ import java.util.List;
 public class MedicalRecord {
 
     private final String patientID;
+    private final List<Diagnosis> diagnoses;
     private String dateOfBirth;
     private String phoneNumber;
     private String emailAddress;
     private String bloodType;
-    private final List<Diagnosis> diagnoses;
 
-    /**
-     * Constructs a MedicalRecord for a specific patient.
-     *
-     * @param patientID the unique ID of the patient.
-     */
     public MedicalRecord(String patientID) {
         this.patientID = patientID;
         this.diagnoses = new ArrayList<>();
     }
 
-    // Getters and setters
     public String getPatientID() {
         return patientID;
     }
@@ -66,10 +60,6 @@ public class MedicalRecord {
 
     public List<Diagnosis> getDiagnoses() {
         return Collections.unmodifiableList(diagnoses);
-    }
-
-    public void addDiagnosis(Diagnosis diagnosis) {
-        this.diagnoses.add(diagnosis);
     }
 
     public void addDiagnoses(List<Diagnosis> diagnoses) {

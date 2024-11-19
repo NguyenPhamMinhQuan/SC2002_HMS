@@ -6,8 +6,8 @@ package Models;
 public class Diagnosis {
     private final String condition;
     private final String diagnosisDate;
-    private String prescription;
-    private String prescriptionStatus;
+    private final String prescription;
+    private final String prescriptionStatus;
 
     /**
      * Constructor to initialize a diagnosis.
@@ -38,13 +38,5 @@ public class Diagnosis {
 
     public String getPrescriptionStatus() {
         return prescriptionStatus;
-    }
-
-    public void setPrescription(String prescription) {
-        this.prescription = prescription;
-    }
-
-    public void setPrescriptionStatus(String prescriptionStatus) {
-        this.prescriptionStatus = prescriptionStatus;
     }
 }

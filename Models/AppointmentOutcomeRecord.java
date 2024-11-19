@@ -9,11 +9,11 @@ import java.util.List;
  */
 public class AppointmentOutcomeRecord {
 
+    private final List<Medication> prescribedMedications;
+    private final String consultationNotes;
     private int appointmentID; // Unique appointment ID
     private String appointmentDate;
     private String serviceType; // e.g., consultation, X-ray, etc.
-    private List<Medication> prescribedMedications;
-    private String consultationNotes;
     private boolean dispensed;
 
     public AppointmentOutcomeRecord(int appointmentID, String appointmentDate, String serviceType, String consultationNotes, boolean dispensed) {
@@ -25,12 +25,10 @@ public class AppointmentOutcomeRecord {
         this.dispensed = dispensed;
     }
 
-    // Add a medication to the list of prescribed medications
     public void addMedication(Medication medication) {
         prescribedMedications.add(medication);
     }
 
-    // Getters and Setters
     public int getAppointmentID() {
         return appointmentID;
     }
@@ -59,16 +57,8 @@ public class AppointmentOutcomeRecord {
         return prescribedMedications;
     }
 
-    public void setPrescribedMedications(List<Medication> prescribedMedications) {
-        this.prescribedMedications = prescribedMedications;
-    }
-
     public String getConsultationNotes() {
         return consultationNotes;
-    }
-
-    public void setConsultationNotes(String consultationNotes) {
-        this.consultationNotes = consultationNotes;
     }
 
     public boolean isDispensed() {
@@ -78,7 +68,6 @@ public class AppointmentOutcomeRecord {
     public void setDispensed(boolean dispensed) {
         this.dispensed = dispensed;
     }
-
 
     // Format medications as a single string for CSV saving
     public String getMedicationsAsString() {

@@ -10,11 +10,11 @@ import java.util.Date;
 public class Appointment {
 
     private int ID;
-    private String patientID;
+    private final String patientID;
     private String doctorID;
     private String appointmentStatus; // e.g., "confirmed", "canceled", "completed"
     private Date appointmentDate;
-    private AppointmentOutcomeRecord outcomeRecord;
+    private final AppointmentOutcomeRecord outcomeRecord;
 
     /**
      * Constructs an Appointment object with the specified details.
@@ -34,8 +34,6 @@ public class Appointment {
         this.outcomeRecord = null; // Outcome record is only set for completed appointments
     }
 
-    // Getters and Setters
-
     public int getID() {
         return ID;
     }
@@ -46,10 +44,6 @@ public class Appointment {
 
     public String getPatientID() {
         return patientID;
-    }
-
-    public void setPatientID(String patientID) {
-        this.patientID = patientID;
     }
 
     public String getDoctorID() {
@@ -74,13 +68,5 @@ public class Appointment {
 
     public void setAppointmentDate(Date appointmentDate) {
         this.appointmentDate = appointmentDate;
-    }
-
-    public AppointmentOutcomeRecord getOutcomeRecord() {
-        return outcomeRecord;
-    }
-
-    public void setOutcomeRecord(AppointmentOutcomeRecord outcomeRecord) {
-        this.outcomeRecord = outcomeRecord;
     }
 }
