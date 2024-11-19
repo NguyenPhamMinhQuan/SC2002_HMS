@@ -128,6 +128,7 @@ public class UserManagementSystem {
                         input -> !input.trim().isEmpty() && !input.equals("password")
                 );
                 user.updatePassword(newPassword);
+                saveUsers();
             }
 
             return user;
