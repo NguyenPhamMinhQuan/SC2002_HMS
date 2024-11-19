@@ -235,7 +235,7 @@ public class UserManagementSystem {
 
         int age = Integer.parseInt(ageStr);
 
-        User user = createUser(role, name, gender, age);
+        User user = createUser(role, name, gender.toLowerCase(), age);
         saveUsers();
 
         System.out.println("User added successfully.\n" + user);
