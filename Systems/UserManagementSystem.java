@@ -375,7 +375,7 @@ public class UserManagementSystem {
         String userId = InputHandler.getValidatedInput(
                 "Enter the User ID of the user you want to delete or 'exit' to cancel: ",
                 "Please select the correct user ID",
-                input -> users.get(input) == null);
+                input -> users.get(input) != null);
 
         User user = users.remove(userId);
 
@@ -394,7 +394,7 @@ public class UserManagementSystem {
                 break;
         }
 
-        System.out.println("User deleted successfully: " + user);
+        System.out.printf("User %s deleted successfully\n", userId);
         saveUsers(); // Save users to file after deleting
     }
 
