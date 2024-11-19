@@ -10,8 +10,8 @@ import java.util.function.Predicate;
 public class InputHandler {
     private static final Scanner scanner = new Scanner(System.in);
 
-    // Private constructor to prevent instantiation
     private InputHandler() {
+        // Private constructor to prevent instantiation
     }
 
     /**
@@ -30,17 +30,6 @@ public class InputHandler {
      */
     public static int nextInt() {
         int value = scanner.nextInt();
-        scanner.nextLine(); // Consume the newline character
-        return value;
-    }
-
-    /**
-     * Reads a double input from the user.
-     *
-     * @return the double value entered by the user.
-     */
-    public static double nextDouble() {
-        double value = scanner.nextDouble();
         scanner.nextLine(); // Consume the newline character
         return value;
     }
@@ -118,21 +107,5 @@ public class InputHandler {
                 System.out.println("Invalid input. Please try again.");
             }
         }
-    }
-
-    /**
-     * Functional interface to represent a provider for input.
-     *
-     * @param <T> the type of input provided.
-     */
-    @FunctionalInterface
-    public interface InputProvider<T> {
-        /**
-         * Provides an input of type {@code T}.
-         *
-         * @return the input value.
-         * @throws Exception if an error occurs while retrieving input.
-         */
-        T getInput() throws Exception;
     }
 }
