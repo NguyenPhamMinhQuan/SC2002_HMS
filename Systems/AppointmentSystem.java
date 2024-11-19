@@ -21,7 +21,7 @@ public class AppointmentSystem {
         loadAppointments();
     }
 
-    // ------------------- Initialization -------------------
+    // -- Initialization
 
     private static void initializeFiles() {
         ensureFileExists(DOCTOR_AVAILABILITY_FILE, "DoctorID,AvailableSlots");
@@ -42,20 +42,9 @@ public class AppointmentSystem {
         }
     }
 
+    // -- Doctor Availability Management
 
-    /**
-     * Returns a list of all appointments.
-     *
-     * @return List of appointments.
-     */
-    public static List<Appointment> getAppointments() {
-        return new ArrayList<>(appointments);
-    }
-
-
-// ------------------- Doctor Availability Management -------------------
-
-    public static void addDoctorAvailability(String doctorID) {
+    public static void addDoctorAvailabilityMenu(String doctorID) {
         String slot = InputHandler.getValidatedInput(
                 "Enter an available slot (YYYY-MM-DD HH:mm): ",
                 "Invalid format. Use YYYY-MM-DD HH:mm.",
@@ -147,7 +136,16 @@ public class AppointmentSystem {
         }
     }
 
-    // ------------------- Appointment Management -------------------
+    // -- Appointment Management
+
+    /**
+     * Returns a list of all appointments.
+     *
+     * @return List of appointments.
+     */
+    public static List<Appointment> getAppointments() {
+        return new ArrayList<>(appointments);
+    }
 
     /**
      * Retrieves appointments for a specific patient filtered by status.
@@ -419,7 +417,6 @@ public class AppointmentSystem {
         System.out.println("Appointment not found.");
     }
 
-
     /**
      * Approves pending appointments for a specific doctor.
      *
@@ -550,7 +547,6 @@ public class AppointmentSystem {
         }
     }
 
-
     /**
      * Retrieves all appointments for a specific doctor.
      *
@@ -600,24 +596,7 @@ public class AppointmentSystem {
         System.out.println("-------------------------------------------------------------------");
     }
 
-    // ------------------- Utility Methods -------------------
-
-    private static void displaySlots(List<String> slots) {
-        if (slots.isEmpty()) {
-            System.out.println("No slots available.");
-            return;
-        }
-
-        System.out.println("+-----+-----------------------+");
-        System.out.println("| No. | Available Slot        |");
-        System.out.println("+-----+-----------------------+");
-
-        for (int i = 0; i < slots.size(); i++) {
-            System.out.printf("| %-3d | %-21s |\n", i + 1, slots.get(i));
-        }
-
-        System.out.println("+-----+-----------------------+");
-    }
+    // -- Utility Methods
 
     private static boolean isValidSlotSelection(String input, int size) {
         try {
@@ -638,6 +617,23 @@ public class AppointmentSystem {
     private static void addSlot(String doctorID, String slot) {
         doctorAvailability.computeIfAbsent(doctorID, k -> new ArrayList<>()).add(slot);
         saveDoctorAvailability();
+    }
+
+    private static void displaySlots(List<String> slots) {
+        if (slots.isEmpty()) {
+            System.out.println("No slots available.");
+            return;
+        }
+
+        System.out.println("+-----+-----------------------+");
+        System.out.println("| No. | Available Slot        |");
+        System.out.println("+-----+-----------------------+");
+
+        for (int i = 0; i < slots.size(); i++) {
+            System.out.printf("| %-3d | %-21s |\n", i + 1, slots.get(i));
+        }
+
+        System.out.println("+-----+-----------------------+");
     }
 
     private static boolean isSlotAvailable(String doctorID, String slot) {

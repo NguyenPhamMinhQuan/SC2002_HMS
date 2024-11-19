@@ -113,7 +113,7 @@ public class Doctor extends User implements UserMenuInterface {
                     AppointmentSystem.displayDoctorAvailability(doctorID);
                     break;
                 case "2":
-                    AppointmentSystem.addDoctorAvailability(doctorID);
+                    AppointmentSystem.addDoctorAvailabilityMenu(doctorID);
                     break;
                 case "3":
                     AppointmentSystem.removeDoctorAvailability(doctorID);
