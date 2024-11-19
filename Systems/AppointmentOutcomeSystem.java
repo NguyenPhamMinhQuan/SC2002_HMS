@@ -1,5 +1,7 @@
 package Systems;
 
+import Enums.AppointmentStatus;
+import Enums.Dispensed;
 import Models.*;
 
 import java.io.*;
@@ -23,7 +25,7 @@ public class AppointmentOutcomeSystem {
 
     public static List<AppointmentOutcomeRecord> getOutcomes() {
         return outcomes.stream()
-                .filter(outcome -> !outcome.isDispensed()) // Filter out outcomes that are already dispensed
+                .filter(outcome -> outcome.isDispensed() == Dispensed.NO) // Filter out outcomes that are already dispensed
                 .collect(Collectors.toList());
     }
 
@@ -104,7 +106,7 @@ public class AppointmentOutcomeSystem {
         String serviceType = parts[2];
         String medicationsStr = parts[3];
         String consultationNotes = parts[4];
-        boolean dispensed = Boolean.parseBoolean(parts[5]);
+        Dispensed dispensed = Dispensed.valueOf(parts[5]);
 
         AppointmentOutcomeRecord outcome = new AppointmentOutcomeRecord(
                 appointmentID, appointmentDate, serviceType, consultationNotes, dispensed
@@ -222,7 +224,7 @@ public class AppointmentOutcomeSystem {
                     outcome.getServiceType(),
                     outcome.getMedicationsAsString(),
                     outcome.getConsultationNotes(),
-                    outcome.isDispensed() ? "Yes" : "No");
+                    outcome.isDispensed() == Dispensed.YES ? "Yes" : "No");
         }
 
         System.out.println("+---------------+-------------------+-------------------+---------------------------------+-----------------------+-------------------+");
@@ -249,7 +251,7 @@ public class AppointmentOutcomeSystem {
      * @param doctorID the doctor's ID.
      */
     public static void addOutcomeByDoctor(String doctorID) {
-        List<Appointment> approvedAppointments = AppointmentSystem.getAppointmentsByDoctor(doctorID, "approved");
+        List<Appointment> approvedAppointments = AppointmentSystem.getAppointmentsByDoctor(doctorID, AppointmentStatus.APPROVED);
 
         if (approvedAppointments.isEmpty()) {
             System.out.println("No approved appointments available to add outcomes.");
@@ -257,7 +259,7 @@ public class AppointmentOutcomeSystem {
         }
 
         System.out.println("\n--- Approved Appointments for Doctor ID: " + doctorID + " ---");
-        AppointmentSystem.displayAppointmentsByDoctor(doctorID, "approved");
+        AppointmentSystem.displayAppointmentsByDoctor(doctorID, AppointmentStatus.APPROVED);
 
         // Prompt the doctor to select an appointment
         String selectedAppointmentID = InputHandler.getValidatedInput(
@@ -272,11 +274,6 @@ public class AppointmentOutcomeSystem {
                     }
                 }
         );
-
-        if (selectedAppointmentID == null) {
-            System.out.println("Outcome creation canceled.");
-            return;
-        }
 
         int appointmentID = Integer.parseInt(selectedAppointmentID);
         Appointment appointment = approvedAppointments.stream()
@@ -309,7 +306,7 @@ public class AppointmentOutcomeSystem {
                 AppointmentSystem.formatDate(appointment.getAppointmentDate()),
                 serviceType,
                 consultationNotes,
-                false
+                Dispensed.NO
         );
 
         // Add medications (optional)
@@ -329,7 +326,6 @@ public class AppointmentOutcomeSystem {
     }
 
     private static void addMedicationsToOutcome(AppointmentOutcomeRecord outcome) {
-        StockSystem stockSystem = new StockSystem();
         boolean addMore = true;
 
         while (addMore) {
@@ -431,7 +427,7 @@ public class AppointmentOutcomeSystem {
                     outcome.getAppointmentDate(),
                     outcome.getServiceType(),
                     outcome.getMedicationsAsString(),
-                    outcome.isDispensed() ? "Yes" : "No");
+                    outcome.isDispensed() == Dispensed.YES ? "Yes" : "No");
         }
 
         System.out.println("+-------------------+-------------------+-------------------+-----------------------+-------------------+");
@@ -473,22 +469,19 @@ public class AppointmentOutcomeSystem {
                 );
 
                 if (replenishChoice.equalsIgnoreCase("yes")) {
-                    // Create replenish request
                     StockReplenishRequest replenishRequest = new StockReplenishRequest(
                             stock.getID(), 100, "pending" // Replenish with 100 units
                     );
-                    new StockSystem().createReplenishRequest(replenishRequest);
+                    StockSystem.createReplenishRequest(replenishRequest);
                     System.out.println("Replenish request created for " + medication.getMedicationName() + ".");
                 }
             }
 
-            // Step 4: Mark the medication as dispensed
             medication.setStatus("dispensed");
             System.out.println("Dispensed " + medication.getQuantity() + " units of " + medication.getMedicationName());
         }
 
-        // Step 5: Update the outcome to dispensed
-        outcome.setDispensed(true);
+        outcome.setDispensed(Dispensed.YES);
         saveOutcomes();
         System.out.println("All medications dispensed and outcome updated.");
     }

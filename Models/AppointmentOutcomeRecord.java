@@ -1,5 +1,7 @@
 package Models;
 
+import Enums.Dispensed;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +16,9 @@ public class AppointmentOutcomeRecord {
     private int appointmentID; // Unique appointment ID
     private String appointmentDate;
     private String serviceType; // e.g., consultation, X-ray, etc.
-    private boolean dispensed;
+    private Dispensed dispensed;
 
-    public AppointmentOutcomeRecord(int appointmentID, String appointmentDate, String serviceType, String consultationNotes, boolean dispensed) {
+    public AppointmentOutcomeRecord(int appointmentID, String appointmentDate, String serviceType, String consultationNotes, Dispensed dispensed) {
         this.appointmentID = appointmentID;
         this.appointmentDate = appointmentDate;
         this.serviceType = serviceType;
@@ -61,11 +63,11 @@ public class AppointmentOutcomeRecord {
         return consultationNotes;
     }
 
-    public boolean isDispensed() {
+    public Dispensed isDispensed() {
         return dispensed;
     }
 
-    public void setDispensed(boolean dispensed) {
+    public void setDispensed(Dispensed dispensed) {
         this.dispensed = dispensed;
     }
 
