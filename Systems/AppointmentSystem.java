@@ -211,17 +211,20 @@ public class AppointmentSystem {
         }
 
         System.out.println("\n--- Appointments for Patient ID: " + patientID + " ---");
-        System.out.printf("%-15s %-15s %-25s %-15s%n", "Appointment ID", "Doctor ID", "Date", "Status");
-        System.out.println("------------------------------------------------------------");
+
+        System.out.println("+-----------------+-----------------+-------------------------+-----------------+");
+        System.out.printf("| %-15s | %-15s | %-23s | %-15s |%n", "Appointment ID", "Doctor ID", "Date", "Status");
+        System.out.println("+-----------------+-----------------+-------------------------+-----------------+");
 
         for (Appointment appointment : appointmentsForPatient) {
-            System.out.printf("%-15d %-15s %-25s %-15s%n",
+            System.out.printf("| %-15d | %-15s | %-23s | %-15s |%n",
                     appointment.getID(),
                     appointment.getDoctorID(),
                     formatDate(appointment.getAppointmentDate()),
                     appointment.getAppointmentStatus());
         }
-        System.out.println("------------------------------------------------------------");
+
+        System.out.println("+-----------------+-----------------+-------------------------+-----------------+");
     }
 
     public static String selectDoctorWithAvailableSlots() {
@@ -596,7 +599,7 @@ public class AppointmentSystem {
         }
         System.out.println("-------------------------------------------------------------------");
     }
-    
+
     // ------------------- Utility Methods -------------------
 
     private static void displaySlots(List<String> slots) {
@@ -709,7 +712,7 @@ public class AppointmentSystem {
                 int id = Integer.parseInt(parts[0]);
                 String patientID = parts[1];
                 String doctorID = parts[2];
-                AppointmentStatus status = AppointmentStatus.valueOf(parts[3]);
+                AppointmentStatus status = AppointmentStatus.valueOf(parts[3].toUpperCase());
                 Date date = DATE_FORMAT.parse(parts[4]);
                 appointments.add(new Appointment(id, patientID, doctorID, status, date));
             }

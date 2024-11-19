@@ -1,3 +1,2 @@
 PatientID,DateOfBirth,PhoneNumber,EmailAddress,BloodType,Diagnoses
-PT1,2000-10-10,12345678,dallas@e.com,B+,big test|2000-10-10|presecription;
-PT4,2000-10-10,918273444,test.3@e.com,B-,
+PT1,2000-10-10,1231231231,test@e.com,A+,

@@ -380,7 +380,7 @@ public class StockSystem {
                     int id = Integer.parseInt(requestDetails[0]);
                     int stockId = Integer.parseInt(requestDetails[1]);
                     int incomingStockLevel = Integer.parseInt(requestDetails[2]);
-                    ReplenishStatus status = ReplenishStatus.valueOf(requestDetails[3]);
+                    ReplenishStatus status = ReplenishStatus.valueOf(requestDetails[3].toUpperCase());
                     StockReplenishRequest request = new StockReplenishRequest(stockId, incomingStockLevel, status);
                     request.setID(id);
                     replenishRequests.add(request);

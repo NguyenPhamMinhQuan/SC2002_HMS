@@ -107,7 +107,7 @@ public class AppointmentOutcomeSystem {
         String serviceType = parts[2];
         String medicationsStr = parts[3];
         String consultationNotes = parts[4];
-        Dispensed dispensed = Dispensed.valueOf(parts[5]);
+        Dispensed dispensed = Dispensed.valueOf(parts[5].toUpperCase());
         String doctorID = parts[6];
         String patientID = parts[7];
 

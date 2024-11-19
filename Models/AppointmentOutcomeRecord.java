@@ -13,12 +13,12 @@ public class AppointmentOutcomeRecord {
 
     private final List<Medication> prescribedMedications;
     private final String consultationNotes;
-    private int appointmentID; // Unique appointment ID
-    private String appointmentDate;
-    private String serviceType; // e.g., consultation, X-ray, etc.
+    private final int appointmentID; // Unique appointment ID
+    private final String appointmentDate;
+    private final String serviceType; // e.g., consultation, X-ray, etc.
     private Dispensed dispensed;
-    private String doctorID;
-    private String patientID;
+    private final String doctorID;
+    private final String patientID;
 
     public AppointmentOutcomeRecord(int appointmentID, String appointmentDate, String serviceType, String consultationNotes, Dispensed dispensed, String doctorID, String patientID) {
         this.appointmentID = appointmentID;
