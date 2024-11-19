@@ -18,9 +18,4 @@ public enum UserRole {
     public String toString() {
         return value;
     }
-
-    // Getter for the lowercase value (optional if needed directly)
-    public String getValue() {
-        return value;
-    }
 }
