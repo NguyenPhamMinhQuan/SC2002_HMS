@@ -8,6 +8,7 @@ public class Medication {
 
     private String medicationName;
     private String status; // e.g., "pending", "completed"
+    private Integer quantity;
 
     /**
      * Constructs a Medication object with the specified name and status.
@@ -15,9 +16,10 @@ public class Medication {
      * @param medicationName the name of the medication
      * @param status         the status of the medication (e.g., "pending")
      */
-    public Medication(String medicationName, String status) {
+    public Medication(String medicationName, String status, Integer quantity) {
         this.medicationName = medicationName;
         this.status = status;
+        this.quantity = quantity;
     }
 
     // Getter and Setter methods
@@ -37,4 +39,8 @@ public class Medication {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public Integer getQuantity() {return quantity;}
+
+    public void setQuantity(Integer quantity) {}
 }

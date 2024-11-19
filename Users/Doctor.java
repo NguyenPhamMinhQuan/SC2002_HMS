@@ -31,12 +31,12 @@ public class Doctor extends User implements UserMenuInterface {
             case 2 -> updateMedicalRecord();
             case 3 -> {
                 AppointmentSystem.displayDoctorAvailability(getUserId());
-                AppointmentSystem.displayAppointmentsByDoctor(getUserId());
+                AppointmentSystem.displayAppointmentsByDoctor(getUserId(), null);
             }
             case 4 -> setAvailability();
             case 5 -> AppointmentSystem.approvePendingAppointments(getUserId());
             case 6 -> AppointmentSystem.viewUpcomingAppointments(getUserId());
-            case 7 -> recordAppointmentOutcome();
+            case 7 -> AppointmentOutcomeSystem.addOutcomeByDoctor(getUserId());
             case 8 -> {
                 return true;
             }
@@ -129,13 +129,5 @@ public class Doctor extends User implements UserMenuInterface {
                     System.out.println("Invalid option. Please try again.");
             }
         }
-    }
-
-    /**
-     * Records the outcome of an appointment.
-     */
-    private void recordAppointmentOutcome() {
-
-
     }
 }

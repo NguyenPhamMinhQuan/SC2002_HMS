@@ -2,6 +2,7 @@ package Users;
 
 import Models.MedicalRecord;
 import Models.User;
+import Systems.AppointmentOutcomeSystem;
 import Systems.AppointmentSystem;
 import Systems.InputHandler;
 import Systems.MedicalRecordSystem;
@@ -38,9 +39,7 @@ public class Patient extends User implements UserMenuInterface {
             case 5 -> AppointmentSystem.rescheduleAppointment(getUserId());
             case 6 -> cancelAppointment();
             case 7 -> AppointmentSystem.displayAppointmentsByPatient(getUserId(), Arrays.asList("pending", "confirmed"));
-            case 8 -> {
-                System.out.println("Viewing past appointment outcomes...");
-            }
+            case 8 -> AppointmentOutcomeSystem.displayOutcomesForPatient(getUserId());
             case 9 -> {
                 return true;
             }

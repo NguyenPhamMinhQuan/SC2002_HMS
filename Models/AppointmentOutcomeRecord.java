@@ -9,31 +9,35 @@ import java.util.List;
  */
 public class AppointmentOutcomeRecord {
 
+    private int appointmentID; // Unique appointment ID
     private String appointmentDate;
     private String serviceType; // e.g., consultation, X-ray, etc.
-    private List<Stock> prescribedMedications;
+    private List<Medication> prescribedMedications;
     private String consultationNotes;
+    private boolean dispensed;
 
-    /**
-     * Constructs an AppointmentOutcomeRecord with the specified details.
-     *
-     * @param appointmentDate   the date of the appointment
-     * @param serviceType       the type of service provided (e.g., consultation)
-     * @param consultationNotes any notes from the consultation
-     */
-    public AppointmentOutcomeRecord(String appointmentDate, String serviceType, String consultationNotes) {
+    public AppointmentOutcomeRecord(int appointmentID, String appointmentDate, String serviceType, String consultationNotes) {
+        this.appointmentID = appointmentID;
         this.appointmentDate = appointmentDate;
         this.serviceType = serviceType;
         this.prescribedMedications = new ArrayList<>();
         this.consultationNotes = consultationNotes;
+        this.dispensed = false;
     }
 
     // Add a medication to the list of prescribed medications
-    public void addMedication(Stock medication) {
+    public void addMedication(Medication medication) {
         prescribedMedications.add(medication);
     }
 
-    // Getter and Setter methods
+    // Getters and Setters
+    public int getAppointmentID() {
+        return appointmentID;
+    }
+
+    public void setAppointmentID(int appointmentID) {
+        this.appointmentID = appointmentID;
+    }
 
     public String getAppointmentDate() {
         return appointmentDate;
@@ -51,11 +55,11 @@ public class AppointmentOutcomeRecord {
         this.serviceType = serviceType;
     }
 
-    public List<Stock> getPrescribedMedications() {
+    public List<Medication> getPrescribedMedications() {
         return prescribedMedications;
     }
 
-    public void setPrescribedMedications(List<Stock> prescribedMedications) {
+    public void setPrescribedMedications(List<Medication> prescribedMedications) {
         this.prescribedMedications = prescribedMedications;
     }
 
@@ -65,5 +69,27 @@ public class AppointmentOutcomeRecord {
 
     public void setConsultationNotes(String consultationNotes) {
         this.consultationNotes = consultationNotes;
+    }
+
+    public boolean isDispensed() {
+        return dispensed;
+    }
+
+    public void setDispensed(boolean dispensed) {
+        this.dispensed = dispensed;
+    }
+
+
+    // Format medications as a single string for CSV saving
+    public String getMedicationsAsString() {
+        StringBuilder sb = new StringBuilder();
+        for (Medication medication : prescribedMedications) {
+            sb.append(medication.getMedicationName())
+                    .append(" (")
+                    .append(medication.getQuantity())
+                    .append(")")
+                    .append("; ");
+        }
+        return sb.toString().trim();
     }
 }

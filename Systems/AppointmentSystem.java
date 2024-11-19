@@ -41,7 +41,18 @@ public class AppointmentSystem {
         }
     }
 
-    // ------------------- Doctor Availability Management -------------------
+
+    /**
+     * Returns a list of all appointments.
+     *
+     * @return List of appointments.
+     */
+    public static List<Appointment> getAppointments() {
+        return new ArrayList<>(appointments);
+    }
+
+
+// ------------------- Doctor Availability Management -------------------
 
     public static void addDoctorAvailability(String doctorID) {
         String slot = InputHandler.getValidatedInput(
@@ -538,8 +549,8 @@ public class AppointmentSystem {
      *
      * @param doctorID the ID of the doctor whose appointments will be displayed.
      */
-    public static void displayAppointmentsByDoctor(String doctorID) {
-        List<Appointment> doctorAppointments = getAppointmentsByDoctor(doctorID, null);
+    public static void displayAppointmentsByDoctor(String doctorID, String status) {
+        List<Appointment> doctorAppointments = getAppointmentsByDoctor(doctorID, status);
 
         if (doctorAppointments.isEmpty()) {
             System.out.println("No appointments found for Doctor ID: " + doctorID);
@@ -577,6 +588,7 @@ public class AppointmentSystem {
 
         System.out.println("+-----+-----------------------+");
     }
+
     private static boolean isValidSlotSelection(String input, int size) {
         try {
             int index = Integer.parseInt(input);
@@ -679,7 +691,7 @@ public class AppointmentSystem {
         }
     }
 
-    private static void saveAppointments() {
+    public static void saveAppointments() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(APPOINTMENTS_FILE))) {
             bw.write("ID,PatientID,DoctorID,Status,Date");
             bw.newLine();
