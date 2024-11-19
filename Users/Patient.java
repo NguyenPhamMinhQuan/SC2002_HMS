@@ -14,7 +14,7 @@ import java.util.Date;
  * Represents a patient in the Hospital Management System.
  * This class handles the patient's personal and medical information.
  */
-public class Patient extends User {
+public class Patient extends User  implements UserMenuInterface {
 
     private final MedicalRecord medicalRecord;
 

@@ -10,7 +10,7 @@ import Systems.UserManagementSystem;
  * Represents an administrator in the hospital management system.
  * Inherits from User class.
  */
-public class Administrator extends User {
+public class Administrator extends User implements UserMenuInterface {
 
     /**
      * Constructs a new Administrator.

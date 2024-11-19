@@ -5,7 +5,7 @@ import Models.User;
 /**
  * Abstract class representing a menu for a specific type of user.
  */
-public abstract class Menu {
+public abstract class Menu implements MenuInterface {
     protected User user;
 
     /**

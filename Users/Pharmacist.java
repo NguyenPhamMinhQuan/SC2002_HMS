@@ -12,7 +12,7 @@ import java.util.List;
  * Represents a pharmacist in the hospital management system.
  * Inherits from User class.
  */
-public class Pharmacist extends User {
+public class Pharmacist extends User implements UserMenuInterface {
 
     private final StockSystem stockSystem = new StockSystem();
 

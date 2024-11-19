@@ -5,7 +5,6 @@ import Systems.*;
 import Systems.MedicalRecordSystem;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -13,7 +12,7 @@ import java.util.List;
  * Represents a doctor in the hospital management system.
  * Inherits from User class.
  */
-public class Doctor extends User {
+public class Doctor extends User implements UserMenuInterface {
 
     /**
      * Constructs a new Doctor.
