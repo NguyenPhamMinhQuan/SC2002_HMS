@@ -1,0 +1,5 @@
+ID,MedicineName,StockLevel,LowStockAlertThreshold
+2,Ibuprofen,101,50
+3,Amoxicillin,13,5
+4,Cough Syrup,188,50
+5,Vicodin,123,500
