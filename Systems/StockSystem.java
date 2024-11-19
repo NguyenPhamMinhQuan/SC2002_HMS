@@ -1,5 +1,6 @@
 package Systems;
 
+import Enums.ReplenishStatus;
 import Models.Stock;
 import Models.StockReplenishRequest;
 
@@ -39,7 +40,7 @@ public class StockSystem {
 
         for (StockReplenishRequest existingRequest : replenishRequests) {
             if (existingRequest.getStockId() == stockRequest.getStockId() &&
-                    existingRequest.getStatus().equalsIgnoreCase("pending")) {
+                    existingRequest.getStatus() == ReplenishStatus.PENDING) {
                 existingRequest.setIncomingStockLevel(stockRequest.getIncomingStockLevel());
                 saveReplenishRequests();
                 return existingRequest;
@@ -68,7 +69,7 @@ public class StockSystem {
     // Static method to get all replenish requests with "pending" status
     public static List<StockReplenishRequest> getReplenishRequests() {
         return replenishRequests.stream()
-                .filter(x -> x.getStatus().equalsIgnoreCase("pending"))
+                .filter(x -> x.getStatus() == ReplenishStatus.PENDING)
                 .collect(Collectors.toList());
     }
     public static void showLowStockItemsAndCreateReplenishRequest() {
@@ -132,7 +133,7 @@ public class StockSystem {
         StockReplenishRequest replenishRequest = new StockReplenishRequest(
                 selectedStock.getID(),
                 replenishQuantity,  // Quantity to replenish
-                "pending"           // Initial status is "pending"
+                ReplenishStatus.PENDING         // Initial status is "pending"
         );
 
         // Add the replenish request to the system
@@ -256,13 +257,13 @@ public class StockSystem {
         }
 
         // Update the replenish request status to "approved"
-        request.setStatus("approved");
+        request.setStatus(ReplenishStatus.APPROVED);
         saveReplenishRequests(); // Save updated replenish requests to the file
     }
 
     private static void rejectReplenishRequest(StockReplenishRequest request) {
         // Update the replenish request status to "rejected"
-        request.setStatus("rejected");
+        request.setStatus(ReplenishStatus.REJECTED);
         saveReplenishRequests(); // Save updated replenish requests to the file
     }
 
@@ -293,7 +294,7 @@ public class StockSystem {
                         String.valueOf(request.getID()),
                         String.valueOf(request.getStockId()),
                         String.valueOf(request.getIncomingStockLevel()),
-                        request.getStatus()));
+                        request.getStatus().toString()));
                 bw.newLine();
             }
         } catch (IOException e) {
@@ -379,7 +380,7 @@ public class StockSystem {
                     int id = Integer.parseInt(requestDetails[0]);
                     int stockId = Integer.parseInt(requestDetails[1]);
                     int incomingStockLevel = Integer.parseInt(requestDetails[2]);
-                    String status = requestDetails[3];
+                    ReplenishStatus status = ReplenishStatus.valueOf(requestDetails[3]);
                     StockReplenishRequest request = new StockReplenishRequest(stockId, incomingStockLevel, status);
                     request.setID(id);
                     replenishRequests.add(request);

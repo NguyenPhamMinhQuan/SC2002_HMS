@@ -2,6 +2,7 @@ package Systems;
 
 import Enums.AppointmentStatus;
 import Enums.Dispensed;
+import Enums.ReplenishStatus;
 import Models.*;
 
 import java.io.*;
@@ -470,7 +471,7 @@ public class AppointmentOutcomeSystem {
 
                 if (replenishChoice.equalsIgnoreCase("yes")) {
                     StockReplenishRequest replenishRequest = new StockReplenishRequest(
-                            stock.getID(), 100, "pending" // Replenish with 100 units
+                            stock.getID(), 100, ReplenishStatus.PENDING // Replenish with 100 units
                     );
                     StockSystem.createReplenishRequest(replenishRequest);
                     System.out.println("Replenish request created for " + medication.getMedicationName() + ".");

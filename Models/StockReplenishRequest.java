@@ -1,12 +1,14 @@
 package Models;
 
+import Enums.ReplenishStatus;
+
 public class StockReplenishRequest {
     private int ID;
     private int stockId;
     private int incomingStockLevel;
-    private String status;
+    private ReplenishStatus status;
 
-    public StockReplenishRequest(int stockId, int incomingStockLevel, String status) {
+    public StockReplenishRequest(int stockId, int incomingStockLevel, ReplenishStatus status) {
         this.stockId = stockId;
         this.incomingStockLevel = incomingStockLevel;
         this.status = status;
@@ -36,11 +38,11 @@ public class StockReplenishRequest {
         this.incomingStockLevel = incomingStockLevel;
     }
 
-    public String getStatus() {
+    public ReplenishStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ReplenishStatus status) {
         this.status = status;
     }
 }
