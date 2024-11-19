@@ -107,6 +107,52 @@ public class UserManagementSystem {
         System.out.println("+------------+-------------------+---------------+-----------+");
     }
 
+    /**
+     * Generates an input picker for selecting a user ID from a list of users.
+     *
+     * @param userList the list of users to pick from.
+     * @return the selected user ID, or {@code null} if the user cancels the selection.
+     */
+    public static String selectUserID(List<User> userList) {
+        if (userList == null || userList.isEmpty()) {
+            System.out.println("No users available to select.");
+            return null;
+        }
+
+        System.out.println("\n--- Select a User ---");
+        System.out.println("+-----+------------+-------------------+---------------+");
+        System.out.println("| No. | User ID    | Name              | Role          |");
+        System.out.println("+-----+------------+-------------------+---------------+");
+
+        // Display the user list in a table format
+        for (int i = 0; i < userList.size(); i++) {
+            User user = userList.get(i);
+            System.out.printf("| %-3d | %-10s | %-17s | %-13s |\n",
+                    i + 1,
+                    user.getUserId(),
+                    user.getName(),
+                    user.getRole());
+        }
+        System.out.println("+-----+------------+-------------------+---------------+");
+        System.out.println("Enter the number corresponding to the user, or type 'exit' to cancel.");
+
+        // Prompt the user for input
+        String input = InputHandler.getValidatedInput(
+                "Select a user by number: ",
+                "Invalid input. Please enter a valid number or 'exit'.",
+                value -> value.equalsIgnoreCase("exit") || (value.matches("\\d+") && Integer.parseInt(value) >= 1 && Integer.parseInt(value) <= userList.size())
+        );
+
+        if (input == null || input.equalsIgnoreCase("exit")) {
+            System.out.println("Selection cancelled.");
+            return null;
+        }
+
+        int selectedIndex = Integer.parseInt(input) - 1;
+        String selectedUserID = userList.get(selectedIndex).getUserId();
+        System.out.println("You selected User ID: " + selectedUserID);
+        return selectedUserID;
+    }
 
     /**
      * Authenticates a user's login.

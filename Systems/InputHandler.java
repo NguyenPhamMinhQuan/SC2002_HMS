@@ -55,14 +55,48 @@ public class InputHandler {
 
     /**
      * Prompts the user for input and validates it using a provided predicate.
-     * If the user enters "exit" (case-insensitive), the method returns {@code null}.
+     * Does NOT allow exiting by typing "exit". The user must provide valid input.
+     *
+     * @param prompt       the message to display to the user.
+     * @param errorMessage the error message to display if the input is invalid.
+     * @param validator    a predicate to validate the input.
+     * @return the validated input if valid.
+     */
+    public static String getValidatedInput(String prompt, String errorMessage, Predicate<String> validator) {
+        while (true) {
+            System.out.println(prompt);
+
+            try {
+                String input = nextLine();
+
+                // Do NOT allow exiting
+                if (input.equalsIgnoreCase("exit")) {
+                    System.out.println("Exiting is not allowed for this input. Please provide valid input.");
+                    continue;
+                }
+
+                // Validate the input
+                if (validator.test(input)) {
+                    return input;
+                }
+
+                System.out.println(errorMessage);
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please try again.");
+            }
+        }
+    }
+
+    /**
+     * Prompts the user for input and validates it using a provided predicate.
+     * Allows exiting by typing "exit" (case-insensitive), which returns {@code null}.
      *
      * @param prompt       the message to display to the user.
      * @param errorMessage the error message to display if the input is invalid.
      * @param validator    a predicate to validate the input.
      * @return the validated input if valid; {@code null} if the user enters "exit".
      */
-    public static String getValidatedInput(String prompt, String errorMessage, Predicate<String> validator) {
+    public static String getValidatedInputWithExit(String prompt, String errorMessage, Predicate<String> validator) {
         while (true) {
             System.out.println(prompt);
 

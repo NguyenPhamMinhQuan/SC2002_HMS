@@ -2,10 +2,7 @@ package Users;
 
 import Models.*;
 import Systems.*;
-import Systems.MedicalRecordSystem;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,92 +43,49 @@ public class Doctor extends User implements UserMenuInterface {
     }
 
     /**
-     * Choose the interested patient by validating the input against the available patients.
-     *
-     * @return userID of the patient.
-     */
-    public String choosePatient() {
-        System.out.println("Please choose among the available Patients:");
-        UserManagementSystem.displayPatients();
-
-        System.out.print("PatientID chosen: ");
-        String patientID = InputHandler.nextLine();
-
-        if (UserManagementSystem.users.containsKey(patientID)) {
-            User chosenUser = UserManagementSystem.users.get(patientID);
-
-            if (chosenUser.getRole().equalsIgnoreCase("patient")) {
-                System.out.println("You have chosen Patient: " + chosenUser.getName());
-                return patientID;
-            } else {
-                System.out.println("The chosen ID does not belong to a patient. Please choose a valid patient ID.");
-            }
-        } else {
-            System.out.println("The Patient ID does not exist. Please try again.");
-        }
-        return choosePatient(); // Retry if invalid
-    }
-
-    /**
      * Views a patient's medical record.
      */
     public void viewMedicalRecord() {
-        System.out.println("Viewing patient medical records...");
-        String patientID = choosePatient();
-
-        MedicalRecord medicalRecord = MedicalRecordSystem.loadMedicalRecord(patientID);
-        if (medicalRecord != null) {
-            medicalRecord.displayMedicalRecord();
-        } else {
-            System.out.println("Medical record for Patient ID " + patientID + " not found.");
-        }
+        String patientID = UserManagementSystem.selectUserID(UserManagementSystem.getUsersByRole("patient"));
+        MedicalRecordSystem.showOrCreateMedicalRecord(patientID);
     }
 
     /**
      * Updates a patient's medical record.
      */
     public void updateMedicalRecord() {
-        String patientID = choosePatient();
+        String patientID = UserManagementSystem.selectUserID(UserManagementSystem.getUsersByRole("patient"));
 
-        System.out.println("What would you like to update?");
+        if (patientID == null) {
+            System.out.println("No patient selected. Exiting...");
+            return;
+        }
+
+        System.out.println("\nWhat would you like to update? ('exit' to exit)");
         System.out.println("1. Blood Type");
         System.out.println("2. Add Diagnosis");
-        int choice = InputHandler.nextInt();
 
-        if (choice == 1) {
-            System.out.print("Enter the updated Blood Type: ");
-            String bloodType = InputHandler.nextLine();
-            MedicalRecord medicalRecord = MedicalRecordSystem.loadMedicalRecord(patientID);
-            if (medicalRecord != null) {
-                medicalRecord.setBloodType(bloodType);
-                MedicalRecordSystem.saveMedicalRecord(medicalRecord);
-                System.out.println("Blood Type updated successfully.");
-            } else {
-                System.out.println("Failed to update Blood Type. Medical record not found.");
-            }
-        } else if (choice == 2) {
-            System.out.print("Enter Diagnosis Condition: ");
-            String condition = InputHandler.nextLine();
+        String choice = InputHandler.getValidatedInputWithExit(
+                "Select an option (1 or 2): ",
+                "Invalid choice. Please select 1 or 2, or type 'exit' to cancel.",
+                input -> input.matches("[12]")
+        );
 
-            String diagnosisDate = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        if ((choice == null) || choice.equalsIgnoreCase("exit")) {
+            System.out.println("Update cancelled. Exiting...");
+            return;
+        }
 
-            System.out.print("Enter Prescription: ");
-            String prescription = InputHandler.nextLine();
-
-            System.out.print("Enter Prescription Status: ");
-            String status = InputHandler.nextLine();
-
-            MedicalRecord medicalRecord = MedicalRecordSystem.loadMedicalRecord(patientID);
-            if (medicalRecord != null) {
-                Diagnosis diagnosis = new Diagnosis(condition, diagnosisDate, prescription, status);
-                medicalRecord.addDiagnosis(diagnosis);
-                MedicalRecordSystem.saveMedicalRecord(medicalRecord);
-                System.out.println("Diagnosis added successfully.");
-            } else {
-                System.out.println("Failed to add Diagnosis. Medical record not found.");
-            }
-        } else {
-            System.out.println("Invalid choice.");
+        switch (choice) {
+            case "1":
+                MedicalRecordSystem.updateBloodType(patientID);
+                break;
+            case "2":
+                MedicalRecordSystem.updateDiagnosis(patientID);
+                break;
+            default:
+                System.out.println("Invalid choice.");
+                break;
         }
     }
 
@@ -292,9 +246,9 @@ public class Doctor extends User implements UserMenuInterface {
         }
 
         // Save the outcome to the system
-        MedicalRecord patientRecord = MedicalRecordSystem.loadMedicalRecord(String.format("%s",selectedAppointment.getPatientID()));
+        MedicalRecord patientRecord = MedicalRecordSystem.loadMedicalRecord(String.format("%s", selectedAppointment.getPatientID()));
         if (patientRecord != null) {
-            patientRecord.addAppointmentOutcome(outcomeRecord);
+//            patientRecord.addAppointmentOutcome(outcomeRecord);
             MedicalRecordSystem.saveMedicalRecord(patientRecord);
             System.out.println("Appointment outcome recorded successfully.");
         } else {
