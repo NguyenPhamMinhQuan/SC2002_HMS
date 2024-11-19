@@ -5,6 +5,7 @@ import Models.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static Systems.StockSystem.getStocks;
 
@@ -19,6 +20,14 @@ public class AppointmentOutcomeSystem {
     public AppointmentOutcomeSystem() {
         loadOutcomes();
     }
+
+    public static List<AppointmentOutcomeRecord> getOutcomes() {
+        return outcomes.stream()
+                .filter(outcome -> !outcome.isDispensed()) // Filter out outcomes that are already dispensed
+                .collect(Collectors.toList());
+    }
+
+
 
     /**
      * Adds a new appointment outcome.
@@ -402,8 +411,11 @@ public class AppointmentOutcomeSystem {
     }
 
     public static void displayAllAppointmentOutcomes() {
-        if (outcomes.isEmpty()) {
-            System.out.println("No appointment outcomes available.");
+        List<AppointmentOutcomeRecord> undispensedOutcomes = getOutcomes();
+
+
+        if (undispensedOutcomes.isEmpty()) {
+            System.out.println("No appointment outcomes available for dispensing.");
             return;
         }
 

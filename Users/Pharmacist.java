@@ -42,9 +42,14 @@ public class Pharmacist extends User implements UserMenuInterface {
     }
 
     private void handleDispensing() {
+        // Check if there are any outcomes to dispense
+        if (AppointmentOutcomeSystem.getOutcomes().isEmpty()) {
+            System.out.println("No appointment outcomes available for dispensing.");
+            return;
+        }
+
         AppointmentOutcomeSystem.displayAllAppointmentOutcomes();
 
-        // Step 2: Ask the pharmacist to select an outcome to dispense medication
         String selectedOutcomeID = InputHandler.getValidatedInput(
                 "Enter the Appointment ID to dispense medications or type 'exit' to cancel: ",
                 "Invalid input. Please enter a valid Appointment ID or 'exit'.",
