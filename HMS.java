@@ -53,7 +53,7 @@ public class HMS {
                         user = UserManagementSystem.login(userID, password);
 
                         if (user == null) {
-                            System.out.println("Invalid User ID or Password. Try again or type 'exit' to go back to the main menu.");
+                            System.out.println("Invalid User ID or Password. 'enter' to try again or 'exit' to exit.");
                             String retry = InputHandler.nextLine();
 
                             if (retry.equalsIgnoreCase("exit")) {

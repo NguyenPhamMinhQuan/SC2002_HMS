@@ -241,7 +241,7 @@ public class UserManagementSystem {
         }
 
         String name = InputHandler.getValidatedInput(
-                "Enter name (or 'exit' to cancel): ",
+                "Enter name: ",
                 "Invalid name. Name cannot be empty.",
                 input -> !input.trim().isEmpty()
         );
@@ -252,7 +252,7 @@ public class UserManagementSystem {
         }
 
         String gender = InputHandler.getValidatedInput(
-                "Enter gender (Male/Female or 'exit' to cancel): ",
+                "Enter gender (Male/Female): ",
                 "Invalid gender. Please enter 'Male' or 'Female'.",
                 input -> input.equalsIgnoreCase("male") || input.equalsIgnoreCase("female")
         );
@@ -263,7 +263,7 @@ public class UserManagementSystem {
         }
 
         String ageStr = InputHandler.getValidatedInput(
-                "Enter age (or 'exit' to cancel): ",
+                "Enter age",
                 "Invalid age. Please enter a positive number.",
                 input -> {
                     try {

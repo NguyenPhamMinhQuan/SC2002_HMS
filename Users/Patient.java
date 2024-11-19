@@ -6,6 +6,7 @@ import Systems.AppointmentSystem;
 import Systems.InputHandler;
 import Systems.MedicalRecordSystem;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -32,11 +33,11 @@ public class Patient extends User implements UserMenuInterface {
         switch (feature) {
             case 1 -> MedicalRecordSystem.showOrCreateMedicalRecord(getUserId());
             case 2 -> MedicalRecordSystem.updateOrAddMedicalRecord(getUserId());
-            case 3 -> AppointmentSystem.displayAvailableSlots();
+            case 3 -> AppointmentSystem.displayAllDoctorsAvailability();
             case 4 -> scheduleAppointment();
-            case 5 -> rescheduleAppointment();
+            case 5 -> AppointmentSystem.rescheduleAppointment(getUserId());
             case 6 -> cancelAppointment();
-            case 7 -> AppointmentSystem.displayAppointmentsByPatient(getUserId(), Arrays.asList("confirmed", "pending"));
+            case 7 -> AppointmentSystem.displayAppointmentsByPatient(getUserId(), Arrays.asList("pending", "confirmed"));
             case 8 -> {
                 System.out.println("Viewing past appointment outcomes...");
             }
@@ -51,49 +52,54 @@ public class Patient extends User implements UserMenuInterface {
     /**
      * Allows the patient to schedule an appointment.
      */
-    private void scheduleAppointment() {
-        AppointmentSystem.displayAvailableSlots();
-        System.out.print("Enter Doctor ID: ");
-        String doctorID = InputHandler.nextLine();
-        System.out.print("Enter Appointment Date and Time (YYYY-MM-DD HH:mm): ");
-        Date appointmentDate = AppointmentSystem.parseDate(InputHandler.nextLine());
-
-        if (appointmentDate != null) {
-            AppointmentSystem.scheduleAppointment(getUserId(), doctorID, appointmentDate);
-        } else {
-            System.out.println("Invalid date format. Please try again.");
-        }
-    }
-
     /**
-     * Allows the patient to reschedule an appointment.
+     * Allows the patient to schedule an appointment.
      */
-    private void rescheduleAppointment() {
-        System.out.println("Your Scheduled Appointments:");
-        AppointmentSystem.displayAppointmentsByPatient(getUserId(), Arrays.asList("confirmed", "pending"));
-
-        System.out.print("Enter Appointment ID to reschedule: ");
-        int appointmentID = InputHandler.nextInt();
-        AppointmentSystem.displayAvailableSlots();
-        System.out.print("Enter new Appointment Date and Time (YYYY-MM-DD HH:mm): ");
-        Date newDate = AppointmentSystem.parseDate(InputHandler.nextLine());
-
-        if (newDate != null) {
-            AppointmentSystem.updateAppointment(appointmentID, newDate);
-        } else {
-            System.out.println("Invalid date format. Please try again.");
+    private void scheduleAppointment() {
+        String doctorID = AppointmentSystem.selectDoctorWithAvailableSlots();
+        if (doctorID == null) {
+            System.out.println("No doctors with available slots or selection canceled.");
+            return;
         }
+
+        Date selectedSlot = AppointmentSystem.selectSlotForDoctor(doctorID);
+        if (selectedSlot == null) {
+            System.out.println("No slots available for this doctor or selection canceled.");
+            return;
+        }
+
+        AppointmentSystem.scheduleAppointment(getUserId(), doctorID, selectedSlot);
     }
 
     /**
      * Allows the patient to cancel an appointment.
      */
     private void cancelAppointment() {
-        System.out.println("Your Scheduled Appointments:");
-        AppointmentSystem.displayAppointmentsByPatient(getUserId(), Arrays.asList("confirmed", "pending"));
+        String patientID = getUserId();
 
-        System.out.print("Enter Appointment ID to cancel: ");
-        int appointmentID = InputHandler.nextInt();
-        AppointmentSystem.cancelAppointment(appointmentID);
+        System.out.println("--- Your Appointments ---");
+        AppointmentSystem.displayAppointmentsByPatient(patientID, Arrays.asList("pending", "confirmed"));
+
+        String input = InputHandler.getValidatedInputWithExit(
+                "Enter the Appointment ID to cancel: ",
+                "Invalid input. Please enter a valid appointment ID.",
+                value -> {
+                    try {
+                        int id = Integer.parseInt(value);
+                        return AppointmentSystem.getAppointmentsByPatient(patientID, null)
+                                .stream()
+                                .anyMatch(appointment -> appointment.getID() == id && !appointment.getAppointmentStatus().equalsIgnoreCase("canceled"));
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
+                }
+        );
+
+        if (input != null) {
+            int appointmentID = Integer.parseInt(input);
+            AppointmentSystem.cancelAppointment(patientID, appointmentID);
+        } else {
+            System.out.println("Cancellation process aborted.");
+        }
     }
 }

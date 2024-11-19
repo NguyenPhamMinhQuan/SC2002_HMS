@@ -29,10 +29,13 @@ public class Doctor extends User implements UserMenuInterface {
         switch (feature) {
             case 1 -> viewMedicalRecord();
             case 2 -> updateMedicalRecord();
-            case 3 -> viewPersonalSchedule();
+            case 3 -> {
+                AppointmentSystem.displayDoctorAvailability(getUserId());
+                AppointmentSystem.displayAppointmentsByDoctor(getUserId());
+            }
             case 4 -> setAvailability();
-            case 5 -> manageAppointmentRequests();
-            case 6 -> viewUpcomingAppointments();
+            case 5 -> AppointmentSystem.approvePendingAppointments(getUserId());
+            case 6 -> AppointmentSystem.viewUpcomingAppointments(getUserId());
             case 7 -> recordAppointmentOutcome();
             case 8 -> {
                 return true;
@@ -89,175 +92,50 @@ public class Doctor extends User implements UserMenuInterface {
         }
     }
 
-    /**
-     * Displays the doctor's personal schedule, including availability and scheduled appointments.
-     */
-    public void viewPersonalSchedule() {
-        List<String> availability = AppointmentSystem.getDoctorAvailability(getUserId());
-        if (availability != null && !availability.isEmpty()) {
-            System.out.println("Available Slots:");
-            for (String slot : availability) {
-                System.out.println("  " + slot);
-            }
-        } else {
-            System.out.println("No available slots set.");
-        }
-        AppointmentSystem.displayAppointmentsByDoctor(getUserId(), null);
-    }
 
     /**
      * Sets the availability for appointments.
      */
     public void setAvailability() {
-        AppointmentSystem.setAvailability(getUserId());
-    }
+        String doctorID = getUserId();
 
-    /**
-     * Manages appointment requests (accept or decline).
-     */
-    public void manageAppointmentRequests() {
-        List<Appointment> pendingAppointments = AppointmentSystem.getAppointmentsByDoctor(getUserId(), "pending");
 
-        if (pendingAppointments.isEmpty()) {
-            System.out.println("No pending appointment requests.");
-            return;
-        }
+        while (true) {
+            System.out.println("\n--- Doctor Menu ---");
+            System.out.println("1. View Availability");
+            System.out.println("2. Add Availability");
+            System.out.println("3. Remove Availability");
+            System.out.println("4. Exit");
 
-        for (Appointment appointment : pendingAppointments) {
-            System.out.println("Appointment ID: " + appointment.getID());
-            System.out.println("Patient ID: " + appointment.getPatientID());
-            System.out.println("Date: " + AppointmentSystem.formatDate(appointment.getAppointmentDate()));
-            System.out.print("Accept or Decline (A/D)? ");
-            String decision = InputHandler.nextLine();
+            String choice = InputHandler.getValidatedInput(
+                    "Select an option: ",
+                    "Invalid input. Please enter a number between 1 and 4.",
+                    input -> input.matches("[1-4]")
+            );
 
-            if (decision.equalsIgnoreCase("A")) {
-                AppointmentSystem.updateAppointmentStatus(appointment.getID(), "confirmed");
-                System.out.println("Appointment confirmed.");
-            } else if (decision.equalsIgnoreCase("D")) {
-                AppointmentSystem.updateAppointmentStatus(appointment.getID(), "declined");
-                System.out.println("Appointment declined.");
-            } else {
-                System.out.println("Invalid input. Skipping appointment.");
+            switch (choice) {
+                case "1":
+                    AppointmentSystem.displayDoctorAvailability(doctorID);
+                    break;
+                case "2":
+                    AppointmentSystem.addDoctorAvailability(doctorID);
+                    break;
+                case "3":
+                    AppointmentSystem.removeDoctorAvailability(doctorID);
+                    break;
+                case "4":
+                    return;
+                default:
+                    System.out.println("Invalid option. Please try again.");
             }
         }
-    }
-
-    /**
-     * View upcoming confirmed appointments.
-     */
-    public void viewUpcomingAppointments() {
-        AppointmentSystem.displayAppointmentsByDoctor(getUserId(), "confirmed");
     }
 
     /**
      * Records the outcome of an appointment.
      */
     private void recordAppointmentOutcome() {
-        System.out.println("Recording appointment outcome...");
 
-        // Get the list of confirmed appointments
-        List<Appointment> confirmedAppointments = AppointmentSystem.getAppointmentsByDoctor(getUserId(), "confirmed");
 
-        if (confirmedAppointments.isEmpty()) {
-            System.out.println("No confirmed appointments available to record outcomes for.");
-            return;
-        }
-
-        // Display confirmed appointments
-        System.out.println("Select an appointment to record the outcome:");
-        for (int i = 0; i < confirmedAppointments.size(); i++) {
-            Appointment appointment = confirmedAppointments.get(i);
-            System.out.printf("[%d] Appointment ID: %s, Patient ID: %s, Date: %s%n",
-                    i + 1,
-                    appointment.getID(),
-                    appointment.getPatientID(),
-                    AppointmentSystem.formatDate(appointment.getAppointmentDate()));
-        }
-
-        // Input selection
-        System.out.print("Enter the number of the appointment: ");
-        int choice = InputHandler.nextInt() - 1;
-
-        if (choice < 0 || choice >= confirmedAppointments.size()) {
-            System.out.println("Invalid choice. Returning to menu.");
-            return;
-        }
-
-        Appointment selectedAppointment = confirmedAppointments.get(choice);
-
-        // Record details for the appointment outcome
-        System.out.print("Enter Service Type (e.g., Consultation, X-ray): ");
-        String serviceType = InputHandler.nextLine();
-
-        System.out.print("Enter Consultation Notes: ");
-        String consultationNotes = InputHandler.nextLine();
-
-        AppointmentOutcomeRecord outcomeRecord = new AppointmentOutcomeRecord(
-                AppointmentSystem.formatDate(selectedAppointment.getAppointmentDate()),
-                serviceType,
-                consultationNotes
-        );
-
-        // Prescribe Medications
-        StockSystem stockSystem = new StockSystem(); // Load the stock system
-        System.out.println("Do you want to prescribe medications? (yes/no): ");
-        String prescribeMedications = InputHandler.nextLine();
-
-        if (prescribeMedications.equalsIgnoreCase("yes")) {
-            while (true) {
-                // Display available stocks
-                System.out.println("Available medicines:");
-                List<Stock> availableStocks = stockSystem.getStocks();
-                for (Stock stock : availableStocks) {
-                    System.out.printf("ID: %d, Name: %s, Stock Level: %d%n",
-                            stock.getID(),
-                            stock.getMedicineName(),
-                            stock.getStockLevel());
-                }
-
-                System.out.print("Enter medicine ID (or type '0' to finish): ");
-                int medicineID = InputHandler.nextInt();
-                if (medicineID == 0) break;
-
-                Stock selectedStock = stockSystem.getStockById(medicineID);
-                if (selectedStock == null) {
-                    System.out.println("Invalid medicine ID. Please try again.");
-                    continue;
-                }
-
-                System.out.print("Enter quantity to prescribe: ");
-                int quantity = InputHandler.nextInt();
-
-                if (selectedStock.getStockLevel() < quantity) {
-                    System.out.println("Insufficient stock for " + selectedStock.getMedicineName() + ". Available: " + selectedStock.getStockLevel());
-                    continue;
-                }
-
-                // Deduct the prescribed quantity from the stock
-                selectedStock.setStockLevel(selectedStock.getStockLevel() - quantity);
-                stockSystem.saveStocks(); // Save updated stock levels
-
-                // Add to the outcome record
-                Stock prescribedMedication = new Stock(selectedStock.getMedicineName(), quantity);
-                outcomeRecord.addMedication(prescribedMedication);
-
-                System.out.println("Added " + quantity + " of " + selectedStock.getMedicineName() + " to the prescription.");
-            }
-        }
-
-        // Save the outcome to the system
-        MedicalRecord patientRecord = MedicalRecordSystem.loadMedicalRecord(String.format("%s", selectedAppointment.getPatientID()));
-        if (patientRecord != null) {
-//            patientRecord.addAppointmentOutcome(outcomeRecord);
-            MedicalRecordSystem.saveMedicalRecord(patientRecord);
-            System.out.println("Appointment outcome recorded successfully.");
-        } else {
-            System.out.println("Failed to record outcome. Patient's medical record not found.");
-            return;
-        }
-
-        // Update the appointment status to "complete"
-        AppointmentSystem.updateAppointmentStatus(selectedAppointment.getID(), "completed");
-        System.out.println("Appointment status updated to 'complete'.");
     }
 }

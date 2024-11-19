@@ -29,7 +29,9 @@ public class Administrator extends User implements UserMenuInterface {
     public boolean functionCall(int feature) {
         switch (feature) {
             case 1 -> manageUsers();
-            case 2 -> AppointmentSystem.displayAppointments();
+            case 2 -> {
+//                AppointmentSystem.displayAppointments();
+            }
             case 3 -> manageMedicationInventory();
             case 4 -> handleReplenishRequests();
             case 5 -> {
