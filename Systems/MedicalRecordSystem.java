@@ -45,17 +45,17 @@ public class MedicalRecordSystem {
         if (medicalRecord.getDiagnoses().isEmpty()) {
             System.out.println("No diagnoses recorded.");
         } else {
-            System.out.println("+--------------------+---------------+-------------------------+--------------------+");
-            System.out.printf("| %-18s | %-13s | %-23s | %-18s |\n", "Condition", "Date", "Prescription", "Status");
-            System.out.println("+--------------------+---------------+-------------------------+--------------------+");
+            System.out.println("+--------------------+---------------+-------------------------+");
+            System.out.printf("| %-18s | %-13s | %-23s |\n", "Condition", "Date", "Prescription");
+            System.out.println("+--------------------+---------------+-------------------------+");
             for (Diagnosis diagnosis : medicalRecord.getDiagnoses()) {
-                System.out.printf("| %-18s | %-13s | %-23s | %-18s |\n",
+                System.out.printf("| %-18s | %-13s | %-23s |\n",
                         diagnosis.getCondition(),
                         diagnosis.getDiagnosisDate(),
-                        diagnosis.getPrescription(),
-                        diagnosis.getPrescriptionStatus());
+                        diagnosis.getPrescription()
+                );
             }
-            System.out.println("+--------------------+---------------+-------------------------+--------------------+");
+            System.out.println("+--------------------+---------------+-------------------------+");
         }
     }
 
@@ -200,13 +200,7 @@ public class MedicalRecordSystem {
                 input -> !input.trim().isEmpty()
         );
 
-        String prescriptionStatus = InputHandler.getValidatedInput(
-                "Enter Prescription Status (e.g., Completed, Ongoing): ",
-                "Status cannot be empty.",
-                input -> !input.trim().isEmpty()
-        );
-
-        Diagnosis newDiagnosis = new Diagnosis(condition, diagnosisDate, prescription, prescriptionStatus);
+        Diagnosis newDiagnosis = new Diagnosis(condition, diagnosisDate, prescription);
 
         List<Diagnosis> diagnoses = new ArrayList<>(medicalRecord.getDiagnoses());
 
@@ -214,6 +208,41 @@ public class MedicalRecordSystem {
         for (int i = 0; i < diagnoses.size(); i++) {
             if (diagnoses.get(i).getCondition().equalsIgnoreCase(newDiagnosis.getCondition())) {
                 diagnoses.set(i, newDiagnosis);
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            diagnoses.add(newDiagnosis);
+        }
+
+        medicalRecord.addDiagnoses(diagnoses);
+        saveMedicalRecord(medicalRecord);
+        System.out.println("Diagnosis " + (updated ? "updated" : "added") + " successfully for User ID: " + userID);
+    }
+
+    public static void upsertDiagnosis(String userID, Diagnosis newDiagnosis) {
+        ensureFileExistsWithHeader();  // Ensures that the file with the correct headers exists
+
+        // Load the medical record for the given user ID
+        MedicalRecord medicalRecord = loadMedicalRecord(userID);
+        if (medicalRecord == null) {
+            System.out.println("Medical record not found for User ID: " + userID);
+            System.out.println("Creating a new medical record...");
+            medicalRecord = new MedicalRecord(userID);  // Create a new medical record if none exists
+        }
+
+        // Get the list of existing diagnoses from the medical record
+        List<Diagnosis> diagnoses = new ArrayList<>(medicalRecord.getDiagnoses());
+
+        // Flag to track if the diagnosis was updated
+        boolean updated = false;
+
+        // Check if the diagnosis already exists, and update it if necessary
+        for (int i = 0; i < diagnoses.size(); i++) {
+            if (diagnoses.get(i).getCondition().equalsIgnoreCase(newDiagnosis.getCondition())) {
+                diagnoses.set(i, newDiagnosis);  // Update existing diagnosis with the new one
                 updated = true;
                 break;
             }
@@ -257,8 +286,7 @@ public class MedicalRecordSystem {
         for (Diagnosis diagnosis : diagnoses) {
             serialized.append(diagnosis.getCondition()).append("|")
                     .append(diagnosis.getDiagnosisDate()).append("|")
-                    .append(diagnosis.getPrescription()).append("|")
-                    .append(diagnosis.getPrescriptionStatus()).append(";");
+                    .append(diagnosis.getPrescription()).append(";");
         }
         return serialized.toString();
     }
@@ -295,8 +323,8 @@ public class MedicalRecordSystem {
         String[] diagnosisEntries = diagnosesData.split(";");
         for (String entry : diagnosisEntries) {
             String[] parts = entry.split("\\|");
-            if (parts.length == 4) {
-                diagnoses.add(new Diagnosis(parts[0], parts[1], parts[2], parts[3]));
+            if (parts.length == 3) {
+                diagnoses.add(new Diagnosis(parts[0], parts[1], parts[2]));
             } else {
                 System.err.println("Invalid diagnosis entry: " + entry);
             }

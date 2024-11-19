@@ -99,8 +99,8 @@ public class AppointmentOutcomeSystem {
      * Parses a CSV line and adds it to the outcomes list.
      */
     private static void parseAndAddOutcome(String line) {
-        String[] parts = line.split(",", 6);
-        if (parts.length < 6) return;
+        String[] parts = line.split(",", 7);
+        if (parts.length < 7) return;
 
         int appointmentID = Integer.parseInt(parts[0]);
         String appointmentDate = parts[1];
@@ -108,9 +108,11 @@ public class AppointmentOutcomeSystem {
         String medicationsStr = parts[3];
         String consultationNotes = parts[4];
         Dispensed dispensed = Dispensed.valueOf(parts[5]);
+        String doctorID = parts[6];
+        String patientID = parts[7];
 
         AppointmentOutcomeRecord outcome = new AppointmentOutcomeRecord(
-                appointmentID, appointmentDate, serviceType, consultationNotes, dispensed
+                appointmentID, appointmentDate, serviceType, consultationNotes, dispensed, doctorID, patientID
         );
 
         if (!medicationsStr.isEmpty()) {
@@ -307,7 +309,9 @@ public class AppointmentOutcomeSystem {
                 AppointmentSystem.formatDate(appointment.getAppointmentDate()),
                 serviceType,
                 consultationNotes,
-                Dispensed.NO
+                Dispensed.NO,
+                appointment.getDoctorID(),
+                appointment.getPatientID()
         );
 
         // Add medications (optional)
@@ -442,6 +446,8 @@ public class AppointmentOutcomeSystem {
             return;
         }
 
+        boolean allMedicationsDispensed = true; // To track if all medications were dispensed
+
         // Step 1: Loop through each medication in the outcome and attempt to dispense
         for (Medication medication : outcome.getPrescribedMedications()) {
             Stock stock = findStockByMedicineName(medication.getMedicationName());
@@ -455,7 +461,8 @@ public class AppointmentOutcomeSystem {
                 System.out.println("Insufficient stock for " + medication.getMedicationName() + ". Available: "
                         + stock.getStockLevel() + ", Requested: " + medication.getQuantity());
                 System.out.println("Dispensing stopped due to insufficient stock.");
-                return; // Stop dispensing if not enough stock
+                allMedicationsDispensed = false;
+                break; // Stop dispensing if not enough stock
             }
 
             // Step 2: Deduct the stock balance
@@ -484,7 +491,6 @@ public class AppointmentOutcomeSystem {
 
         outcome.setDispensed(Dispensed.YES);
         saveOutcomes();
-        System.out.println("All medications dispensed and outcome updated.");
     }
 
     private static Stock findStockByMedicineName(String medicationName) {

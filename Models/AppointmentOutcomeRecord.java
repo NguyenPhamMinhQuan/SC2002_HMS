@@ -17,15 +17,23 @@ public class AppointmentOutcomeRecord {
     private String appointmentDate;
     private String serviceType; // e.g., consultation, X-ray, etc.
     private Dispensed dispensed;
+    private String doctorID;
+    private String patientID;
 
-    public AppointmentOutcomeRecord(int appointmentID, String appointmentDate, String serviceType, String consultationNotes, Dispensed dispensed) {
+    public AppointmentOutcomeRecord(int appointmentID, String appointmentDate, String serviceType, String consultationNotes, Dispensed dispensed, String doctorID, String patientID) {
         this.appointmentID = appointmentID;
         this.appointmentDate = appointmentDate;
         this.serviceType = serviceType;
         this.prescribedMedications = new ArrayList<>();
         this.consultationNotes = consultationNotes;
         this.dispensed = dispensed;
+        this.doctorID = doctorID;
+        this.patientID = patientID;
     }
+
+    public String getDoctorID() { return doctorID; }
+
+    public String getPatientID() { return patientID; }
 
     public void addMedication(Medication medication) {
         prescribedMedications.add(medication);
@@ -35,24 +43,12 @@ public class AppointmentOutcomeRecord {
         return appointmentID;
     }
 
-    public void setAppointmentID(int appointmentID) {
-        this.appointmentID = appointmentID;
-    }
-
     public String getAppointmentDate() {
         return appointmentDate;
     }
 
-    public void setAppointmentDate(String appointmentDate) {
-        this.appointmentDate = appointmentDate;
-    }
-
     public String getServiceType() {
         return serviceType;
-    }
-
-    public void setServiceType(String serviceType) {
-        this.serviceType = serviceType;
     }
 
     public List<Medication> getPrescribedMedications() {

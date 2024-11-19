@@ -1,3 +1,2 @@
-AppointmentID,Date,ServiceType,Medications,ConsultationNotes,Dispensed
-2,2024-12-13 12:10,test,Ibuprofen (50);,test2,true
-2,2024-12-13 12:10,test3,,test5,false
+AppointmentID,Date,ServiceType,Medications,ConsultationNotes,Dispensed,DoctorID,PatientID
+2,2024-12-13 12:10,test,Ibuprofen (50);,test2,true,D1,PT1

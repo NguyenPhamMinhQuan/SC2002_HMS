@@ -7,7 +7,6 @@ public class Diagnosis {
     private final String condition;
     private final String diagnosisDate;
     private final String prescription;
-    private final String prescriptionStatus;
 
     /**
      * Constructor to initialize a diagnosis.
@@ -15,13 +14,11 @@ public class Diagnosis {
      * @param condition          the diagnosed condition.
      * @param diagnosisDate      the date of diagnosis.
      * @param prescription       the requested prescription.
-     * @param prescriptionStatus the status of the prescription request.
      */
-    public Diagnosis(String condition, String diagnosisDate, String prescription, String prescriptionStatus) {
+    public Diagnosis(String condition, String diagnosisDate, String prescription) {
         this.condition = condition;
         this.diagnosisDate = diagnosisDate;
         this.prescription = prescription;
-        this.prescriptionStatus = prescriptionStatus;
     }
 
     public String getCondition() {
@@ -34,9 +31,5 @@ public class Diagnosis {
 
     public String getPrescription() {
         return prescription;
-    }
-
-    public String getPrescriptionStatus() {
-        return prescriptionStatus;
     }
 }

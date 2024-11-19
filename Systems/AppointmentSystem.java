@@ -596,6 +596,7 @@ public class AppointmentSystem {
         }
         System.out.println("-------------------------------------------------------------------");
     }
+    
     // ------------------- Utility Methods -------------------
 
     private static void displaySlots(List<String> slots) {
