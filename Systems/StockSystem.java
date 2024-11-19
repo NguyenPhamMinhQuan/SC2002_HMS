@@ -162,7 +162,21 @@ public class StockSystem {
      * Persistence Methods
      */
     public void loadStocks() {
-        try (BufferedReader br = new BufferedReader(new FileReader(STOCKS_FILE))) {
+        File stockFile = new File(STOCKS_FILE);
+
+        // Check if the file exists; if not, create it with headers
+        if (!stockFile.exists()) {
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(stockFile))) {
+                bw.write("ID,MedicineName,StockLevel,LowStockAlertThreshold");
+                bw.newLine();
+                System.out.println("Stock file created with headers: " + STOCKS_FILE);
+            } catch (IOException e) {
+                System.err.println("Error creating stocks file: " + e.getMessage());
+                return;
+            }
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(stockFile))) {
             String line;
             br.readLine(); // Skip Header
 
@@ -206,7 +220,21 @@ public class StockSystem {
 
 
     public void loadReplenishRequests() {
-        try (BufferedReader br = new BufferedReader(new FileReader(REPLENISH_REQUESTS_FILE))) {
+        File replenishFile = new File(REPLENISH_REQUESTS_FILE);
+
+        // Check if the file exists; if not, create it with headers
+        if (!replenishFile.exists()) {
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(replenishFile))) {
+                bw.write("ID,StockID,IncomingStockLevel,Status");
+                bw.newLine();
+                System.out.println("Replenish requests file created with headers: " + REPLENISH_REQUESTS_FILE);
+            } catch (IOException e) {
+                System.err.println("Error creating replenish requests file: " + e.getMessage());
+                return;
+            }
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(replenishFile))) {
             String line;
             br.readLine(); // Skip header
 

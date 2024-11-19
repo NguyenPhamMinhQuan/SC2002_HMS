@@ -268,8 +268,16 @@ public class AppointmentSystem {
      */
     private static void loadDoctorAvailability() {
         File file = new File(DOCTOR_AVAILABILITY_FILE);
+
+        // Check if the file exists; if not, create it with headers
         if (!file.exists()) {
-            System.out.println("Doctor availability file not found. Starting fresh.");
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+                bw.write("DoctorID,AvailableSlots");
+                bw.newLine();
+                System.out.println("Doctor availability file created with headers: " + DOCTOR_AVAILABILITY_FILE);
+            } catch (IOException e) {
+                System.err.println("Error creating doctor availability file: " + e.getMessage());
+            }
             return;
         }
 
@@ -312,7 +320,16 @@ public class AppointmentSystem {
      */
     private static void loadAppointments() {
         File file = new File(APPOINTMENTS_FILE);
+
+        // Check if the file exists; if not, create it with headers
         if (!file.exists()) {
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+                bw.write("ID,PatientID,DoctorID,Status,Date");
+                bw.newLine();
+                System.out.println("Appointments file created with headers: " + APPOINTMENTS_FILE);
+            } catch (IOException e) {
+                System.err.println("Error creating appointments file: " + e.getMessage());
+            }
             return;
         }
 

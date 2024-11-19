@@ -7,6 +7,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * System to manage medical records, including saving, updating, and loading records.
+ */
 public class MedicalRecordSystem {
 
     private static final String MEDICAL_RECORD_CSV = "data/medical_records.csv";
@@ -14,7 +17,7 @@ public class MedicalRecordSystem {
     /**
      * Saves or updates a medical record in the CSV file.
      *
-     * @param medicalRecord The medical record to save or update.
+     * @param medicalRecord the medical record to save or update.
      */
     public static void saveMedicalRecord(MedicalRecord medicalRecord) {
         File file = new File(MEDICAL_RECORD_CSV);
@@ -63,15 +66,15 @@ public class MedicalRecordSystem {
 
             System.out.println("Medical record saved or updated successfully.");
         } catch (IOException e) {
-            System.out.println("Error saving medical record: " + e.getMessage());
+            System.err.println("Error saving medical record: " + e.getMessage());
         }
     }
 
     /**
      * Serializes a medical record into a CSV-compatible string.
      *
-     * @param medicalRecord The medical record to serialize.
-     * @return A string representing the serialized medical record.
+     * @param medicalRecord the medical record to serialize.
+     * @return a string representing the serialized medical record.
      */
     private static String serializeMedicalRecord(MedicalRecord medicalRecord) {
         StringBuilder recordLine = new StringBuilder();
@@ -93,10 +96,28 @@ public class MedicalRecordSystem {
         return recordLine.toString();
     }
 
+    /**
+     * Loads a medical record for a given patient ID.
+     *
+     * @param patientID the ID of the patient whose record needs to be loaded.
+     * @return the medical record if found; null otherwise.
+     */
     public static MedicalRecord loadMedicalRecord(String patientID) {
-        String filePath = "data/medical_records.csv"; // Ensure the correct file path
+        File file = new File(MEDICAL_RECORD_CSV);
 
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+        // Check if the file exists; if not, create it with headers
+        if (!file.exists()) {
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+                bw.write("PatientID,DateOfBirth,PhoneNumber,EmailAddress,BloodType,Diagnoses");
+                bw.newLine();
+                System.out.println("Medical records file created with headers: " + MEDICAL_RECORD_CSV);
+            } catch (IOException e) {
+                System.err.println("Error creating medical records file: " + e.getMessage());
+                return null;
+            }
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(MEDICAL_RECORD_CSV))) {
             String line;
 
             while ((line = br.readLine()) != null) {
@@ -129,17 +150,21 @@ public class MedicalRecordSystem {
                     if (recordDetails.length > 5 && !recordDetails[5].equalsIgnoreCase("None") && !recordDetails[5].isEmpty()) {
                         String[] diagnoses = recordDetails[5].split(";");
                         for (String diagnosisDetail : diagnoses) {
-                            String[] diagnosisParts = diagnosisDetail.split(";");
-                            if (diagnosisParts.length == 4) {
-                                Diagnosis diagnosis = new Diagnosis(
-                                        diagnosisParts[0], // Condition
-                                        diagnosisParts[1], // Date
-                                        diagnosisParts[2], // Prescription
-                                        diagnosisParts[3]  // Status
-                                );
-                                medicalRecord.addDiagnosis(diagnosis);
-                            } else {
-                                System.err.println("Invalid diagnosis entry: " + diagnosisDetail);
+                            try {
+                                String[] diagnosisParts = diagnosisDetail.split("\\|");
+                                if (diagnosisParts.length == 4) {
+                                    Diagnosis diagnosis = new Diagnosis(
+                                            diagnosisParts[0], // Condition
+                                            diagnosisParts[1], // Date
+                                            diagnosisParts[2], // Prescription
+                                            diagnosisParts[3]  // Status
+                                    );
+                                    medicalRecord.addDiagnosis(diagnosis);
+                                } else {
+                                    System.err.println("Invalid diagnosis entry: " + diagnosisDetail);
+                                }
+                            } catch (Exception e) {
+                                System.err.println("Error parsing diagnosis: " + diagnosisDetail);
                             }
                         }
                     }
@@ -147,8 +172,6 @@ public class MedicalRecordSystem {
                     return medicalRecord; // Return the loaded record
                 }
             }
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found: " + filePath);
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
         } catch (Exception e) {
@@ -158,6 +181,4 @@ public class MedicalRecordSystem {
         System.err.println("Medical record not found for Patient ID: " + patientID);
         return null; // Return null if not found
     }
-
-
 }
