@@ -53,7 +53,7 @@ public class Doctor extends User {
      */
     public String choosePatient() {
         System.out.println("Please choose among the available Patients:");
-        UserManagementSystem.filterPatients();
+        UserManagementSystem.displayPatients();
 
         System.out.print("PatientID chosen: ");
         String patientID = InputHandler.nextLine();

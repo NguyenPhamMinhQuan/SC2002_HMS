@@ -1,7 +1,12 @@
-A1,password,John,Male,45,Administrator
-P1,password,Anna,Female,35,Pharmacist
-A2,password,dallas,male,10,Administrator
+UserID,Password,Name,Gender,Age,Role
+A1,123,John,Male,45,administrator
+PT5,password,dallaspat,male,10,patient
+P1,password,Anna,Female,35,pharmacist
+A2,password,dallas,male,10,administrator
+PT4,password,dallas,male,10,patient
+A3,password,dallas-admin,female,10,administrator
 PT1,password,Mike,Male,30,patient
 D1,password,Dr.John,Male,45,doctor
+PT3,password,dallas-test,male,100,patient
 D2,password,Smith,Female,50,doctor
 PT2,password,Jane,Female,25,patient

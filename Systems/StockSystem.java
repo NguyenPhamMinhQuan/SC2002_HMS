@@ -164,10 +164,7 @@ public class StockSystem {
     public void loadStocks() {
         try (BufferedReader br = new BufferedReader(new FileReader(STOCKS_FILE))) {
             String line;
-
-            // Skip header
-//            br.readLine();
-
+            br.readLine(); // Skip Header
 
             while ((line = br.readLine()) != null) {
                 String[] stockDetails = line.split(",");
@@ -193,6 +190,9 @@ public class StockSystem {
 
     public void saveStocks() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(STOCKS_FILE))) {
+            bw.write("ID,medicineName,stockLevel,lowStockAlertThreshold");
+            bw.newLine();
+
             for (Stock stock : this.stocks) {
                 String stockLine = String.join(",", String.valueOf(stock.getID()), stock.getMedicineName(),
                         String.valueOf(stock.getStockLevel()), String.valueOf(stock.getLowStockAlertThreshold()));
@@ -208,9 +208,7 @@ public class StockSystem {
     public void loadReplenishRequests() {
         try (BufferedReader br = new BufferedReader(new FileReader(REPLENISH_REQUESTS_FILE))) {
             String line;
-
-            // Skip header
-//            br.readLine();
+            br.readLine(); // Skip header
 
 
             while ((line = br.readLine()) != null) {
@@ -246,6 +244,8 @@ public class StockSystem {
 
     public void saveReplenishRequests() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(REPLENISH_REQUESTS_FILE))) {
+            bw.write("ID,medicineName,stockLevel,lowStockAlertThreshold");
+
             for (StockReplenishRequest request : this.replenishRequests) {
                 String requestLine = String.join(",", String.valueOf(request.getID()), String.valueOf(request.getStockId()),
                         String.valueOf(request.getIncomingStockLevel()), request.getStatus());

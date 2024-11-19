@@ -25,10 +25,10 @@ public class HMS {
             System.err.println("An error occurred while loading users: " + e.getMessage());
         }
 
-        System.out.println("Welcome to the Hospital Management System!");
+        System.out.println("Welcome to the Hospital Management System!\n");
 
         while (true) { // Main loop for login and registration
-            System.out.println("\nPlease choose an option:");
+            System.out.println("Please choose an option:");
             System.out.println("1. Log in");
             System.out.println("2. Register as a new patient");
             System.out.println("3. Exit");
@@ -51,22 +51,18 @@ public class HMS {
                         String password = InputHandler.nextLine();
 
                         user = UserManagementSystem.login(userID, password);
+
                         if (user == null) {
                             System.out.println("Invalid User ID or Password. Try again or type 'exit' to go back to the main menu.");
                             String retry = InputHandler.nextLine();
-                            if (retry.equalsIgnoreCase("exit")) break;
+
+                            if (retry.equalsIgnoreCase("exit")) {
+                                break;
+                            }
                         }
                     }
                 } else if (choice == 2) {
-                    System.out.println("Registering a new patient...");
-                    System.out.print("Name: ");
-                    String name = InputHandler.nextLine();
-                    System.out.print("Gender: ");
-                    String gender = InputHandler.nextLine();
-                    System.out.print("Age: ");
-                    int age = InputHandler.nextInt();
-
-                    user = UserManagementSystem.createUser("patient", name, gender, age);
+                    user = UserManagementSystem.addNewPatient();
                     System.out.println("Patient registered successfully! Your User ID is: " + user.getUserId());
                     System.out.println("The default password is 'password'.");
                 } else {
@@ -75,7 +71,11 @@ public class HMS {
                 }
 
                 if (user != null) {
+                    /*
+                      This logic handles logged-in users
+                     */
                     System.out.println("\nWelcome, " + user.getRole() + " " + user.getName() + ".");
+
                     Menu menu = switch (user.getRole().toLowerCase()) {
                         case "patient" -> new PatientMenu(user);
                         case "doctor" -> new DoctorMenu(user);
@@ -94,10 +94,11 @@ public class HMS {
                         System.out.println();
                         int menuChoice = menu.displayOptions();
                         System.out.println();
-                        logout = user.functionCall(menuChoice);
 
+                        logout = user.functionCall(menuChoice);
                         if (logout) {
                             System.out.println("Logging out...");
+                            System.out.println();
                         }
                     }
                 }

@@ -43,7 +43,7 @@ public class Administrator extends User {
 
     private void manageUsers() {
         System.out.println("Viewing and managing hospital staff...");
-        UserManagementSystem.filterStaff();
+        UserManagementSystem.displayStaff();
 
         System.out.println("Choose an action:");
         System.out.println("1. Add a user");
@@ -53,7 +53,7 @@ public class Administrator extends User {
 
         int action = Integer.parseInt(InputHandler.nextLine());
         switch (action) {
-            case 1 -> UserManagementSystem.addNewUser();
+            case 1 -> UserManagementSystem.addNewUser(null);
             case 2 -> UserManagementSystem.updateUser();
             case 3 -> UserManagementSystem.deleteUser();
             case 4 -> System.out.println("Returning to main menu...");
