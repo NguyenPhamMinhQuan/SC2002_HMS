@@ -1,5 +1,6 @@
 package Users;
 
+import Enums.UserRole;
 import Models.User;
 import Systems.AppointmentSystem;
 import Systems.InputHandler;
@@ -22,7 +23,7 @@ public class Administrator extends User implements UserMenuInterface {
      * @param age      the age of the user
      */
     public Administrator(String userId, String password, String name, String gender, int age) {
-        super(userId, password, "Administrator", name, gender, age);
+        super(userId, password, UserRole.ADMINISTRATOR, name, gender, age);
     }
 
     @Override

@@ -1,17 +1,19 @@
 package Models;
 
+import Enums.UserRole;
+
 /**
  * Represents a user in the hospital management system.
  */
 public class User {
     private final String userId; // User ID is final, as it should not change
-    private final String role; // Role is final, as it should not change after creation
+    private final UserRole role; // Role is final, as it should not change after creation
     private String password;
     private String name;
     private String gender;
     private int age;
 
-    public User(String userId, String password, String role, String name, String gender, int age) {
+    public User(String userId, String password, UserRole role, String name, String gender, int age) {
         this.userId = userId;
         this.password = password;
         this.role = role;
@@ -24,7 +26,7 @@ public class User {
         return userId;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 

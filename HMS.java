@@ -1,3 +1,4 @@
+import Enums.UserRole;
 import Menus.*;
 import Models.User;
 import Systems.InputHandler;
@@ -76,18 +77,12 @@ public class HMS {
                      */
                     System.out.println("\nWelcome, " + user.getRole() + " " + user.getName() + ".");
 
-                    Menu menu = switch (user.getRole().toLowerCase()) {
-                        case "patient" -> new PatientMenu(user);
-                        case "doctor" -> new DoctorMenu(user);
-                        case "pharmacist" -> new PharmacistMenu(user);
-                        case "administrator" -> new AdministratorMenu(user);
-                        default -> {
-                            System.out.println("Invalid role. Returning to main menu...");
-                            yield null;
-                        }
+                    Menu menu = switch (user.getRole()) {
+                        case UserRole.PATIENT -> new PatientMenu(user);
+                        case UserRole.DOCTOR -> new DoctorMenu(user);
+                        case UserRole.PHARMACIST -> new PharmacistMenu(user);
+                        case UserRole.ADMINISTRATOR -> new AdministratorMenu(user);
                     };
-
-                    if (menu == null) continue;
 
                     boolean logout = false;
                     while (!logout) { // Loop for menu until logout

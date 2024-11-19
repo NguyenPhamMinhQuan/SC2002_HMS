@@ -1,5 +1,6 @@
 package Users;
 
+import Enums.UserRole;
 import Models.User;
 import Systems.*;
 
@@ -19,7 +20,7 @@ public class Doctor extends User implements UserMenuInterface {
      * @param age      the age of the user.
      */
     public Doctor(String userId, String password, String name, String gender, int age) {
-        super(userId, password, "doctor", name, gender, age);
+        super(userId, password, UserRole.DOCTOR, name, gender, age);
     }
 
     @Override
@@ -27,7 +28,7 @@ public class Doctor extends User implements UserMenuInterface {
         switch (feature) {
             case 1 -> MedicalRecordSystem.showOrCreateMedicalRecord(
                             UserManagementSystem.selectUserIDMenu(
-                                    UserManagementSystem.getUsersByRole("patient")
+                                    UserManagementSystem.getUsersByRole(UserRole.PATIENT)
                             )
                     );
             case 2 -> updateMedicalRecord();
@@ -51,7 +52,7 @@ public class Doctor extends User implements UserMenuInterface {
      * Updates a patient's medical record.
      */
     public void updateMedicalRecord() {
-        String patientID = UserManagementSystem.selectUserIDMenu(UserManagementSystem.getUsersByRole("patient"));
+        String patientID = UserManagementSystem.selectUserIDMenu(UserManagementSystem.getUsersByRole(UserRole.PATIENT));
 
         if (patientID == null) {
             System.out.println("No patient selected. Exiting...");

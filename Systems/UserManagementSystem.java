@@ -1,5 +1,6 @@
 package Systems;
 
+import Enums.UserRole;
 import Models.User;
 import Users.Administrator;
 import Users.Doctor;
@@ -40,7 +41,7 @@ public class UserManagementSystem {
      * @param role the role to filter by (e.g., "patient", "doctor").
      * @return a list of users with the specified role.
      */
-    public static List<User> getUsersByRole(String role) {
+    public static List<User> getUsersByRole(UserRole role) {
         return getUsersByRoles(Collections.singleton(role));
     }
 
@@ -50,19 +51,19 @@ public class UserManagementSystem {
      * @param roles a collection of roles to filter by.
      * @return a list of users matching the specified roles.
      */
-    public static List<User> getUsersByRoles(Collection<String> roles) {
+    public static List<User> getUsersByRoles(Collection<UserRole> roles) {
         return getAllUsers().stream()
-                .filter(user -> roles.stream().anyMatch(role -> role.equalsIgnoreCase(user.getRole())))
+                .filter(user -> roles.stream().anyMatch(role -> role.equals(user.getRole())))
                 .toList();
     }
 
     // Displays --
 
     /**
-     * Displays all users with "patient", "doctor", or "admin" roles in a table format.
+     * Displays all users with "pharmacist", "doctor", or "admin" roles in a table format.
      */
     public static void displayStaff() {
-        displayUserTable(getUsersByRoles(Arrays.asList("patient", "doctor", "admin")));
+        displayUserTable(getUsersByRoles(Arrays.asList(UserRole.ADMINISTRATOR, UserRole.DOCTOR, UserRole.PHARMACIST)));
     }
 
     /**
@@ -95,17 +96,17 @@ public class UserManagementSystem {
      */
     public static void addUser(User user) {
         users.put(user.getUserId(), user);
-        switch (user.getRole().toLowerCase()) {
-            case "patient":
+        switch (user.getRole()) {
+            case UserRole.PATIENT:
                 patientCount++;
                 break;
-            case "doctor":
+            case UserRole.DOCTOR:
                 doctorCount++;
                 break;
-            case "administrator":
+            case UserRole.ADMINISTRATOR:
                 adminCount++;
                 break;
-            case "pharmacist":
+            case UserRole.PHARMACIST:
                 pharmacistCount++;
                 break;
             default:
@@ -205,17 +206,17 @@ public class UserManagementSystem {
 
         User user = users.remove(userId);
 
-        switch (user.getRole().toLowerCase()) {
-            case "patient":
+        switch (user.getRole()) {
+            case UserRole.PATIENT:
                 patientCount--;
                 break;
-            case "doctor":
+            case UserRole.DOCTOR:
                 doctorCount--;
                 break;
-            case "administrator":
+            case UserRole.ADMINISTRATOR:
                 adminCount--;
                 break;
-            case "pharmacist":
+            case UserRole.PHARMACIST:
                 pharmacistCount--;
                 break;
         }
@@ -404,7 +405,7 @@ public class UserManagementSystem {
                         user.getName(),
                         user.getGender(),
                         String.valueOf(user.getAge()),
-                        user.getRole().toLowerCase()
+                        user.getRole().toString()
                 );
                 bw.write(userLine);
                 bw.newLine();

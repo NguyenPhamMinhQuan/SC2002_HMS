@@ -1,5 +1,6 @@
 package Users;
 
+import Enums.UserRole;
 import Models.User;
 import Systems.AppointmentOutcomeSystem;
 import Systems.InputHandler;
@@ -23,7 +24,7 @@ public class Pharmacist extends User implements UserMenuInterface {
      * @param age      the age of the user
      */
     public Pharmacist(String userId, String password, String name, String gender, int age) {
-        super(userId, password, "Pharmacist", name, gender, age);
+        super(userId, password, UserRole.PHARMACIST, name, gender, age);
     }
 
     @Override
