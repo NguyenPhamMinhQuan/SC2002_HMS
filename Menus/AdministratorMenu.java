@@ -8,10 +8,21 @@ import Systems.InputHandler;
  */
 public class AdministratorMenu extends Menu {
 
+    /**
+     * Constructs a new AdministratorMenu for the given user.
+     *
+     * @param user the user object representing the administrator who is logging in
+     */
     public AdministratorMenu(User user) {
         super(user);
     }
 
+    /**
+     * Displays the available options in the Administrator's menu.
+     * The user can select an option by entering the corresponding number.
+     *
+     * @return the number corresponding to the selected option
+     */
     @Override
     public int displayOptions() {
         System.out.println("Administrator Menu:");
