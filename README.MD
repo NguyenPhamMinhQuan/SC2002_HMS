@@ -28,11 +28,11 @@ The `HMS` package contains all the source code for the Hospital Management Syste
 The project follows a modular structure to separate concerns:
 
 - `HMS.java`: Entry point of the application.
-- `HMS.Menus` package: Contains classes to display user's menu and retrieve user's input for each role (e.g., DoctorMenu, PatientMenu).
-- `HMS.Users` package: Classes representing different user roles like Doctor, Patient, and Administrator, each handling their own use cases.
-- `HMS.Models` package: Define the entity classes of the HMS with their getters and setters methods for data encapsulation.
-- `HMS.Systems` package: Contains utitlity classes that manages System logic and store temporary data during run time for fast retrieval and usage.
-- `HMS.Enums` package: Contains Enumeration classes for AppointmentStatus, ReplenishStatus, Dispensed and UserRole.
+- `HMS.Menus` package: This package contains classes responsible for displaying different menus based on user roles and handling user input in a terminal-based menu system.
+- `HMS.Users` package: This package contains classes that represent the user types in the HMS.
+- `HMS.Models` package: This package contains the core data models representing the entities in the application, such as users, appointments, and medications.
+- `HMS.Systems` package: This package contains utitlity classes that manages System logic and store temporary data during run time for fast retrieval and usage.
+- `HMS.Enums` package: This package contains enumerations used throughout the application for representing fixed values.
 - `data` folder: Contains all the CSV data files required for the project. These files are loaded at runtime to simulate real hospital data, and any updates to the system are saved back into the CSV files upon exitting the HMS.
 
 ### Instructions to Compile and Run the App
