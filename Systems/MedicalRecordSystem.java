@@ -16,8 +16,18 @@ public class MedicalRecordSystem {
 
     // Display / Modifiers --
 
+    /**
+     * Displays the medical record for the given userID, or prompts the user
+     * to create a new record if no record exists
+     *
+     * @param userID ID of the user whose medical record is to be displayed.
+     */
     public static void showOrCreateMedicalRecord(String userID) {
         ensureFileExistsWithHeader();
+
+        if(userID == null){
+            return;
+        }
 
         // Load the medical record for the given user ID
         MedicalRecord medicalRecord = loadMedicalRecord(userID);
@@ -59,6 +69,13 @@ public class MedicalRecordSystem {
         }
     }
 
+    /**
+     * Creates or updates a medical record for the given user ID.
+     * If no record exists, a new one is created.
+     * Prompts the user for new values, which can be left blank to retain the current value.
+     *
+     * @param userID the ID of the user whose medical record needs to be created or updated.
+     */
     public static void upsertMedicalRecord(String userID) {
         ensureFileExistsWithHeader();
 
@@ -222,6 +239,12 @@ public class MedicalRecordSystem {
         System.out.println("Diagnosis " + (updated ? "updated" : "added") + " successfully for User ID: " + userID);
     }
 
+    /**
+     * Adds or updates a diagnosis in the medical record for the given user ID.
+     * If a diagnosis already exists for the condition, it is updated; otherwise, a new one is added.
+     *
+     * @param userID the ID of the user whose diagnosis needs to be updated.
+     */
     public static void upsertDiagnosis(String userID, Diagnosis newDiagnosis) {
         ensureFileExistsWithHeader();  // Ensures that the file with the correct headers exists
 
