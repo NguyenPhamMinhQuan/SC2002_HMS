@@ -26,6 +26,20 @@ public class Administrator extends User implements UserMenuInterface {
         super(userId, password, UserRole.ADMINISTRATOR, name, gender, age);
     }
 
+
+    /**
+     * Processes the selected feature from the Administrator's menu.
+     *
+     * @param feature the feature option to execute.
+     *                <ul>
+     *                  <li>1 - Manage hospital staff</li>
+     *                  <li>2 - Display all appointments</li>
+     *                  <li>3 - View stock inventory</li>
+     *                  <li>4 - Handle stock replenishment requests</li>
+     *                  <li>5 - Exit the menu</li>
+     *                </ul>
+     * @return {@code true} if the administrator chooses to exit the menu, otherwise {@code false}.
+     */
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
@@ -41,6 +55,15 @@ public class Administrator extends User implements UserMenuInterface {
         return false;
     }
 
+    /**
+     * Provides a menu to manage hospital staff, including adding, updating, and deleting users.
+     * The administrator can:
+     * <ul>
+     *   <li>View the list of staff.</li>
+     *   <li>Choose to add, update, or delete a user.</li>
+     *   <li>Return to the main menu if no action is taken.</li>
+     * </ul>
+     */
     private void manageUsers() {
         System.out.println("\n--- Viewing and Managing Hospital Staff ---");
         UserManagementSystem.displayStaff();
