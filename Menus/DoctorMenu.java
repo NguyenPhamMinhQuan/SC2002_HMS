@@ -7,10 +7,21 @@ import Systems.InputHandler;
  * Represents the menu interface for doctors.
  */
 public class DoctorMenu extends Menu {
+    /**
+     * Constructs a new DoctorMenu for the given user.
+     *
+     * @param user the user object representing the doctor who is logging in
+     */
     public DoctorMenu(User user) {
         super(user);
     }
 
+    /**
+     * Displays the available options in the Doctor's menu.
+     * The user can select an option by entering the corresponding number.
+     *
+     * @return the number corresponding to the selected option
+     */
     @Override
     public int displayOptions() {
         System.out.println("Doctor Menu:");
