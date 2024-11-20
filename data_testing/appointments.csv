@@ -1,4 +1,0 @@
-ID,PatientID,DoctorID,Status,Date
-1,PT1,D1,completed,0203-10-13 10:11
-2,PT1,D1,canceled,2000-11-11 23:23
-3,PT2,D2,canceled,2024-12-01 00:00
