@@ -75,7 +75,7 @@ The Javadocs provide:
 - Details of methods and their parameters.
 - Information about data structures used throughout the application.
 
-To view the Javadocs, open the `index.html` file in the [`docs` folder](/docs) with any browser and navigate using the hyperlinks or search bar on the page.
+To view the Javadocs, open the `index.html` file in the [`docs` folder](/doc) with any browser and navigate using the hyperlinks or search bar on the page.
 
 ---
 
