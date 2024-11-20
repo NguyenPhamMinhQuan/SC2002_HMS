@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
  * It provides methods to load, save, and manipulate stock HMS.data, as well as create and update replenish requests.
  */
 public class StockSystem {
-    private static final String STOCKS_FILE = "data/stocks.csv";
-    private static final String REPLENISH_REQUESTS_FILE = "data/replenish_requests.csv";
+    private static final String STOCKS_FILE = "HMS/data/stocks.csv";
+    private static final String REPLENISH_REQUESTS_FILE = "HMS/data/replenish_requests.csv";
 
     private static final List<Stock> stocks = new ArrayList<>();
     private static final List<StockReplenishRequest> replenishRequests = new ArrayList<>();

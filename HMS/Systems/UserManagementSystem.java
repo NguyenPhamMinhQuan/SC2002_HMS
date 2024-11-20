@@ -15,7 +15,7 @@ import java.util.*;
  * It includes methods to add, load, save users, and authenticate them.
  */
 public class UserManagementSystem {
-    private static final String USERS_FILE = "./data/users.csv";
+    private static final String USERS_FILE = "HMS/data/users.csv";
 
     public static Map<String, User> users = new HashMap<>();
 
@@ -97,16 +97,16 @@ public class UserManagementSystem {
     public static void addUser(User user) {
         users.put(user.getUserId(), user);
         switch (user.getRole()) {
-            case UserRole.PATIENT:
+            case PATIENT:
                 patientCount++;
                 break;
-            case UserRole.DOCTOR:
+            case DOCTOR:
                 doctorCount++;
                 break;
-            case UserRole.ADMINISTRATOR:
+            case ADMINISTRATOR:
                 adminCount++;
                 break;
-            case UserRole.PHARMACIST:
+            case PHARMACIST:
                 pharmacistCount++;
                 break;
             default:
@@ -139,6 +139,7 @@ public class UserManagementSystem {
      * Updates an existing user's details.
      */
     public static void updateUser() {
+        System.out.println("Enter the User ID of the user to update: ");
         String userId = InputHandler.getValidatedInput(
                 "Enter the User ID of the user to update: ",
                 "Invalid User ID. Please try again.",
@@ -206,16 +207,16 @@ public class UserManagementSystem {
         User user = users.remove(userId);
 
         switch (user.getRole()) {
-            case UserRole.PATIENT:
+            case PATIENT:
                 patientCount--;
                 break;
-            case UserRole.DOCTOR:
+            case DOCTOR:
                 doctorCount--;
                 break;
-            case UserRole.ADMINISTRATOR:
+            case ADMINISTRATOR:
                 adminCount--;
                 break;
-            case UserRole.PHARMACIST:
+            case PHARMACIST:
                 pharmacistCount--;
                 break;
         }
@@ -341,11 +342,7 @@ public class UserManagementSystem {
         if (user != null && user.getPassword().equals(password)) {
             if (user.getPassword().equals("password")) {
                 System.out.println("Please change your password (ie. Do not use the default password)");
-                String newPassword = InputHandler.getValidatedInput(
-                        "New Password:",
-                        "Invalid password, do not use 'password'.",
-                        input -> !input.trim().isEmpty() && !input.equals("password")
-                );
+                String newPassword = passwordValidation();
                 user.updatePassword(newPassword);
                 saveUsers();
             }
@@ -355,7 +352,82 @@ public class UserManagementSystem {
 
         return null; // Invalid credentials
     }
+     /**
+     * Validate new password to see the changed password pass the security requirements:
+     * Here are some requirements regarding to the length and character composition:
+     * 1. Length should be between 6 and 20.
+     * 2. Must include at least one lowercase letter.
+     * 3. Must include at least one uppercase letter.
+     * 4. Must include at least one digit.
+     * 5. Must not be the default password
+     *
+     * @return the validated password.
+     */
+    private static String passwordValidation(){
+        boolean invalid = true;
+        String password;
+        System.out.println("Your new password must follow these requirements:");
+        System.out.println("\t1.Length should be between 6 and 20.");
+        System.out.println("\t2.Must include at least one lowercase letter.");
+        System.out.println("\t3.Must include at least one uppercase letter.");
+        System.out.println("\t4.Must include at least one digit.");
+        System.out.println("\t5.Must not be the default 'password'");
+        System.out.println("---------------------------------------------------------------------");
+        do{
+            System.out.println("Please enter your new password:");
+            password = InputHandler.nextLine();
+            
+            // Validate not default password
+            if (password.equals("password")) {
+                System.out.println("Password must not be the default 'password'.Try again.");
+                continue;
+            }
 
+            // Validate length
+            if (password.length() < 6 || password.length() > 20) {
+                System.out.println("Password length must be between 6 and 20 characters.Try again.");
+                continue;
+            }
+
+            // Validate lowercase
+            if (!password.matches(".*[a-z].*")) {
+                System.out.println("Password must include at least one lowercase letter.Try again.");
+                continue;
+            }
+
+            // Validate uppercase
+            if (!password.matches(".*[A-Z].*")) {
+                System.out.println("Password must include at least one uppercase letter.Try again.");
+                continue;
+            }
+
+            // Validate digit
+            if (!password.matches(".*\\d.*")) {
+                System.out.println("Password must include at least one digit.Try again.");
+                continue;
+            }
+
+            // If all conditions are met, mark as valid
+            invalid = false;
+
+        } while (invalid);
+        return password;
+    }
+
+     /**
+     * Prompt User's password change and save the changes
+     * 
+     * @param user the user whose password is to be updated.
+     */
+    public static void updatePassword(String userId) {
+        User user = users.get(userId);
+        System.out.println("Changing user's password...");
+        String newPassword = UserManagementSystem.passwordValidation();
+        user.updatePassword(newPassword);
+        saveUsers();
+        System.out.println("Password updated successfully.");
+    }
+    
     // Data --
 
     /**

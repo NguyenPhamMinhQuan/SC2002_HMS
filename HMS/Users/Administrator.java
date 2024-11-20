@@ -32,6 +32,7 @@ public class Administrator extends User implements UserMenuInterface {
      *
      * @param feature the feature option to execute.
      *                <ul>
+     *                  <li>0 - Change password</li>
      *                  <li>1 - Manage hospital staff</li>
      *                  <li>2 - Display all appointments</li>
      *                  <li>3 - View stock inventory</li>
@@ -43,6 +44,7 @@ public class Administrator extends User implements UserMenuInterface {
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
+            case 0 -> UserManagementSystem.updatePassword(getUserId());
             case 1 -> manageUsers();
             case 2 -> AppointmentSystem.displayAllAppointments();
             case 3 -> StockSystem.printStocks();

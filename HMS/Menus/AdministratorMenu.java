@@ -26,6 +26,7 @@ public class AdministratorMenu extends Menu {
     @Override
     public int displayOptions() {
         System.out.println("Administrator Menu:");
+        System.out.println("0. Change Password.");
         System.out.println("1. View and Manage Hospital Staff");
         System.out.println("2. View Appointments Details");
         System.out.println("3. View and Manage Medication Inventory");

@@ -12,38 +12,38 @@ import java.util.List;
  */
 public class MedicalRecordSystem {
 
-    private static final String MEDICAL_RECORD_CSV = "data/medical_records.csv";
+    private static final String MEDICAL_RECORDS_FILE = "data/medical_records.csv";
 
     // Display / Modifiers --
 
     /**
-     * Displays the medical record for the given userID, or prompts the user
+     * Displays the medical record for the given patientID, or prompts the patient
      * to create a new record if no record exists
      *
-     * @param userID ID of the user whose medical record is to be displayed.
+     * @param patientID ID of the patient whose medical record is to be displayed.
      */
-    public static void showOrCreateMedicalRecord(String userID) {
+    public static void showOrCreateMedicalRecord(String patientID) {
         ensureFileExistsWithHeader();
 
-        if(userID == null){
+        if(patientID == null){
             return;
         }
 
-        // Load the medical record for the given user ID
-        MedicalRecord medicalRecord = loadMedicalRecord(userID);
+        // Load the medical record for the given patient ID
+        MedicalRecord medicalRecord = loadMedicalRecord(patientID);
 
         if (medicalRecord == null) {
-            System.out.println("Medical record not found for User ID: " + userID);
-            System.out.println("Prompting user to create a new medical record...");
+            System.out.println("Medical record not found for patient ID: " + patientID);
+            System.out.println("Prompting patient to create a new medical record...");
 
-            upsertMedicalRecord(userID);
+            upsertMedicalRecord(patientID);
 
-            medicalRecord = loadMedicalRecord(userID);
+            medicalRecord = loadMedicalRecord(patientID);
         }
 
         assert medicalRecord != null; // To fix warnings, should not happen
 
-        System.out.println("\n--- Medical Record for User ID: " + userID + " ---");
+        System.out.println("\n--- Medical Record for patient ID: " + patientID + " ---");
         System.out.println("+--------------------+--------------------------+");
         System.out.printf("| %-18s | %-24s |\n", "Date of Birth", medicalRecord.getDateOfBirth());
         System.out.printf("| %-18s | %-24s |\n", "Phone Number", medicalRecord.getPhoneNumber());
@@ -70,24 +70,24 @@ public class MedicalRecordSystem {
     }
 
     /**
-     * Creates or updates a medical record for the given user ID.
+     * Creates or updates a medical record for the given patient ID.
      * If no record exists, a new one is created.
-     * Prompts the user for new values, which can be left blank to retain the current value.
+     * Prompts the patient for new values, which can be left blank to retain the current value.
      *
-     * @param userID the ID of the user whose medical record needs to be created or updated.
+     * @param patientID the ID of the patient whose medical record needs to be created or updated.
      */
-    public static void upsertMedicalRecord(String userID) {
+    public static void upsertMedicalRecord(String patientID) {
         ensureFileExistsWithHeader();
 
-        MedicalRecord medicalRecord = loadMedicalRecord(userID);
+        MedicalRecord medicalRecord = loadMedicalRecord(patientID);
         boolean isNewRecord = (medicalRecord == null);
 
         if (isNewRecord) {
-            System.out.println("Medical record not found for User ID: " + userID);
+            System.out.println("Medical record not found for patient ID: " + patientID);
             System.out.println("Creating a new medical record...");
-            medicalRecord = new MedicalRecord(userID);
+            medicalRecord = new MedicalRecord(patientID);
         } else {
-            System.out.println("\n--- Updating Medical Record for User ID: " + userID + " ---");
+            System.out.println("\n--- Updating Medical Record for patient ID: " + patientID + " ---");
             System.out.println("Leave the input blank to retain the current value.");
         }
 
@@ -146,9 +146,9 @@ public class MedicalRecordSystem {
         saveMedicalRecord(medicalRecord);
 
         if (isNewRecord) {
-            System.out.println("New medical record created successfully for User ID: " + userID);
+            System.out.println("New medical record created successfully for patient ID: " + patientID);
         } else {
-            System.out.println("Medical record updated successfully for User ID: " + userID);
+            System.out.println("Medical record updated successfully for patient ID: " + patientID);
         }
     }
 
@@ -156,16 +156,16 @@ public class MedicalRecordSystem {
      * Updates the blood type of medical record and saves the changes to the CSV file.
      * If the medical record does not exist, it creates a new one.
      *
-     * @param userID the ID of the user whose blood type needs to be updated.
+     * @param patientID the ID of the patient whose blood type needs to be updated.
      */
-    public static void upsertBloodType(String userID) {
+    public static void upsertBloodType(String patientID) {
         ensureFileExistsWithHeader();
 
-        MedicalRecord medicalRecord = loadMedicalRecord(userID);
+        MedicalRecord medicalRecord = loadMedicalRecord(patientID);
         if (medicalRecord == null) {
-            System.out.println("Medical record not found for User ID: " + userID);
+            System.out.println("Medical record not found for patient ID: " + patientID);
             System.out.println("Creating a new medical record...");
-            medicalRecord = new MedicalRecord(userID);
+            medicalRecord = new MedicalRecord(patientID);
         }
 
         String newBloodType = InputHandler.getValidatedInput(
@@ -177,7 +177,7 @@ public class MedicalRecordSystem {
         try {
             medicalRecord.setBloodType(newBloodType);
             saveMedicalRecord(medicalRecord);
-            System.out.println("Blood type updated successfully for User ID: " + userID);
+            System.out.println("Blood type updated successfully for patient ID: " + patientID);
         } catch (IllegalArgumentException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -187,16 +187,16 @@ public class MedicalRecordSystem {
      * Updates or adds a diagnosis in the medical record and saves the changes to the CSV file.
      * If the medical record does not exist, it creates a new one.
      *
-     * @param userID the ID of the user whose diagnosis needs to be updated.
+     * @param patientID the ID of the patient whose diagnosis needs to be updated.
      */
-    public static void upsertDiagnosis(String userID) {
+    public static void upsertDiagnosis(String patientID) {
         ensureFileExistsWithHeader();
 
-        MedicalRecord medicalRecord = loadMedicalRecord(userID);
+        MedicalRecord medicalRecord = loadMedicalRecord(patientID);
         if (medicalRecord == null) {
-            System.out.println("Medical record not found for User ID: " + userID);
+            System.out.println("Medical record not found for patient ID: " + patientID);
             System.out.println("Creating a new medical record...");
-            medicalRecord = new MedicalRecord(userID);
+            medicalRecord = new MedicalRecord(patientID);
         }
 
         String condition = InputHandler.getValidatedInput(
@@ -236,24 +236,24 @@ public class MedicalRecordSystem {
 
         medicalRecord.addDiagnoses(diagnoses);
         saveMedicalRecord(medicalRecord);
-        System.out.println("Diagnosis " + (updated ? "updated" : "added") + " successfully for User ID: " + userID);
+        System.out.println("Diagnosis " + (updated ? "updated" : "added") + " successfully for patient ID: " + patientID);
     }
 
     /**
-     * Adds or updates a diagnosis in the medical record for the given user ID.
+     * Adds or updates a diagnosis in the medical record for the given patient ID.
      * If a diagnosis already exists for the condition, it is updated; otherwise, a new one is added.
      *
-     * @param userID the ID of the user whose diagnosis needs to be updated.
+     * @param patientID the ID of the patient whose diagnosis needs to be updated.
      */
-    public static void upsertDiagnosis(String userID, Diagnosis newDiagnosis) {
+    public static void upsertDiagnosis(String patientID, Diagnosis newDiagnosis) {
         ensureFileExistsWithHeader();  // Ensures that the file with the correct headers exists
 
-        // Load the medical record for the given user ID
-        MedicalRecord medicalRecord = loadMedicalRecord(userID);
+        // Load the medical record for the given patient ID
+        MedicalRecord medicalRecord = loadMedicalRecord(patientID);
         if (medicalRecord == null) {
-            System.out.println("Medical record not found for User ID: " + userID);
+            System.out.println("Medical record not found for patient ID: " + patientID);
             System.out.println("Creating a new medical record...");
-            medicalRecord = new MedicalRecord(userID);  // Create a new medical record if none exists
+            medicalRecord = new MedicalRecord(patientID);  // Create a new medical record if none exists
         }
 
         // Get the list of existing diagnoses from the medical record
@@ -277,7 +277,7 @@ public class MedicalRecordSystem {
 
         medicalRecord.addDiagnoses(diagnoses);
         saveMedicalRecord(medicalRecord);
-        System.out.println("Diagnosis " + (updated ? "updated" : "added") + " successfully for User ID: " + userID);
+        System.out.println("Diagnosis " + (updated ? "updated" : "added") + " successfully for patient ID: " + patientID);
     }
 
     // Helpers --
@@ -286,12 +286,12 @@ public class MedicalRecordSystem {
      * Ensures the medical records file exists and creates it with a header if it doesn't.
      */
     private static void ensureFileExistsWithHeader() {
-        File file = new File(MEDICAL_RECORD_CSV);
+        File file = new File(MEDICAL_RECORDS_FILE);
         if (!file.exists()) {
             try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
                 bw.write("PatientID,DateOfBirth,PhoneNumber,EmailAddress,BloodType,Diagnoses");
                 bw.newLine();
-                System.out.println("Medical records file created with headers: " + MEDICAL_RECORD_CSV);
+                System.out.println("Medical records file created with headers: " + MEDICAL_RECORDS_FILE);
             } catch (IOException e) {
                 System.err.println("Error creating medical records file: " + e.getMessage());
             }
@@ -364,7 +364,7 @@ public class MedicalRecordSystem {
     public static void saveMedicalRecord(MedicalRecord medicalRecord) {
         ensureFileExistsWithHeader();
 
-        File file = new File(MEDICAL_RECORD_CSV);
+        File file = new File(MEDICAL_RECORDS_FILE);
         List<String> allRecords = new ArrayList<>();
         boolean recordUpdated = false;
 
@@ -418,7 +418,7 @@ public class MedicalRecordSystem {
     public static MedicalRecord loadMedicalRecord(String patientID) {
         ensureFileExistsWithHeader();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(MEDICAL_RECORD_CSV))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(MEDICAL_RECORDS_FILE))) {
             String line;
 
             while ((line = br.readLine()) != null) {

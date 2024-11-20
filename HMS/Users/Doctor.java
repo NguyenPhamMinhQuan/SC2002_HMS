@@ -33,6 +33,7 @@ public class Doctor extends User implements UserMenuInterface {
      *
      * @param feature the feature option to execute.
      *                <ul>
+     *                  <li>0 - Change password</li>
      *                  <li>1 - View medical record</li>
      *                  <li>2 - Update medical record</li>
      *                  <li>3 - View Personal Schedule</li>
@@ -47,6 +48,7 @@ public class Doctor extends User implements UserMenuInterface {
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
+            case 0 -> UserManagementSystem.updatePassword(getUserId());
             case 1 -> {
                 // Retrieve all appointments for the current doctor
                 List<Appointment> doctorAppts = AppointmentSystem.getAppointments().stream()

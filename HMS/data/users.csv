@@ -5,6 +5,7 @@ P1,123,Anna,female,35,pharmacist
 A2,password,dallas,male,10,administrator
 PT4,password,dallas,male,10,patient
 A3,password,dallas-admin,female,10,administrator
+PT6,password,Quan,male,20,patient
 PT1,123,Mike,male,30,patient
 D1,123,Dr.John,male,45,doctor
 PT3,password,dallas-test,male,100,patient
