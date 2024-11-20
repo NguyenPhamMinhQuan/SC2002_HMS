@@ -1,4 +1,4 @@
 /**
- * This package contains classes for handling user input, managing authentication.
+ * This package contains utitlity classes that manages System logic and store temporary data during run time for fast retrieval and usage.
  */
 package HMS.Systems;
