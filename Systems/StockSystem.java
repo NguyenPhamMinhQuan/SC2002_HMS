@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * The StockSystem class handles the management of stocks and replenish requests in the system.
+ * It provides methods to load, save, and manipulate stock data, as well as create and update replenish requests.
+ */
 public class StockSystem {
     private static final String STOCKS_FILE = "data/stocks.csv";
     private static final String REPLENISH_REQUESTS_FILE = "data/replenish_requests.csv";
@@ -22,19 +26,33 @@ public class StockSystem {
         loadReplenishRequests();
     }
 
-    // Static method to get all stocks
+    /**
+     * Returns the list of all stocks in the system.
+     *
+     * @return a list of all stocks
+     */
     public static List<Stock> getStocks() {
         return stocks;
     }
 
-    // Static method to get stocks with low levels
+    /**
+     * Returns the list of stocks with a stock level below or equal to their low stock alert threshold.
+     *
+     * @return a list of low-level stocks
+     */
     public static List<Stock> getLowLevelStocks() {
         return stocks.stream()
                 .filter(stock -> stock.getStockLevel() <= stock.getLowStockAlertThreshold())
                 .collect(Collectors.toList());
     }
 
-    // Static method to create a replenish request
+    /**
+     * Creates a replenish request for a stock.
+     * If a pending request for the same stock already exists, it updates the existing request with the incoming stock level.
+     *
+     * @param stockRequest the replenish request to be created
+     * @return the created or updated replenish request
+     */
     public static StockReplenishRequest createReplenishRequest(StockReplenishRequest stockRequest) {
         stockRequest.setID(nextReplenishRequestID++);
 
@@ -52,7 +70,12 @@ public class StockSystem {
         return stockRequest;
     }
 
-    // Static method to update a replenish request
+    /**
+     * Updates an existing replenish request.
+     *
+     * @param request the replenish request with updated details
+     * @return the updated replenish request, or null if the request doesn't exist
+     */
     public static StockReplenishRequest updateReplenishRequest(StockReplenishRequest request) {
         for (StockReplenishRequest currentRequest : replenishRequests) {
             if (currentRequest.getID() == request.getID()) {
@@ -66,12 +89,21 @@ public class StockSystem {
         return null;
     }
 
-    // Static method to get all replenish requests with "pending" status
+    /**
+     * Returns a list of all replenish requests that are currently pending.
+     *
+     * @return a list of pending replenish requests
+     */
     public static List<StockReplenishRequest> getReplenishRequests() {
         return replenishRequests.stream()
                 .filter(x -> x.getStatus() == ReplenishStatus.PENDING)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Displays low-level stock items and allows the user to create a replenish request for them.
+     * Prompts the user for stock selection and quantity to replenish.
+     */
     public static void showLowStockItemsAndCreateReplenishRequest() {
         List<Stock> lowLevelStocks = StockSystem.getLowLevelStocks();  // Get stocks that are low level
 
@@ -141,7 +173,13 @@ public class StockSystem {
         System.out.println("Replenishment request created successfully for " + selectedStock.getMedicineName() + " with quantity " + replenishQuantity + ".");
     }
 
-    // Helper function to validate stock selection
+    /**
+     * Helper function to validate the stock selection input.
+     *
+     * @param input the user's input
+     * @param size the number of available stocks to choose from
+     * @return true if the input is a valid stock selection
+     */
     private static boolean isValidStockSelection(String input, int size) {
         try {
             int index = Integer.parseInt(input);
@@ -151,7 +189,9 @@ public class StockSystem {
         }
     }
 
-    // Static method to print all stocks in a table format
+    /**
+     * Prints all the stocks in a table format.
+     */
     public static void printStocks() {
         // Check if there are any stocks
         if (getStocks().isEmpty()) {
@@ -178,6 +218,9 @@ public class StockSystem {
         System.out.println("+-----+--------------------------+---------------+------------------------+");
     }
 
+    /**
+     * Displays all pending replenish requests in a table format.
+     */
     public static void displayPendingReplenishRequest() {
         if (getReplenishRequests().isEmpty()) {
             System.out.println("No replenish requests available.");
@@ -201,6 +244,10 @@ public class StockSystem {
         System.out.println("+-------------------+-------------------+-------------------+-------------------+");
     }
 
+    /**
+     * Handles the approval or rejection of a replenish request
+     * Prompts the admin to select a request and approve or reject it.
+     */
     public static void handleReplenishRequests() {
         List<StockReplenishRequest> pendingRequests = getReplenishRequests();  // Assuming this method returns only pending requests
 
@@ -246,6 +293,11 @@ public class StockSystem {
         }
     }
 
+    /**
+     * Approves the replenish request, updates stock levels, and changes the request status to approved.
+     *
+     * @param request the replenish request to approve
+     */
     private static void approveReplenishRequest(StockReplenishRequest request) {
         Stock stock = getStockById(request.getStockId());
         if (stock != null) {
@@ -261,13 +313,23 @@ public class StockSystem {
         saveReplenishRequests(); // Save updated replenish requests to the file
     }
 
+    /**
+     * Rejects the replenish request and sets the request status to rejected.
+     *
+     * @param request the replenish request to reject
+     */
     private static void rejectReplenishRequest(StockReplenishRequest request) {
         // Update the replenish request status to "rejected"
         request.setStatus(ReplenishStatus.REJECTED);
         saveReplenishRequests(); // Save updated replenish requests to the file
     }
 
-
+    /**
+     * Validates whether the selected replenish request ID is valid.
+     *
+     * @param input the user input for request ID
+     * @return true if the input corresponds to a valid replenish request ID, otherwise false
+     */
     private static boolean isValidReplenishRequestSelection(String input) {
         try {
             int requestID = Integer.parseInt(input);
@@ -276,7 +338,12 @@ public class StockSystem {
             return false;
         }
     }
-
+    /**
+     * Retrieves the replenish request by its ID.
+     *
+     * @param requestID the ID of the replenish request
+     * @return the replenish request if found, or null if not found
+     */
     private static StockReplenishRequest getReplenishRequestByID(int requestID) {
         return getReplenishRequests().stream()
                 .filter(request -> request.getID() == requestID)
@@ -284,7 +351,10 @@ public class StockSystem {
                 .orElse(null);
     }
 
-    // Static method to save all replenish requests to the CSV file
+
+    /**
+     * Saves the list of replenish requests to the storage file.
+     */
     public static void saveReplenishRequests() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(REPLENISH_REQUESTS_FILE))) {
             bw.write("ID,StockID,IncomingStockLevel,Status");
@@ -302,7 +372,9 @@ public class StockSystem {
         }
     }
 
-    // Static method to load stocks from the CSV file
+    /**
+     * Loads stock data from the storage file into memory.
+     */
     public static void loadStocks() {
         File stockFile = new File(STOCKS_FILE);
         if (!stockFile.exists()) {
@@ -335,6 +407,9 @@ public class StockSystem {
         }
     }
 
+    /**
+     * Saves the list of stocks to the storage file.
+     */
     public static void saveStocks() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(STOCKS_FILE))) {
             bw.write("ID,MedicineName,StockLevel,LowStockAlertThreshold");
@@ -355,7 +430,9 @@ public class StockSystem {
         }
     }
 
-    // Static method to load replenish requests from the CSV file
+    /**
+     *  Loads replenish requests from the storage file into memory.
+     */
     public static void loadReplenishRequests() {
         File replenishFile = new File(REPLENISH_REQUESTS_FILE);
         if (!replenishFile.exists()) {
@@ -399,6 +476,12 @@ public class StockSystem {
         }
     }
 
+    /**
+     * Retrieves the stock by its ID.
+     *
+     * @param stockId the ID of the stock
+     * @return the stock object if found or null if not found
+     */
     public static Stock getStockById(int stockId) {
         return stocks.stream()
                 .filter(stock -> stock.getID() == stockId)
