@@ -8,10 +8,20 @@ import Systems.InputHandler;
  */
 public class PharmacistMenu extends Menu {
 
+    /**
+     * Constructs a PharmacistMenu for the given user.
+     *
+     * @param user the logged-in pharmacist user.
+     */
     public PharmacistMenu(User user) {
         super(user);
     }
 
+    /**
+     * Displays menu options for the pharmacist and returns the user's choice.
+     *
+     * @return the option selected by the user.
+     */
     @Override
     public int displayOptions() {
         System.out.println("Pharmacist Menu:");
