@@ -36,38 +36,83 @@ public class Appointment {
         this.outcomeRecord = null; // Outcome record is only set for completed appointments
     }
 
+    /**
+     * get the unique identifier of the appointment.
+     *
+     * @return the Appointment ID
+     */
     public int getID() {
         return ID;
     }
 
+    /**
+     * Sets the unique ID of the appointment.
+     *
+     * @param ID the new appointment ID.
+     */
     public void setID(int ID) {
         this.ID = ID;
     }
 
+    /**
+     * Gets the unique ID of the patient.
+     *
+     * @return the patient ID.
+     */
     public String getPatientID() {
         return patientID;
     }
 
+    /**
+     * Gets the unique ID of the doctor.
+     *
+     * @return the doctor ID.
+     */
     public String getDoctorID() {
         return doctorID;
     }
 
+    /**
+     * Sets the unique ID of the doctor.
+     *
+     * @param doctorID the new doctor ID.
+     */
     public void setDoctorID(String doctorID) {
         this.doctorID = doctorID;
     }
 
+    /**
+     * Gets the current status of the appointment.
+     *
+     * @return the appointment status.
+     */
     public AppointmentStatus getAppointmentStatus() {
         return appointmentStatus;
     }
 
+    /**
+     * Updates the status of the appointment.
+     *
+     * @param appointmentStatus the new appointment status.
+     */
     public void setAppointmentStatus(AppointmentStatus appointmentStatus) {
         this.appointmentStatus = appointmentStatus;
     }
 
+    /**
+     * Gets the date and time of the appointment.
+     *
+     * @return the appointment date.
+     */
     public Date getAppointmentDate() {
         return appointmentDate;
     }
 
+    /**
+     * Updates the date and time of the appointment.
+     *
+     * @param appointmentDate the new appointment date.
+     */
     public void setAppointmentDate(Date appointmentDate) {
         this.appointmentDate = appointmentDate;
     }
