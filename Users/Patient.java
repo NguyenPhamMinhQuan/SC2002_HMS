@@ -29,6 +29,23 @@ public class Patient extends User implements UserMenuInterface {
         super(userId, password, UserRole.PATIENT, name, gender, age);
     }
 
+    /**
+     * Executes the specified feature from the patient's menu.
+     *
+     * @param feature the feature option to execute.
+     *                <ul>
+     *                  <li>1 - View medical record</li>
+     *                  <li>2 - Update Personal Information: </li>
+     *                  <li>3 - View Available Appointment Slots</li>
+     *                  <li>4 - Schedule an Appointment</li>
+     *                  <li>5 - Reschedule an Appointment</li>
+     *                  <li>6 - Cancel an Appointment</li>
+     *                  <li>7 - View Scheduled Appointments</li>
+     *                  <li>8 - View Past Appointment Outcome Records</li>
+     *                  <li>9 - Logout</li>
+     *                </ul>
+     * @return {@code true} if patient chooses to exit the menu; {@code false} otherwise.
+     */
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
@@ -49,7 +66,8 @@ public class Patient extends User implements UserMenuInterface {
     }
 
     /**
-     * Allows the patient to schedule an appointment.
+     * Allows the patient to schedule an appointment by selecting a doctor and an available timeslot
+     * If no slots are available, the scheduling process is cancelled
      */
     private void scheduleAppointment() {
         String doctorID = AppointmentSystem.selectDoctorWithAvailableSlots();
