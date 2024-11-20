@@ -27,6 +27,19 @@ public class Pharmacist extends User implements UserMenuInterface {
         super(userId, password, UserRole.PHARMACIST, name, gender, age);
     }
 
+    /**
+     * Executes the specified feature from the pharmacist's menu.
+     *
+     * @param feature the feature option to execute.
+     *                <ul>
+     *                  <li>1 - View Appointment Outcome Record</li>
+     *                  <li>2 - Update Prescription Status</li>
+     *                  <li>3 - View Medication Inventory</li>
+     *                  <li>4 - Submit Replenishment Request</li>
+     *                  <li>5 - Logout</li>
+     *                </ul>
+     * @return {@code true} if pharmacist chooses to exit the menu; {@code false} otherwise.
+     */
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
@@ -42,6 +55,11 @@ public class Pharmacist extends User implements UserMenuInterface {
         return false;
     }
 
+    /**
+     * Handles the process of dispensing medication based on the appointment outcome.
+     * The pharmacist selects an appointment outcome from the available list and dispenses medication.
+     * If no outcomes are available or the pharmacist cancels the process, the action is aborted.
+     */
     private void handleDispensing() {
         if (AppointmentOutcomeSystem.getOutcomes().isEmpty()) {
             System.out.println("No appointment outcomes available for dispensing.");
