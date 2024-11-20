@@ -9,11 +9,11 @@ public class Diagnosis {
     private final String prescription;
 
     /**
-     * Constructor to initialize a diagnosis.
+     * Constructs a new {@code Diagnosis} object with the specified details.
      *
-     * @param condition          the diagnosed condition.
-     * @param diagnosisDate      the date of diagnosis.
-     * @param prescription       the requested prescription.
+     * @param condition      the diagnosed medical condition.
+     * @param diagnosisDate  the date of the diagnosis in a valid format (e.g., YYYY-MM-DD).
+     * @param prescription   the prescription recommended for the condition.
      */
     public Diagnosis(String condition, String diagnosisDate, String prescription) {
         this.condition = condition;
@@ -21,14 +21,29 @@ public class Diagnosis {
         this.prescription = prescription;
     }
 
+    /**
+     * Gets the diagnosed medical condition.
+     *
+     * @return the condition as a string.
+     */
     public String getCondition() {
         return condition;
     }
 
+    /**
+     * Gets the date when the diagnosis was made.
+     *
+     * @return the diagnosis date as a string.
+     */
     public String getDiagnosisDate() {
         return diagnosisDate;
     }
 
+    /**
+     * Gets the prescription recommended for the diagnosed condition.
+     *
+     * @return the prescription as a string.
+     */
     public String getPrescription() {
         return prescription;
     }
