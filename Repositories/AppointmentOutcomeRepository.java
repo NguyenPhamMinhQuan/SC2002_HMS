@@ -1,40 +1,68 @@
 package Repositories;
-import Enums.Dispensed;
+
 import Models.AppointmentOutcomeRecord;
+import Enums.Dispensed;
 import Models.Medication;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AppointmentOutcomeRepository implements IAppointmentOutcomeRepository {
-    private static final String OUTCOMES_FILE = "data/appointment_outcomes.csv";
-    private final List<AppointmentOutcomeRecord> outcomes = new ArrayList<>();
-
-    public AppointmentOutcomeRepository() {
-        loadOutcomes();
-    }
+public class AppointmentOutcomeRepository implements IAppointmentOutcomeRepository, LoadandSaveInterface<AppointmentOutcomeRecord> {
+    private static final String FILE_PATH = "data/appointment_outcomes.csv";
 
     @Override
     public List<AppointmentOutcomeRecord> getAllOutcomes() {
-        return new ArrayList<>(outcomes); // Return a copy to avoid external modifications
+        return loadData(); // Delegate to loadData()
     }
 
     @Override
     public AppointmentOutcomeRecord getOutcomeById(int appointmentID) {
-        return outcomes.stream()
+        return loadData().stream()
                 .filter(outcome -> outcome.getAppointmentID() == appointmentID)
                 .findFirst()
-                .orElse(null); // Return null if no matching outcome is found
+                .orElse(null);
     }
 
     @Override
     public void saveOutcomes(List<AppointmentOutcomeRecord> outcomes) {
-        File file = new File(OUTCOMES_FILE);
+        saveData(outcomes); // Delegate to saveData()
+    }
+
+    @Override
+    public List<AppointmentOutcomeRecord> loadData() {
+        List<AppointmentOutcomeRecord> outcomes = new ArrayList<>();
+        File file = new File(FILE_PATH);
+
+        if (!file.exists()) {
+            System.err.println("File not found: " + FILE_PATH);
+            return outcomes; // Return empty list if file is missing
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            br.readLine(); // Skip header
+
+            while ((line = br.readLine()) != null) {
+                AppointmentOutcomeRecord outcome = parseOutcome(line);
+                if (outcome != null) {
+                    outcomes.add(outcome);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading appointment outcomes: " + e.getMessage());
+        }
+
+        return outcomes;
+    }
+
+    @Override
+    public void saveData(List<AppointmentOutcomeRecord> outcomes) {
+        File file = new File(FILE_PATH);
 
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
             // Write the header
-            bw.write("AppointmentID,Date,ServiceType,Medications,ConsultationNotes,Dispensed,DoctorID,PatientID");
+            bw.write("AppointmentID,AppointmentDate,ServiceType,Medications,ConsultationNotes,Dispensed,DoctorID,PatientID");
             bw.newLine();
 
             // Write each outcome as a line in the file
@@ -48,7 +76,7 @@ public class AppointmentOutcomeRepository implements IAppointmentOutcomeReposito
     }
 
     private AppointmentOutcomeRecord parseOutcome(String line) {
-        String[] parts = line.split(",", 8);
+        String[] parts = line.split(",", 8); // Split into 8 parts for all fields
         if (parts.length < 8) {
             return null;
         }
@@ -77,7 +105,7 @@ public class AppointmentOutcomeRepository implements IAppointmentOutcomeReposito
             if (!medicationsStr.isEmpty()) {
                 String[] medications = medicationsStr.split(";");
                 for (String med : medications) {
-                    String[] medParts = med.split(" \\(");
+                    String[] medParts = med.split(" \\("); // Name and quantity
                     String name = medParts[0].trim();
                     int quantity = Integer.parseInt(medParts[1].replace(")", "").trim());
                     outcome.addMedication(new Medication(name, "pending", quantity));
@@ -104,36 +132,5 @@ public class AppointmentOutcomeRepository implements IAppointmentOutcomeReposito
                 outcome.getDoctorID(),
                 outcome.getPatientID()
         );
-    }
-
-    private void loadOutcomes() {
-        File file = new File(OUTCOMES_FILE);
-
-        if (!file.exists()) {
-            createOutcomesFile(file);
-            return;
-        }
-
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            br.readLine(); // Skip header
-            String line;
-            while ((line = br.readLine()) != null) {
-                AppointmentOutcomeRecord outcome = parseOutcome(line);
-                if (outcome != null) {
-                    outcomes.add(outcome);
-                }
-            }
-        } catch (IOException e) {
-            System.err.println("Error loading appointment outcomes: " + e.getMessage());
-        }
-    }
-
-    private void createOutcomesFile(File file) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
-            bw.write("AppointmentID,Date,ServiceType,Medications,ConsultationNotes,Dispensed,DoctorID,PatientID");
-            bw.newLine();
-        } catch (IOException e) {
-            System.err.println("Error creating outcomes file: " + e.getMessage());
-        }
     }
 }

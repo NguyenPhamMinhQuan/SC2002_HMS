@@ -7,49 +7,14 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class ReplenishmentRepository implements IReplenishmentRepository {
+public class ReplenishmentRepository implements IReplenishmentRepository, LoadandSaveInterface<StockReplenishRequest> {
     private static final String REPLENISH_REQUESTS_FILE = "data/replenish_requests.csv";
 
     @Override
     public List<StockReplenishRequest> getAllRequests() {
-        List<StockReplenishRequest> requests = new ArrayList<>();
-    
-        try (BufferedReader br = new BufferedReader(new FileReader(REPLENISH_REQUESTS_FILE))) {
-            String line;
-            br.readLine(); // Skip the header line
-    
-            while ((line = br.readLine()) != null) {
-                String[] details = line.split(",");
-                if (details.length < 4) {
-                    System.err.println("Invalid line in replenish requests file: " + line);
-                    continue; // Skip invalid lines
-                }
-    
-                try {
-                    int id = Integer.parseInt(details[0]);                      // ID
-                    int stockId = Integer.parseInt(details[1]);                 // Stock ID
-                    int incomingStockLevel = Integer.parseInt(details[2]);      // Incoming Stock Level
-                    ReplenishStatus status = ReplenishStatus.valueOf(details[3].toUpperCase()); // Status
-    
-                    // Create and add the StockReplenishRequest object to the list
-                    StockReplenishRequest request = new StockReplenishRequest(stockId, incomingStockLevel, status);
-                    request.setID(id);
-                    requests.add(request);
-    
-                } catch (IllegalArgumentException e) {
-                    System.err.println("Error parsing line: " + line + ". Error: " + e.getMessage());
-                }
-            }
-        } catch (FileNotFoundException e) {
-            System.err.println("Replenish requests file not found: " + e.getMessage());
-        } catch (IOException e) {
-            System.err.println("Error reading replenish requests file: " + e.getMessage());
-        }
-    
-        return requests;
+        return loadData(); // Delegate to loadData()
     }
-    
+
     @Override
     public List<StockReplenishRequest> getRequestsByStatus(ReplenishStatus status) {
         return getAllRequests().stream()
@@ -59,28 +24,8 @@ public class ReplenishmentRepository implements IReplenishmentRepository {
 
     @Override
     public void saveAllRequests(List<StockReplenishRequest> requests) {
-    
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(REPLENISH_REQUESTS_FILE))) {
-            // Write the CSV header
-            bw.write("ID,StockID,IncomingStockLevel,Status");
-            bw.newLine();
-    
-            // Write each replenish request's data as a new line in the CSV
-            for (StockReplenishRequest request : requests) {
-                String line = String.join(",",
-                        String.valueOf(request.getID()),                     // Request ID
-                        String.valueOf(request.getStockId()),                // Stock ID
-                        String.valueOf(request.getIncomingStockLevel()),     // Incoming Stock Level
-                        request.getStatus().toString()                      // Status
-                );
-                bw.write(line);
-                bw.newLine(); // Move to the next line
-            }
-        } catch (IOException e) {
-            System.err.println("Failed to save replenish requests to file: " + e.getMessage());
-        }
+        saveData(requests); // Delegate to saveData()
     }
-    
 
     @Override
     public StockReplenishRequest findRequestById(int requestId) {
@@ -88,5 +33,82 @@ public class ReplenishmentRepository implements IReplenishmentRepository {
                 .filter(request -> request.getID() == requestId)
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public List<StockReplenishRequest> loadData() {
+        List<StockReplenishRequest> requests = new ArrayList<>();
+        File file = new File(REPLENISH_REQUESTS_FILE);
+
+        if (!file.exists()) {
+            System.err.println("File not found: " + REPLENISH_REQUESTS_FILE);
+            return requests; // Return an empty list if the file doesn't exist
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            br.readLine(); // Skip the header
+
+            while ((line = br.readLine()) != null) {
+                StockReplenishRequest request = parseRequest(line);
+                if (request != null) {
+                    requests.add(request);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading replenish requests: " + e.getMessage());
+        }
+
+        return requests;
+    }
+
+    @Override
+    public void saveData(List<StockReplenishRequest> requests) {
+        File file = new File(REPLENISH_REQUESTS_FILE);
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+            // Write the CSV header
+            bw.write("ID,StockID,IncomingStockLevel,Status");
+            bw.newLine();
+
+            // Write each replenish request's data
+            for (StockReplenishRequest request : requests) {
+                bw.write(formatRequest(request));
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to save replenish requests: " + e.getMessage());
+        }
+    }
+
+    private StockReplenishRequest parseRequest(String line) {
+        String[] parts = line.split(",", 4); // Split into 4 parts for all fields
+        if (parts.length < 4) {
+            return null; // Invalid line
+        }
+
+        try {
+            int id = Integer.parseInt(parts[0]);
+            int stockId = Integer.parseInt(parts[1]);
+            int incomingStockLevel = Integer.parseInt(parts[2]);
+            ReplenishStatus status = ReplenishStatus.valueOf(parts[3].toUpperCase());
+
+            StockReplenishRequest request = new StockReplenishRequest(stockId, incomingStockLevel, status);
+            request.setID(id);
+            return request;
+        } catch (IllegalArgumentException e) {
+            System.err.println("Error parsing request line: " + line + ". Error: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    private String formatRequest(StockReplenishRequest request) {
+        return String.join(",",
+                String.valueOf(request.getID()),
+                String.valueOf(request.getStockId()),
+                String.valueOf(request.getIncomingStockLevel()),
+                request.getStatus().toString()
+        );
     }
 }

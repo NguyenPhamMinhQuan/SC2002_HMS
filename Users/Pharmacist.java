@@ -61,6 +61,7 @@ public class Pharmacist extends User implements UserMenuInterface {
             return;
         }
 
+
         int outcomeID = Integer.parseInt(selectedOutcomeID);
         AppointmentOutcomeSystem.dispenseMedication(outcomeID);
     }

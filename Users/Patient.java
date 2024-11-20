@@ -5,6 +5,8 @@ import Enums.UserRole;
 import Models.Appointment;
 import Models.Stock;
 import Models.User;
+import Repositories.AppointmentOutcomeRepository;
+import Repositories.IAppointmentOutcomeRepository;
 import Systems.AppointmentOutcomeSystem;
 import Systems.AppointmentSystem;
 import Systems.InputHandler;
@@ -32,10 +34,12 @@ public class Patient extends User implements UserMenuInterface {
      * @param gender   the gender of the patient (Male or Female).
      * @param age      the age of the patient.
      */
-    public Patient(String userId, String password, String name, String gender, int age,
-             AppointmentOutcomeSystem outcomeSystem, StockSystem stockSystem, AppointmentSystem appointmentSystem) {
+    public Patient(String userId, String password, String name, String gender, int age) {
         super(userId, password, UserRole.PATIENT, name, gender, age);
-        this.outcomeSystem = new AppointmentOutcomeSystem(outcomeSystem, stockSystem, appointmentSystem);
+
+            // Example of passing a repository (adjust as needed for your application)
+        IAppointmentOutcomeRepository repository = new AppointmentOutcomeRepository();
+        this.outcomeSystem = new AppointmentOutcomeSystem(repository);
     }
 
     @Override

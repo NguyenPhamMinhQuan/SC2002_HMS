@@ -6,61 +6,99 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StockRepository implements IStockRepository {
-    private static final String STOCKS_FILE = "data/stocks.csv";
-
-    @Override
-    public void saveAllStocks(List<Stock> stocks) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(STOCKS_FILE))) {
-            // Write the CSV header
-            bw.write("ID,MedicineName,StockLevel,LowStockAlertThreshold");
-            bw.newLine();
-    
-            // Write each stock's data as a new line in the CSV
-            for (Stock stock : stocks) {
-                String line = String.join(",",
-                        String.valueOf(stock.getID()), // ID
-                        stock.getMedicineName(),       // Medicine Name
-                        String.valueOf(stock.getStockLevel()), // Stock Level
-                        String.valueOf(stock.getLowStockAlertThreshold()) // Threshold
-                );
-                bw.write(line);
-                bw.newLine(); // Move to the next line
-            }
-        } catch (IOException e) {
-            System.err.println("Failed to save stocks to file: " + e.getMessage());
-        }
-    }
-    
-
-    @Override
-    public Stock findById(int stockId) {
-        return getAllStocks().stream()
-                .filter(stock -> stock.getID() == stockId)
-                .findFirst()
-                .orElse(null);
-    }
+public class StockRepository implements IStockRepository, LoadandSaveInterface<Stock> {
+    private static final String FILE_PATH = "data/stocks.csv";
 
     @Override
     public List<Stock> getAllStocks() {
-    List<Stock> stocks = new ArrayList<>();
-    try (BufferedReader br = new BufferedReader(new FileReader(STOCKS_FILE))) {
-        String line;
-        br.readLine(); // Skip header
-        while ((line = br.readLine()) != null) {
-            String[] details = line.split(",");
-            int id = Integer.parseInt(details[0]);
-            String medicineName = details[1];
-            int stockLevel = Integer.parseInt(details[2]);
-            int lowStockThreshold = Integer.parseInt(details[3]);
-
-            Stock stock = new Stock(id, medicineName, stockLevel, lowStockThreshold);
-            stocks.add(stock);
-        }
-    } catch (IOException e) {
-        System.err.println("Error loading stocks: " + e.getMessage());
+        return loadData(); // Delegate to loadData()
     }
-    return stocks;
-}
 
+    @Override
+    public Stock findById(int stockId) {
+        return loadData().stream()
+                .filter(stock -> stock.getID() == stockId)
+                .findFirst()
+                .orElse(null); // Return null if not found
+    }
+
+    @Override
+    public void saveAllStocks(List<Stock> stocks) {
+        saveData(stocks); // Delegate to saveData()
+    }
+
+    @Override
+    public List<Stock> loadData() {
+        List<Stock> stocks = new ArrayList<>();
+        File file = new File(FILE_PATH);
+
+        if (!file.exists()) {
+            System.err.println("File not found: " + FILE_PATH);
+            return stocks; // Return empty list if file is missing
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            br.readLine(); // Skip header
+
+            while ((line = br.readLine()) != null) {
+                Stock stock = parseStock(line);
+                if (stock != null) {
+                    stocks.add(stock);
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading stocks: " + e.getMessage());
+        }
+
+        return stocks;
+    }
+
+    @Override
+    public void saveData(List<Stock> stocks) {
+        File file = new File(FILE_PATH);
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
+            // Write the header
+            bw.write("StockID,MedicineName,StockLevel,LowStockAlertThreshold");
+            bw.newLine();
+
+            // Write each stock as a line in the file
+            for (Stock stock : stocks) {
+                bw.write(formatStock(stock));
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.err.println("Error saving stocks: " + e.getMessage());
+        }
+    }
+
+    private Stock parseStock(String line) {
+        String[] parts = line.split(",", 4); // Split into 4 parts for all fields
+        if (parts.length < 4) {
+            return null;
+        }
+
+        try {
+            int stockID = Integer.parseInt(parts[0]);
+            String medicineName = parts[1];
+            int stockLevel = Integer.parseInt(parts[2]);
+            int lowStockAlertThreshold = Integer.parseInt(parts[3]);
+
+            return new Stock(stockID, medicineName, stockLevel, lowStockAlertThreshold);
+        } catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+            System.err.println("Error parsing stock line: " + line + ". Error: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    private String formatStock(Stock stock) {
+        return String.join(",",
+                String.valueOf(stock.getID()),
+                stock.getMedicineName(),
+                String.valueOf(stock.getStockLevel()),
+                String.valueOf(stock.getLowStockAlertThreshold())
+        );
+    }
 }

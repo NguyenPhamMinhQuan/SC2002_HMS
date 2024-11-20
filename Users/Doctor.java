@@ -3,8 +3,11 @@ package Users;
 import Enums.UserRole;
 import Models.User;
 import Systems.*;
-
+import Repositories.AppointmentOutcomeRepository;
 import Repositories.IAppointmentOutcomeRepository;
+import Repositories.IStockRepository;
+import Repositories.StockRepository;
+import Repositories.IAppointmentRepository;can
 /**
  * Represents a doctor in the hospital management system.
  * Inherits from User class.
@@ -21,10 +24,14 @@ public class Doctor extends User implements UserMenuInterface {
      * @param gender   the gender of the user (Male or Female).
      * @param age      the age of the user.
      */
-    public Doctor(String userId, String password, String name, String gender, int age,
-                    IAppointmentOutcomeRepository outcomeRepository, IStockSystem stockSystem) {
+    public Doctor(String userId, String password, String name, String gender, int age) {
         super(userId, password, UserRole.DOCTOR, name, gender, age);
-        this.appointmentOutcomeSystem = new AppointmentOutcomeSystem(outcomeRepository, stockSystem);
+        IAppointmentOutcomeRepository outcomeRepository = new AppointmentOutcomeRepository();
+        IAppointmentRepository appointmentRepository = new AppointmentRepository();
+        IStockRepository stockRepository = new StockRepository();
+    
+    // Initialize AppointmentOutcomeSystem with repositories
+    this.appointmentOutcomeSystem = new AppointmentOutcomeSystem(outcomeRepository, appointmentRepository, stockRepository);
     }
 
     @Override
