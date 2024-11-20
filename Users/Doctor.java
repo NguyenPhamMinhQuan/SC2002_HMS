@@ -1,8 +1,13 @@
 package Users;
 
 import Enums.UserRole;
+import Models.Appointment;
 import Models.User;
 import Systems.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 /**
  * Represents a doctor in the hospital management system.
@@ -23,14 +28,41 @@ public class Doctor extends User implements UserMenuInterface {
         super(userId, password, UserRole.DOCTOR, name, gender, age);
     }
 
+    /**
+     * Processes the selected feature from the doctor's menu.
+     *
+     * @param feature the feature option to execute.
+     *                <ul>
+     *                  <li>1 - View medical record</li>
+     *                  <li>2 - Update medical record</li>
+     *                  <li>3 - View Personal Schedule</li>
+     *                  <li>4 - Manage Availability for Appointments</li>
+     *                  <li>5 - Accept or Decline Appointment Requests</li>
+     *                  <li>6 - View Upcoming Appointments</li>
+     *                  <li>7 - Record Appointment Outcome</li>
+     *                  <li>8 - Logout</li>
+     *                </ul>
+     * @return {@code true} if the doctor chooses to exit the menu, otherwise {@code false}.
+     */
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
-            case 1 -> MedicalRecordSystem.showOrCreateMedicalRecord(
-                            UserManagementSystem.selectUserIDMenu(
-                                    UserManagementSystem.getUsersByRole(UserRole.PATIENT)
-                            )
-                    );
+            case 1 -> {
+                // Retrieve all appointments for the current doctor
+                List<Appointment> doctorAppts = AppointmentSystem.getAppointments().stream()
+                        .filter(x -> x.getDoctorID().equals(getUserId()))
+                        .collect(Collectors.toList());
+
+                // Retrieve all patients for the current doctor based on their appointments
+                List<User> doctorPatients = UserManagementSystem.getUsersByRole(UserRole.PATIENT).stream()
+                        .filter(patient -> doctorAppts.stream()
+                                .anyMatch(appointment -> appointment.getPatientID().equals(patient.getUserId())))
+                        .collect(Collectors.toList());
+
+                // Show or create the medical record for the selected patient
+                String selectedPatientId = UserManagementSystem.selectUserIDMenu(doctorPatients);
+                MedicalRecordSystem.showOrCreateMedicalRecord(selectedPatientId);
+            }
             case 2 -> updateMedicalRecord();
             case 3 -> {
                 AppointmentSystem.displayDoctorAvailability(getUserId());
@@ -50,9 +82,22 @@ public class Doctor extends User implements UserMenuInterface {
 
     /**
      * Updates a patient's medical record.
+     * The user can select a patient an update the patient's blood type or add a diagnosis.
      */
     public void updateMedicalRecord() {
-        String patientID = UserManagementSystem.selectUserIDMenu(UserManagementSystem.getUsersByRole(UserRole.PATIENT));
+        // Retrieve all appointments for the current doctor
+        List<Appointment> doctorAppts = AppointmentSystem.getAppointments().stream()
+                .filter(x -> x.getDoctorID().equals(getUserId()))
+                .collect(Collectors.toList());
+
+        // Retrieve all patients for the current doctor based on their appointments
+        List<User> doctorPatients = UserManagementSystem.getUsersByRole(UserRole.PATIENT).stream()
+                .filter(patient -> doctorAppts.stream()
+                        .anyMatch(appointment -> appointment.getPatientID().equals(patient.getUserId())))
+                .collect(Collectors.toList());
+
+        // Show or create the medical record for the selected patient
+        String patientID = UserManagementSystem.selectUserIDMenu(doctorPatients);
 
         if (patientID == null) {
             System.out.println("No patient selected. Exiting...");
@@ -89,7 +134,8 @@ public class Doctor extends User implements UserMenuInterface {
 
 
     /**
-     * Sets the availability for appointments.
+     * Sets the doctor's availability for appointments.
+     * The doctor can view, add, or remove availability, or exit the menu.
      */
     public void setAvailability() {
         String doctorID = getUserId();
