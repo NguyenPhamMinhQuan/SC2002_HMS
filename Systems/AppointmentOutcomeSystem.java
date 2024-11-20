@@ -24,6 +24,11 @@ public class AppointmentOutcomeSystem {
         loadOutcomes();
     }
 
+    /**
+     * Retrieves all appointment outcomes that are not yet dispensed.
+     *
+     * @return a list of AppointmentOutcomeRecord objects that have not been dispensed.
+     */
     public static List<AppointmentOutcomeRecord> getOutcomes() {
         return outcomes.stream()
                 .filter(outcome -> outcome.isDispensed() == Dispensed.NO) // Filter out outcomes that are already dispensed
@@ -33,13 +38,21 @@ public class AppointmentOutcomeSystem {
 
 
     /**
-     * Adds a new appointment outcome.
+     * Adds a new appointment outcome to the list and saves it to the file.
+     *
+     * @param outcome the AppointmentOutcomeRecord to add.
      */
     public static void addOutcome(AppointmentOutcomeRecord outcome) {
         outcomes.add(outcome);
         saveOutcomes();
     }
 
+    /**
+     * Retrieves an appointment by its ID.
+     *
+     * @param appointmentID the ID of the appointment.
+     * @return the Appointment object if found, otherwise null.
+     */
     private static Appointment getAppointmentByID(int appointmentID) {
         List<Appointment> appointments = AppointmentSystem.getAppointments(); // Get all appointments
         return appointments.stream()
@@ -217,7 +230,7 @@ public class AppointmentOutcomeSystem {
      */
     private static void displayOutcomeTable(List<AppointmentOutcomeRecord> outcomesList) {
         System.out.println("+---------------+-------------------+-------------------+---------------------------------+-----------------------+-------------------+");
-        System.out.println("| AppointmentID | Date              | Service Type      | Medications                     | Consultation Notes     | Dispensed          |");
+        System.out.println("| AppointmentID | Date              | Service Type      | Medications                     | Consultation Notes    | Dispensed          |");
         System.out.println("+---------------+-------------------+-------------------+---------------------------------+-----------------------+-------------------+");
 
         for (AppointmentOutcomeRecord outcome : outcomesList) {
@@ -330,6 +343,12 @@ public class AppointmentOutcomeSystem {
         System.out.println("Appointment outcome record added successfully.");
     }
 
+    /**
+     * Adds medications to the outcome of an appointment by displaying available stocks and
+     * prompting the user for their selection.
+     *
+     * @param outcome The appointment outcome record to which medications will be added.
+     */
     private static void addMedicationsToOutcome(AppointmentOutcomeRecord outcome) {
         boolean addMore = true;
 
@@ -402,6 +421,13 @@ public class AppointmentOutcomeSystem {
         }
     }
 
+    /**
+     * Validates if the user's stock selection is a valid index within the available stocks.
+     *
+     * @param input The user input string representing the selected stock index.
+     * @param size  The size of the list of available stocks.
+     * @return {@code true} if the input is a valid stock index, otherwise {@code false}.
+     */
     private static boolean isValidStockSelection(String input, int size) {
         try {
             int index = Integer.parseInt(input);  // Try to parse the input to an integer
@@ -411,6 +437,9 @@ public class AppointmentOutcomeSystem {
         }
     }
 
+    /**
+     * Displays all undispensed appointment outcomes in a tabular format.
+     */
     public static void displayAllAppointmentOutcomes() {
         List<AppointmentOutcomeRecord> undispensedOutcomes = getOutcomes();
 
@@ -438,6 +467,12 @@ public class AppointmentOutcomeSystem {
         System.out.println("+-------------------+-------------------+-------------------+-----------------------+-------------------+");
     }
 
+    /**
+     * Dispenses medication for a specified appointment outcome. This method checks if stock is available
+     * and deducts the stock level accordingly. If stock is low, it creates a replenish request.
+     *
+     * @param outcomeID The ID of the appointment outcome for which medication will be dispensed.
+     */
     public static void dispenseMedication(int outcomeID) {
         AppointmentOutcomeRecord outcome = getOutcomeByAppointmentID(outcomeID);
 
@@ -492,7 +527,12 @@ public class AppointmentOutcomeSystem {
         outcome.setDispensed(Dispensed.YES);
         saveOutcomes();
     }
-
+    /**
+     * Finds the stock object for a given medication name.
+     *
+     * @param medicationName The name of the medication to find in the stock.
+     * @return The corresponding Stock object if found, otherwise {@code null}.
+     */
     private static Stock findStockByMedicineName(String medicationName) {
         return getStocks()
                 .stream()
