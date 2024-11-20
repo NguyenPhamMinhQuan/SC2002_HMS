@@ -7,10 +7,20 @@ import Systems.InputHandler;
  * Represents the menu interface for patients.
  */
 public class PatientMenu extends Menu {
+    /**
+     * Constructs a PatientMenu for the given user.
+     *
+     * @param user the logged-in patient user.
+     */
     public PatientMenu(User user) {
         super(user);
     }
 
+    /**
+     * Displays menu options for the patient and returns the user's choice.
+     *
+     * @return the option selected by the user.
+     */
     @Override
     public int displayOptions() {
         System.out.println("Patient Menu:");
