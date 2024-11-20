@@ -7,6 +7,10 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * A system to manage user appointments, including the ability to create, update, and cancel appointments.
+ * It allows users to schedule and view appointments, as well as manage appointments for specific users.
+ */
 public class AppointmentSystem {
 
     private static final String DOCTOR_AVAILABILITY_FILE = "data/doctor_availability.csv";
@@ -22,12 +26,25 @@ public class AppointmentSystem {
     }
 
     // -- Initialization
-
+    /**
+     * Initializes the required files by checking if they exist.
+     * If they don't, the files are created with the appropriate header information.
+     * This method ensures that the following files are initialized:
+     * - Doctor Availability file with the header: "DoctorID,AvailableSlots"
+     * - Appointments file with the header: "ID,PatientID,DoctorID,Status,Date"
+     */
     private static void initializeFiles() {
         ensureFileExists(DOCTOR_AVAILABILITY_FILE, "DoctorID,AvailableSlots");
         ensureFileExists(APPOINTMENTS_FILE, "ID,PatientID,DoctorID,Status,Date");
     }
 
+    /**
+     * Ensures that a file exists at the specified file path. If the file does not exist, it is created
+     * along with the provided header information. If necessary, the parent directories of the file are also created.
+     *
+     * @param filePath The path of the file to be checked and created if it doesn't exist.
+     * @param header The header content to be written into the file if it is created.
+     */
     private static void ensureFileExists(String filePath, String header) {
         File file = new File(filePath);
         if (!file.exists()) {
@@ -43,7 +60,14 @@ public class AppointmentSystem {
     }
 
     // -- Doctor Availability Management
-
+    /**
+     * Prompts the user to input an available time slot for a given doctor and adds it to the doctor's availability list.
+     * The input is validated to ensure it is in the correct format (YYYY-MM-DD HH:mm).
+     * The time is also checked to ensure it falls within the valid hours (09:00 to 17:00).
+     * If the slot is already in the availability list, it is not added again.
+     *
+     * @param doctorID The ID of the doctor for whom the availability is being set.
+     */
     public static void addDoctorAvailabilityMenu(String doctorID) {
         String slot = InputHandler.getValidatedInput(
                 "Enter an available slot (YYYY-MM-DD HH:mm): ",
@@ -76,6 +100,8 @@ public class AppointmentSystem {
 
     /**
      * Displays all doctors with their available slots in a table format.
+     * Each doctor ID is displayed alongside their available time slots.
+     * If a doctor has no available slots, a message stating "No slots available" is shown.
      */
     public static void displayAllDoctorsAvailability() {
         if (doctorAvailability.isEmpty()) {
@@ -102,6 +128,12 @@ public class AppointmentSystem {
         }
     }
 
+    /**
+     * Displays the availability for a specific doctor based on the provided doctor ID.
+     * If no availability is found for the doctor, a message is shown stating that no availability is set.
+     *
+     * @param doctorID The ID of the doctor whose availability is being displayed.
+     */
     public static void displayDoctorAvailability(String doctorID) {
         List<String> slots = doctorAvailability.getOrDefault(doctorID, new ArrayList<>());
         if (slots.isEmpty()) {
@@ -112,6 +144,13 @@ public class AppointmentSystem {
         }
     }
 
+    /**
+     * Prompts the user to select a slot to remove from a given doctor's availability list.
+     * If no availability is set for the doctor, a message is shown.
+     * Once a valid slot is selected, it is removed from the list, and the changes are saved.
+     *
+     * @param doctorID The ID of the doctor whose availability is being modified.
+     */
     public static void removeDoctorAvailability(String doctorID) {
         List<String> slots = doctorAvailability.get(doctorID);
         if (slots == null || slots.isEmpty()) {
@@ -225,6 +264,13 @@ public class AppointmentSystem {
         System.out.println("+-----------------+-----------------+-------------------------+-----------------+");
     }
 
+    /**
+     * Displays a list of doctors with available slots and prompts the user to select a doctor to book an appointment with.
+     * If no doctors have available slots, a message is displayed indicating this.
+     * The method returns the selected doctor ID or null if no selection is made.
+     *
+     * @return The doctor ID of the selected doctor, or null if no valid doctor is selected or if there are no available doctors.
+     */
     public static String selectDoctorWithAvailableSlots() {
         List<String> selectableDoctors = new ArrayList<>();
         System.out.printf("%-15s %-30s%n", "Doctor ID", "Available Slots");
@@ -251,6 +297,14 @@ public class AppointmentSystem {
         );
     }
 
+    /**
+     * Displays the available slots for a specific doctor and prompts the user to select a slot for booking an appointment.
+     * If the selected slot is not valid, the method returns null.
+     * If no slots are available for the doctor, a message is displayed indicating so.
+     *
+     * @param doctorID The ID of the doctor for whom the appointment is being scheduled.
+     * @return The selected appointment date, or null if the selection is invalid or if no available slots are found.
+     */
     public static Date selectSlotForDoctor(String doctorID) {
         List<String> availableSlots = doctorAvailability.getOrDefault(doctorID, new ArrayList<>());
 
@@ -278,6 +332,15 @@ public class AppointmentSystem {
         }
     }
 
+    /**
+     * Schedules an appointment for a patient with the specified doctor at the selected date and time.
+     * If the selected slot is unavailable, an error message is displayed.
+     * Once the appointment is scheduled, the slot is booked and the appointment is saved.
+     *
+     * @param patientID The ID of the patient scheduling the appointment.
+     * @param doctorID The ID of the doctor with whom the appointment is being scheduled.
+     * @param appointmentDate The date and time of the appointment.
+     */
     public static void scheduleAppointment(String patientID, String doctorID, Date appointmentDate) {
         String slot = DATE_FORMAT.format(appointmentDate);
         if (!isSlotAvailable(doctorID, slot)) {
@@ -597,7 +660,14 @@ public class AppointmentSystem {
     }
 
     // -- Utility Methods
-
+    /**
+     * Validates whether the provided input corresponds to a valid slot selection within the given size.
+     * The input must be a number between 1 and the size of available slots.
+     *
+     * @param input The input to validate.
+     * @param size The total number of available slots.
+     * @return True if the input is a valid slot selection, false otherwise.
+     */
     private static boolean isValidSlotSelection(String input, int size) {
         try {
             int index = Integer.parseInt(input);
@@ -607,6 +677,12 @@ public class AppointmentSystem {
         }
     }
 
+    /**
+     * Validates whether the provided date is within the working hours (9:00 AM to 5:00 PM).
+     *
+     * @param date The date to validate.
+     * @return True if the time is within the valid range (9:00 AM to 5:00 PM), false otherwise.
+     */
     private static boolean isValidHour(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -614,11 +690,23 @@ public class AppointmentSystem {
         return hour >= 9 && hour < 17;
     }
 
+    /**
+     * Adds a new available slot for the given doctor and saves the updated availability.
+     *
+     * @param doctorID The ID of the doctor for whom the slot is being added.
+     * @param slot The new available slot to be added in the format "yyyy-MM-dd HH:mm".
+     */
     private static void addSlot(String doctorID, String slot) {
         doctorAvailability.computeIfAbsent(doctorID, k -> new ArrayList<>()).add(slot);
         saveDoctorAvailability();
     }
 
+    /**
+     * Displays the available slots in a tabular format.
+     * If no slots are available, a message will be displayed instead.
+     *
+     * @param slots The list of available slots to display.
+     */
     private static void displaySlots(List<String> slots) {
         if (slots.isEmpty()) {
             System.out.println("No slots available.");
@@ -636,6 +724,13 @@ public class AppointmentSystem {
         System.out.println("+-----+-----------------------+");
     }
 
+    /**
+     * Checks whether the given slot is available for the specified doctor.
+     *
+     * @param doctorID The ID of the doctor to check availability for.
+     * @param slot The slot to check availability for.
+     * @return True if the slot is available, false otherwise.
+     */
     private static boolean isSlotAvailable(String doctorID, String slot) {
         List<String> slots = doctorAvailability.get(doctorID);
         return slots != null && slots.contains(slot);
@@ -654,6 +749,13 @@ public class AppointmentSystem {
         return DATE_FORMAT.format(date);
     }
 
+    /**
+     * Books a slot for the specified doctor by removing it from their available slots.
+     * After booking, the updated availability is saved.
+     *
+     * @param doctorID The ID of the doctor whose slot is being booked.
+     * @param slot The slot to be booked in the format "yyyy-MM-dd HH:mm".
+     */
     private static void bookSlot(String doctorID, String slot) {
         List<String> slots = doctorAvailability.get(doctorID);
         if (slots != null) {
@@ -662,6 +764,10 @@ public class AppointmentSystem {
         }
     }
 
+    /**
+     * Loads the doctor availability data from a file and populates the `doctorAvailability` map.
+     * The data is expected to be in CSV format, with doctor IDs and their available slots.
+     */
     private static void loadDoctorAvailability() {
         try (BufferedReader br = new BufferedReader(new FileReader(DOCTOR_AVAILABILITY_FILE))) {
             br.readLine(); // Skip header
@@ -699,6 +805,10 @@ public class AppointmentSystem {
         }
     }
 
+    /**
+     * Loads the appointments from a file and populates the `appointments` list.
+     * The data is expected to be in CSV format with appointment details.
+     */
     private static void loadAppointments() {
         try (BufferedReader br = new BufferedReader(new FileReader(APPOINTMENTS_FILE))) {
             br.readLine(); // Skip header
@@ -717,6 +827,10 @@ public class AppointmentSystem {
         }
     }
 
+    /**
+     * Saves the current list of appointments to a file.
+     * The data is saved in CSV format with appointment details, including the status and date.
+     */
     public static void saveAppointments() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(APPOINTMENTS_FILE))) {
             bw.write("ID,PatientID,DoctorID,Status,Date");
