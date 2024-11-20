@@ -22,7 +22,7 @@ Our team is Group 2 from Lab Group SCS7 that comprises of:
 
 ## App Source Code
 
-The `HMS` folder contains all the source code for the Hospital Management System (HMS) written in Java. This includes classes for managing users (e.g., doctors, patients), appointments, and other essential hospital operations.
+The `HMS` package contains all the source code for the Hospital Management System (HMS) written in Java. This includes classes for managing users (e.g., doctors, patients), appointments, and other essential hospital operations.
 
 ### App general Structure:
 The project follows a modular structure to separate concerns:
