@@ -2,11 +2,15 @@ package Users;
 
 import Enums.AppointmentStatus;
 import Enums.UserRole;
+import Models.Appointment;
+import Models.Stock;
 import Models.User;
 import Systems.AppointmentOutcomeSystem;
 import Systems.AppointmentSystem;
 import Systems.InputHandler;
 import Systems.MedicalRecordSystem;
+import Systems.StockSystem;
+import Systems.AppointmentSystem;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -16,6 +20,9 @@ import java.util.Date;
  * This class handles the patient's personal and medical information.
  */
 public class Patient extends User implements UserMenuInterface {
+    private final AppointmentOutcomeSystem outcomeSystem;
+    private final StockSystem stockSystem;
+    private final AppointmentSystem appointmentSystem;
     /**
      * Constructs a new Patient with the specified details and an empty medical record.
      *
@@ -25,8 +32,10 @@ public class Patient extends User implements UserMenuInterface {
      * @param gender   the gender of the patient (Male or Female).
      * @param age      the age of the patient.
      */
-    public Patient(String userId, String password, String name, String gender, int age) {
+    public Patient(String userId, String password, String name, String gender, int age,
+             AppointmentOutcomeSystem outcomeSystem, StockSystem stockSystem, AppointmentSystem appointmentSystem) {
         super(userId, password, UserRole.PATIENT, name, gender, age);
+        this.outcomeSystem = new AppointmentOutcomeSystem(outcomeSystem, stockSystem, appointmentSystem);
     }
 
     @Override

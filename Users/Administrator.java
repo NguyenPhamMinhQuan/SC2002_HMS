@@ -12,6 +12,7 @@ import Systems.UserManagementSystem;
  * Inherits from User class.
  */
 public class Administrator extends User implements UserMenuInterface {
+    private final StockSystem stockSystem;
 
     /**
      * Constructs a new Administrator.
@@ -24,15 +25,17 @@ public class Administrator extends User implements UserMenuInterface {
      */
     public Administrator(String userId, String password, String name, String gender, int age) {
         super(userId, password, UserRole.ADMINISTRATOR, name, gender, age);
+        this.stockSystem = new StockSystem(); // Initialize StockSystem instance
     }
+
 
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
             case 1 -> manageUsers();
             case 2 -> AppointmentSystem.displayAllAppointments();
-            case 3 -> StockSystem.printStocks();
-            case 4 -> StockSystem.handleReplenishRequests();
+            case 3 -> stockSystem.displayStocks();
+            case 4 -> stockSystem.handleReplenishRequests();
             case 5 -> {
                 return true;
             }

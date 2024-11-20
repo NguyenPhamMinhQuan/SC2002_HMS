@@ -1,3 +1,4 @@
+/* 
 package Systems;
 
 import Enums.ReplenishStatus;
@@ -405,4 +406,180 @@ public class StockSystem {
                 .findFirst()
                 .orElse(null); // Return null if the stock is not found
     }
+} */
+
+package Systems;
+
+import Enums.ReplenishStatus;
+import Models.Stock;
+import Models.StockReplenishRequest;
+import Services.StockService;
+import Services.ReplenishmentService;
+import Repositories.StockRepository;
+import Repositories.IReplenishmentRepository;
+import Repositories.IStockRepository;
+import Repositories.ReplenishmentRepository;
+
+import java.util.List;
+
+public class StockSystem {
+    private final StockService stockService;
+    private final ReplenishmentService replenishmentService;
+
+    public StockSystem() {
+        IStockRepository stockRepo = new StockRepository();
+        IReplenishmentRepository replenishRepo = new ReplenishmentRepository();
+        this.stockService = new StockService(stockRepo);
+        this.replenishmentService = new ReplenishmentService(replenishRepo, stockRepo);
+    }
+
+    public void displayStocks() {
+        List<Stock> stocks = stockService.getAllStocks();
+        if (stocks.isEmpty()) {
+            System.out.println("No stocks available.");
+            return;
+        }
+        // Print logic here
+    }
+
+    public void displayPendingReplenishRequests() {
+        List<StockReplenishRequest> pendingRequests = replenishmentService.getPendingRequests();
+        if (pendingRequests.isEmpty()) {
+            System.out.println("No pending replenish requests available.");
+            return;
+        }
+        // Print logic here
+    }
+
+    public void handleReplenishRequests() {
+        List<StockReplenishRequest> pendingRequests = replenishmentService.getPendingRequests();
+        if (pendingRequests.isEmpty()) {
+            System.out.println("No pending replenish requests available.");
+            return;
+        }
+        // Request approval/rejection logic here
+    }
+
+    public void showLowStockItemsAndCreateReplenishRequest() {
+        List<Stock> lowLevelStocks = stockService.getLowLevelStocks();
+        if (lowLevelStocks.isEmpty()) {
+            System.out.println("No low stock items found.");
+            return;
+        }
+        // Create replenish request logic here
+    }
+
+    public void createReplenishRequest() {
+        // Step 1: Fetch and display low-stock items
+        List<Stock> lowLevelStocks = stockService.getLowLevelStocks();
+    
+        if (lowLevelStocks.isEmpty()) {
+            System.out.println("No low-stock items found.");
+            return;
+        }
+    
+        System.out.println("\n--- Low Stock Items ---");
+        System.out.println("+-----+--------------------------+---------------+--------------------+");
+        System.out.println("| No. | Medicine Name            | Stock Level   | Low Stock Threshold |");
+        System.out.println("+-----+--------------------------+---------------+--------------------+");
+    
+        for (int i = 0; i < lowLevelStocks.size(); i++) {
+            Stock stock = lowLevelStocks.get(i);
+            System.out.printf("| %-3d | %-24s | %-13d | %-18d |\n",
+                    i + 1,
+                    stock.getMedicineName(),
+                    stock.getStockLevel(),
+                    stock.getLowStockAlertThreshold()); // Use the threshold from the Stock object
+        }
+    
+        System.out.println("+-----+--------------------------+---------------+--------------------+");
+    
+        // Step 2: Prompt user to select a stock to replenish
+        String selectedStockInput = InputHandler.getValidatedInput(
+                "Enter the number of the stock to create a replenish request (or type 'exit' to cancel): ",
+                "Invalid input. Please enter a valid number or 'exit'.",
+                input -> input.equalsIgnoreCase("exit") || isValidStockSelection(input, lowLevelStocks.size())
+        );
+    
+        if (selectedStockInput.equalsIgnoreCase("exit")) {
+            System.out.println("Operation canceled.");
+            return;
+        }
+    
+        int selectedStockIndex = Integer.parseInt(selectedStockInput) - 1;
+        Stock selectedStock = lowLevelStocks.get(selectedStockIndex);
+    
+        // Step 3: Fetch the threshold from the Stock object
+        int thresholdLevel = selectedStock.getLowStockAlertThreshold(); // Dynamic threshold level from the CSV
+        int maxQuantity = thresholdLevel * 2; // Example logic for max quantity
+    
+        // Step 4: Prompt user for replenish quantity
+        String replenishQuantityInput = InputHandler.getValidatedInput(
+                "Enter the quantity to replenish (max " + maxQuantity + "): ",
+                "Invalid quantity. Must be a number between 1 and " + maxQuantity + ".",
+                input -> {
+                    try {
+                        int quantity = Integer.parseInt(input);
+                        return quantity > 0 && quantity <= maxQuantity;
+                    } catch (NumberFormatException e) {
+                        return false;
+                    }
+                }
+        );
+    
+        int replenishQuantity = Integer.parseInt(replenishQuantityInput);
+    
+        // Step 5: Create replenish request using the ReplenishmentService
+        StockReplenishRequest replenishRequest = replenishmentService.createRequest(
+                selectedStock.getID(),
+                replenishQuantity
+        );
+    
+        // Step 6: Notify the user of successful request creation
+        System.out.println("Replenishment request created successfully for "
+                + selectedStock.getMedicineName() + " with quantity " + replenishQuantity + ".");
+    }
+    
+
+    public void manageReplenishments() {
+        while (true) {
+            System.out.println("\nReplenishment Management:");
+            System.out.println("1. Show Low Stock Items and Create Replenish Request");
+            System.out.println("2. Display Pending Replenish Requests");
+            System.out.println("3. Handle Replenish Requests");
+            System.out.println("4. Exit");
+    
+            String choice = InputHandler.getValidatedInput(
+                    "Enter your choice: ",
+                    "Invalid input. Please select a number between 1 and 4.",
+                    input -> input.matches("[1-4]")
+            );
+    
+            switch (choice) {
+                case "1":
+                    createReplenishRequest();
+                    break;
+                case "2":
+                    displayPendingReplenishRequests();
+                    break;
+                case "3":
+                    handleReplenishRequests();
+                    break;
+                case "4":
+                    System.out.println("Exiting Replenishment Management.");
+                    return;
+            }
+        }
+    }
+    
+    private boolean isValidStockSelection(String input, int size) {
+        try {
+            int index = Integer.parseInt(input);
+            return index > 0 && index <= size; // Validate that the input is within the valid range
+        } catch (NumberFormatException e) {
+            return false; // Input is not a valid number
+        }
+    }
+    
 }
+

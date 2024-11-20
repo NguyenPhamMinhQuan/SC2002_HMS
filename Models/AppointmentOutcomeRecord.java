@@ -20,7 +20,8 @@ public class AppointmentOutcomeRecord {
     private final String doctorID;
     private final String patientID;
 
-    public AppointmentOutcomeRecord(int appointmentID, String appointmentDate, String serviceType, String consultationNotes, Dispensed dispensed, String doctorID, String patientID) {
+    public AppointmentOutcomeRecord(int appointmentID, String appointmentDate, String serviceType, 
+                                 String consultationNotes, Dispensed dispensed, String doctorID, String patientID) {
         this.appointmentID = appointmentID;
         this.appointmentDate = appointmentDate;
         this.serviceType = serviceType;

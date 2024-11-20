@@ -1,5 +1,5 @@
 package Systems;
-
+/* 
 import Enums.AppointmentStatus;
 import Enums.Dispensed;
 import Enums.ReplenishStatus;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static Systems.StockSystem.getStocks;
+import static Systems.StockSystem.getStocks();
 
 public class AppointmentOutcomeSystem {
     private static final String OUTCOMES_FILE = "data/appointment_outcomes.csv";
@@ -31,10 +31,11 @@ public class AppointmentOutcomeSystem {
     }
 
 
-
+    */
     /**
      * Adds a new appointment outcome.
      */
+    /* 
     public static void addOutcome(AppointmentOutcomeRecord outcome) {
         outcomes.add(outcome);
         saveOutcomes();
@@ -54,16 +55,18 @@ public class AppointmentOutcomeSystem {
      * @param appointmentID the ID of the appointment.
      * @return the corresponding outcome, or null if not found.
      */
+    /* 
     public static AppointmentOutcomeRecord getOutcomeByAppointmentID(int appointmentID) {
         return outcomes.stream()
                 .filter(outcome -> outcome.getAppointmentID() == appointmentID)
                 .findFirst()
                 .orElse(null);
     }
-
+    
     /**
      * Loads all outcomes from the CSV file.
      */
+    /* 
     private static void loadOutcomes() {
         File file = new File(OUTCOMES_FILE);
         if (!file.exists()) {
@@ -86,6 +89,7 @@ public class AppointmentOutcomeSystem {
      *
      * @param file the file to create.
      */
+    /* 
     private static void createOutcomesFile(File file) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(file))) {
             bw.write("AppointmentID,Date,ServiceType,Medications,ConsultationNotes,Dispensed");
@@ -98,6 +102,7 @@ public class AppointmentOutcomeSystem {
     /**
      * Parses a CSV line and adds it to the outcomes list.
      */
+    /* 
     private static void parseAndAddOutcome(String line) {
         String[] parts = line.split(",", 7);
         if (parts.length < 7) return;
@@ -131,6 +136,7 @@ public class AppointmentOutcomeSystem {
     /**
      * Saves all outcomes to the CSV file.
      */
+    /* 
     private static void saveOutcomes() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(OUTCOMES_FILE))) {
             bw.write("AppointmentID,Date,ServiceType,Medications,ConsultationNotes,Dispensed");
@@ -157,6 +163,7 @@ public class AppointmentOutcomeSystem {
      *
      * @param doctorID the doctor's ID.
      */
+    /* 
     public static void displayOutcomesForDoctor(String doctorID) {
         List<AppointmentOutcomeRecord> doctorOutcomes = new ArrayList<>();
 
@@ -180,6 +187,7 @@ public class AppointmentOutcomeSystem {
      *
      * @param patientID the patient's ID.
      */
+    /* 
     public static void displayOutcomesForPatient(String patientID) {
         List<AppointmentOutcomeRecord> patientOutcomes = new ArrayList<>();
 
@@ -201,6 +209,7 @@ public class AppointmentOutcomeSystem {
     /**
      * Displays all appointment outcomes.
      */
+    /* 
     public static void displayAllOutcomes() {
         if (outcomes.isEmpty()) {
             System.out.println("No outcomes recorded.");
@@ -215,6 +224,7 @@ public class AppointmentOutcomeSystem {
      *
      * @param outcomesList the list of outcomes to display.
      */
+    /* 
     private static void displayOutcomeTable(List<AppointmentOutcomeRecord> outcomesList) {
         System.out.println("+---------------+-------------------+-------------------+---------------------------------+-----------------------+-------------------+");
         System.out.println("| AppointmentID | Date              | Service Type      | Medications                     | Consultation Notes     | Dispensed          |");
@@ -239,6 +249,7 @@ public class AppointmentOutcomeSystem {
      * @param input the user input.
      * @return true if the input is a valid outcome ID, false otherwise.
      */
+    /* 
     public static boolean isValidOutcomeSelection(String input) {
         try {
             int outcomeID = Integer.parseInt(input);
@@ -253,6 +264,7 @@ public class AppointmentOutcomeSystem {
      *
      * @param doctorID the doctor's ID.
      */
+    /* 
     public static void addOutcomeByDoctor(String doctorID) {
         List<Appointment> approvedAppointments = AppointmentSystem.getAppointmentsByDoctor(doctorID, AppointmentStatus.APPROVED);
 
@@ -501,3 +513,273 @@ public class AppointmentOutcomeSystem {
                 .orElse(null);
     }
 }
+    */
+
+    import Models.Appointment;
+    import Models.AppointmentOutcomeRecord;
+    import Models.Stock;
+    import Models.Medication;
+import Enums.AppointmentStatus;
+import Enums.Dispensed;
+    import Repositories.IAppointmentOutcomeRepository;
+    import Systems.AppointmentSystem;
+    
+    import java.util.ArrayList;
+    import java.util.List;
+    import java.util.stream.Collectors;
+    import java.text.SimpleDateFormat;
+    
+    public class AppointmentOutcomeSystem {
+        private final IAppointmentOutcomeRepository outcomeRepository;
+        private final IStockSystem stockSystem;
+        private final List<AppointmentOutcomeRecord> outcomes;
+        private final AppointmentSystem appointmentSystem;
+    
+        // Constructor
+        public AppointmentOutcomeSystem(IAppointmentOutcomeRepository outcomeRepository, IStockSystem stockSystem, AppointmentSystem appointmentSystem) {
+            this.outcomeRepository = outcomeRepository;
+            this.stockSystem = stockSystem;
+            this.outcomes = new ArrayList<>(outcomeRepository.getAllOutcomes());
+            this.appointmentSystem = appointmentSystem;
+
+        }
+    
+        public AppointmentOutcomeRecord getOutcomeByAppointmentID(int appointmentID) {
+            return outcomes.stream()
+                    .filter(outcome -> outcome.getAppointmentID() == appointmentID)
+                    .findFirst()
+                    .orElse(null);
+        }
+    
+        public void saveOutcomes() {
+            outcomeRepository.saveOutcomes(outcomes);
+        }
+    
+        public void loadOutcomes() {
+            outcomes.clear();
+            outcomes.addAll(outcomeRepository.getAllOutcomes());
+        }
+    
+        public List<AppointmentOutcomeRecord> getOutcomes() {
+            return outcomes.stream()
+                    .filter(outcome -> outcome.isDispensed() == Dispensed.NO)
+                    .collect(Collectors.toList());
+        }
+    
+        public void addOutcome(AppointmentOutcomeRecord outcome) {
+            outcomes.add(outcome);
+            saveOutcomes();
+        }
+    
+        public void addMedicationsToOutcome(AppointmentOutcomeRecord outcome) {
+            boolean addMore = true;
+    
+            while (addMore) {
+                // Fetch available stocks using the StockSystem interface
+                List<Stock> availableStocks = stockSystem.getAllStocks();
+                if (availableStocks.isEmpty()) {
+                    System.out.println("No available stock found.");
+                    return;
+                }
+    
+                System.out.println("+-----+--------------------------+---------------+");
+                System.out.println("| No. | Medicine Name            | Stock Level   |");
+                System.out.println("+-----+--------------------------+---------------+");
+    
+                for (int i = 0; i < availableStocks.size(); i++) {
+                    Stock stock = availableStocks.get(i);
+                    System.out.printf("| %-3d | %-24s | %-13d |\n",
+                            i + 1,
+                            stock.getMedicineName(),
+                            stock.getStockLevel());
+                }
+    
+                System.out.println("+-----+--------------------------+---------------+");
+    
+                // Prompt the user to select a stock by its number
+                String selectedStockIndex = InputHandler.getValidatedInput(
+                        "Enter the number of the medicine to prescribe (or type 'exit' to finish): ",
+                        "Invalid input. Please enter a valid number or 'exit'.",
+                        input -> input.equalsIgnoreCase("exit") || isValidStockSelection(input, availableStocks.size())
+                );
+    
+                if (selectedStockIndex.equalsIgnoreCase("exit")) {
+                    System.out.println("Finished adding medications.");
+                    break;
+                }
+    
+                int stockIndex = Integer.parseInt(selectedStockIndex) - 1;
+                Stock selectedStock = availableStocks.get(stockIndex);
+    
+                // Prompt the user for the quantity
+                int maxQuantity = selectedStock.getStockLevel();
+                String quantityInput = InputHandler.getValidatedInput(
+                        "Enter the quantity to prescribe (max " + maxQuantity + "): ",
+                        "Invalid quantity. Must be a number between 1 and " + maxQuantity + ".",
+                        input -> {
+                            try {
+                                int quantity = Integer.parseInt(input);
+                                return quantity > 0 && quantity <= maxQuantity;
+                            } catch (NumberFormatException e) {
+                                return false;
+                            }
+                        }
+                );
+    
+                int quantity = Integer.parseInt(quantityInput);
+    
+                // Add the selected medication to the outcome
+                Medication medication = new Medication(selectedStock.getMedicineName(), "pending", quantity);
+                outcome.addMedication(medication);
+    
+                System.out.println("Added " + quantity + " units of " + selectedStock.getMedicineName() + " to the outcome.");
+    
+                // Prompt the user if they want to add more medications
+                addMore = InputHandler.getValidatedInput(
+                        "Do you want to add more medications? (yes/no): ",
+                        "Please enter 'yes' or 'no'.",
+                        input -> input.equalsIgnoreCase("yes") || input.equalsIgnoreCase("no")
+                ).equalsIgnoreCase("yes");
+            }
+        }
+    
+        public void dispenseMedication(int outcomeID) {
+            AppointmentOutcomeRecord outcome = getOutcomeByAppointmentID(outcomeID);
+    
+            if (outcome == null) {
+                System.out.println("Outcome record not found.");
+                return;
+            }
+    
+            boolean allMedicationsDispensed = true; // To track if all medications were dispensed
+    
+            // Loop through each medication in the outcome and attempt to dispense
+            for (Medication medication : outcome.getPrescribedMedications()) {
+                Stock stock = stockSystem.findStockByMedicineName(medication.getMedicationName());
+    
+                if (stock == null) {
+                    System.out.println("Stock for medication " + medication.getMedicationName() + " not found.");
+                    continue;
+                }
+    
+                if (stock.getStockLevel() < medication.getQuantity()) {
+                    System.out.println("Insufficient stock for " + medication.getMedicationName() + ". Available: "
+                            + stock.getStockLevel() + ", Requested: " + medication.getQuantity());
+                    System.out.println("Dispensing stopped due to insufficient stock.");
+                    allMedicationsDispensed = false;
+                    break;
+                }
+    
+                // Deduct the stock balance
+                stock.setStockLevel(stock.getStockLevel() - medication.getQuantity());
+    
+                // If stock is low, create a replenish request
+                if (stock.getStockLevel() <= stock.getLowStockAlertThreshold()) {
+                    stockSystem.createReplenishRequest(stock.getID(), 100); // Example replenish quantity
+                    System.out.println("Replenish request created for " + medication.getMedicationName() + ".");
+                }
+    
+                medication.setStatus("dispensed");
+                System.out.println("Dispensed " + medication.getQuantity() + " units of " + medication.getMedicationName());
+            }
+    
+            if (allMedicationsDispensed) {
+                outcome.setDispensed(Dispensed.YES);
+            }
+    
+            saveOutcomes();
+        }
+    
+        private boolean isValidStockSelection(String input, int size) {
+            try {
+                int index = Integer.parseInt(input);
+                return index > 0 && index <= size;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+
+        public void addOutcomeByDoctor(String doctorID) {
+            // Step 1: Get all approved appointments for the doctor
+            List<Appointment> approvedAppointments = appointmentSystem.getAppointmentsByDoctor(doctorID, AppointmentStatus.APPROVED);
+
+            if (approvedAppointments.isEmpty()) {
+                System.out.println("No approved appointments available to add outcomes.");
+                return;
+            }
+
+            System.out.println("\n--- Approved Appointments for Doctor ID: " + doctorID + " ---");
+            appointmentSystem.displayAppointmentsByDoctor(doctorID, AppointmentStatus.APPROVED);
+
+            // Step 2: Prompt the doctor to select an appointment
+            String selectedAppointmentID = InputHandler.getValidatedInput(
+                    "Enter the Appointment ID to add an outcome: ",
+                    "Invalid input. Please enter a valid Appointment ID.",
+                    input -> {
+                        try {
+                            int id = Integer.parseInt(input);
+                            return approvedAppointments.stream().anyMatch(appointment -> appointment.getID() == id);
+                        } catch (NumberFormatException e) {
+                            return false;
+                        }
+                    }
+            );
+
+            int appointmentID = Integer.parseInt(selectedAppointmentID);
+            Appointment appointment = approvedAppointments.stream()
+                    .filter(app -> app.getID() == appointmentID)
+                    .findFirst()
+                    .orElse(null);
+
+            if (appointment == null) {
+                System.out.println("Appointment not found.");
+                return;
+            }
+
+            // Step 3: Prompt for service type
+            String serviceType = InputHandler.getValidatedInput(
+                    "Enter the service type (e.g., Consultation, X-Ray, etc.): ",
+                    "Service type cannot be empty.",
+                    input -> !input.trim().isEmpty()
+            );
+
+            // Step 4: Prompt for consultation notes
+            String consultationNotes = InputHandler.getValidatedInput(
+                    "Enter consultation notes: ",
+                    "Notes cannot be empty.",
+                    input -> !input.trim().isEmpty()
+            );
+
+            // Step 5: Create the outcome record
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String formattedDate = dateFormat.format(appointment.getAppointmentDate());
+
+            AppointmentOutcomeRecord outcome = new AppointmentOutcomeRecord(
+                    appointmentID,
+                    formattedDate, // Convert Date to String
+                    serviceType,
+                    consultationNotes,
+                    Dispensed.NO,
+                    doctorID,
+                    appointment.getPatientID()
+            );
+
+            // Step 6: Optionally add medications
+            boolean addMedications = InputHandler.getValidatedInput(
+                    "Do you want to add prescribed medications? (yes/no): ",
+                    "Please enter 'yes' or 'no'.",
+                    input -> input.equalsIgnoreCase("yes") || input.equalsIgnoreCase("no")
+            ).equalsIgnoreCase("yes");
+
+            if (addMedications) {
+                addMedicationsToOutcome(outcome);
+            }
+
+            // Step 7: Save the outcome
+            addOutcome(outcome);
+            System.out.println("Appointment outcome record added successfully.");
+        }
+    }
+    
+    
+            

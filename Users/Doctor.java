@@ -4,11 +4,13 @@ import Enums.UserRole;
 import Models.User;
 import Systems.*;
 
+import Repositories.IAppointmentOutcomeRepository;
 /**
  * Represents a doctor in the hospital management system.
  * Inherits from User class.
  */
 public class Doctor extends User implements UserMenuInterface {
+    private final AppointmentOutcomeSystem appointmentOutcomeSystem;
 
     /**
      * Constructs a new Doctor.
@@ -19,8 +21,10 @@ public class Doctor extends User implements UserMenuInterface {
      * @param gender   the gender of the user (Male or Female).
      * @param age      the age of the user.
      */
-    public Doctor(String userId, String password, String name, String gender, int age) {
+    public Doctor(String userId, String password, String name, String gender, int age,
+                    IAppointmentOutcomeRepository outcomeRepository, IStockSystem stockSystem) {
         super(userId, password, UserRole.DOCTOR, name, gender, age);
+        this.appointmentOutcomeSystem = new AppointmentOutcomeSystem(outcomeRepository, stockSystem);
     }
 
     @Override
@@ -39,7 +43,7 @@ public class Doctor extends User implements UserMenuInterface {
             case 4 -> setAvailability();
             case 5 -> AppointmentSystem.approvePendingAppointments(getUserId());
             case 6 -> AppointmentSystem.viewUpcomingAppointments(getUserId());
-            case 7 -> AppointmentOutcomeSystem.addOutcomeByDoctor(getUserId());
+            case 7 -> appointmentOutcomeSystem.addOutcomeByDoctor(getUserId());
             case 8 -> {
                 return true;
             }
