@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 
 import static Systems.StockSystem.getStocks;
 
+/**
+ * Manages the appointment outcome records within the hospital management system.
+ * This class is responsible for loading, storing, and accessing appointment outcome data.
+ */
 public class AppointmentOutcomeSystem {
     private static final String OUTCOMES_FILE = "data/appointment_outcomes.csv";
     private static final List<AppointmentOutcomeRecord> outcomes = new ArrayList<>();
@@ -20,6 +24,10 @@ public class AppointmentOutcomeSystem {
         loadOutcomes();
     }
 
+    /**
+     * Static initializer block to load appointment outcomes when the class is first accessed.
+     * Ensures that the outcomes are loaded into memory at runtime.
+     */
     public AppointmentOutcomeSystem() {
         loadOutcomes();
     }
