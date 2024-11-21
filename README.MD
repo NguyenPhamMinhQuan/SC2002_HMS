@@ -14,11 +14,11 @@ This repository contains the source code and documentation for the Hospital Mana
 
 ## Our team
 Our team is Group 2 from Lab Group SCS7 that comprises of:
- - Hui Cheok Shun, Jordan
- - Jerwin Lee Chu Hao
- - Nguyen Pham Minh Quan
- - See Tow Tze Jiet
- - Dallas Ng Zhi Hao
+ - Dallas Ng Zhi Hao (Number: 4)
+ - Hui Cheok Shun, Jordan (Number: 7)
+ - Jerwin Lee Chu Hao (Number: 8)
+ - Nguyen Pham Minh Quan (Number: 17)
+ - See Tow Tze Jiet (Number: 20)
 
 ## App Source Code
 
