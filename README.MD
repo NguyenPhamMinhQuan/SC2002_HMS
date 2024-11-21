@@ -67,7 +67,7 @@ This will start the Hospital Management System (HMS) via the Command Line Interf
 
 ## Javadocs
 
-The `docs` folder contains the generated documentation for the Java code. It provides an organized view of the classes, methods, and their relationships within the HMS.
+The `doc` folder contains the generated documentation for the Java code. It provides an organized view of the classes, methods, and their relationships within the HMS.
 
 ### Overview
 The Javadocs provide:
