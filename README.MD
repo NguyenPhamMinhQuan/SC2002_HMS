@@ -94,11 +94,12 @@ The UML class diagram illustrates the structure of the Hospital Management Syste
 
 ## Report
 
-The `report` folder contains the final project report, which outlines the OOP concepts and principles applications and design decisions made during the implementation of the Hospital Management System.
+The Final Project Report, which outlines the OOP concepts and principles applied and design decisions made during the implementation of the Hospital Management System.
 
 ### Overview
 - **Project Scope**: Describes the functionality and features of the system.
 - **Design Decisions**: Explains key design patterns and principles applied, limitations of the system, and highlight the additional features added and potential future improvements.
 - **Reflection**: Reflect on the journey in building the project, including challenges faced and lessons learnt.
+- **Testing**: Our testing script and output.
 
-You can read our final report here: [Final Report](Report.pdf)
+You can read our final report here: [Final Report](SCS7-grp2-Report.pdf)
