@@ -33,9 +33,9 @@ public class Administrator extends User implements UserMenuInterface {
      * @param feature the feature option to execute.
      *                <ul>
      *                  <li>0 - Change password</li>
-     *                  <li>1 - Manage hospital staff</li>
+     *                  <li>1 - View and Manage Hospital Staff</li>
      *                  <li>2 - Display all appointments</li>
-     *                  <li>3 - View stock inventory</li>
+     *                  <li>3 - View and Mange stock inventory</li>
      *                  <li>4 - Handle stock replenishment requests</li>
      *                  <li>5 - Exit the menu</li>
      *                </ul>
@@ -47,7 +47,12 @@ public class Administrator extends User implements UserMenuInterface {
             case 0 -> UserManagementSystem.updatePassword(getUserId());
             case 1 -> manageUsers();
             case 2 -> AppointmentSystem.displayAllAppointments();
-            case 3 -> StockSystem.printStocks();
+            case 3 -> {
+                StockSystem.printStocks();
+                StockSystem.showLowStockItemsAndCreateReplenishRequest(); //Keep a log of all the replenishment and only allow for replenishing stocks with low level
+                StockSystem.handleReplenishRequests();
+                StockSystem.printStocks();
+            }
             case 4 -> StockSystem.handleReplenishRequests();
             case 5 -> {
                 return true;
