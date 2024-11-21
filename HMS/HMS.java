@@ -80,10 +80,10 @@ public class HMS {
                     System.out.println("\nWelcome, " + user.getRole() + " " + user.getName() + ".");
 
                     Menu menu = switch (user.getRole()) {
-                        case UserRole.PATIENT -> new PatientMenu(user);
-                        case UserRole.DOCTOR -> new DoctorMenu(user);
-                        case UserRole.PHARMACIST -> new PharmacistMenu(user);
-                        case UserRole.ADMINISTRATOR -> new AdministratorMenu(user);
+                        case PATIENT -> new PatientMenu(user);
+                        case DOCTOR -> new DoctorMenu(user);
+                        case PHARMACIST -> new PharmacistMenu(user);
+                        case ADMINISTRATOR -> new AdministratorMenu(user);
                     };
 
                     boolean logout = false;

@@ -14,11 +14,11 @@ This repository contains the source code and documentation for the Hospital Mana
 
 ## Our team
 Our team is Group 2 from Lab Group SCS7 that comprises of:
- - Hui Cheok Shun, Jordan
- - Jerwin Lee Chu Hao
- - Nguyen Pham Minh Quan
- - See Tow Tze Jiet
- - Dallas Ng Zhi Hao
+ - Dallas Ng Zhi Hao (Number: 4)
+ - Hui Cheok Shun, Jordan (Number: 7)
+ - Jerwin Lee Chu Hao (Number: 8)
+ - Nguyen Pham Minh Quan (Number: 17)
+ - See Tow Tze Jiet (Number: 20)
 
 ## App Source Code
 
@@ -67,7 +67,7 @@ This will start the Hospital Management System (HMS) via the Command Line Interf
 
 ## Javadocs
 
-The `docs` folder contains the generated documentation for the Java code. It provides an organized view of the classes, methods, and their relationships within the HMS.
+The `doc` folder contains the generated documentation for the Java code. It provides an organized view of the classes, methods, and their relationships within the HMS.
 
 ### Overview
 The Javadocs provide:
@@ -88,17 +88,18 @@ The UML class diagram illustrates the structure of the Hospital Management Syste
 - **Class relationships**: Shows inheritance, realization, associations, aggregation, dependencies, and usage.
 - **Class attributes**: Displays all properties of each class, with their default value if any.
 - **Methods**: Shows all methods in each class.
-- **Utitlity classes**: There are utility classes used, mainly in the System package
+- **Utitlity classes**: There are utility classes used, mainly in the System package where all of their attributes and methods are static. This is illustrated by underlines.
 
 ---
 
 ## Report
 
-The `report` folder contains the final project report, which outlines the OOP concepts and principles applications and design decisions made during the implementation of the Hospital Management System.
+The Final Project Report, which outlines the OOP concepts and principles applied and design decisions made during the implementation of the Hospital Management System.
 
 ### Overview
 - **Project Scope**: Describes the functionality and features of the system.
 - **Design Decisions**: Explains key design patterns and principles applied, limitations of the system, and highlight the additional features added and potential future improvements.
 - **Reflection**: Reflect on the journey in building the project, including challenges faced and lessons learnt.
+- **Testing**: Our testing script and output.
 
-You can read our final report here: [Final Report](Report.pdf)
+You can read our final report here: [Final Report](SCS7-grp2-Report.pdf)

@@ -25,6 +25,7 @@ public class DoctorMenu extends Menu {
     @Override
     public int displayOptions() {
         System.out.println("Doctor Menu:");
+        System.out.println("0. Change Password.");
         System.out.println("1. View Patient Medical Records");
         System.out.println("2. Update Patient Medical Records");
         System.out.println("3. View Personal Schedule");

@@ -7,6 +7,7 @@ import HMS.Systems.AppointmentOutcomeSystem;
 import HMS.Systems.AppointmentSystem;
 import HMS.Systems.InputHandler;
 import HMS.Systems.MedicalRecordSystem;
+import HMS.Systems.UserManagementSystem;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -34,6 +35,7 @@ public class Patient extends User implements UserMenuInterface {
      *
      * @param feature the feature option to execute.
      *                <ul>
+     *                  <li>0 - Change password</li>
      *                  <li>1 - View medical record</li>
      *                  <li>2 - Update Personal Information: </li>
      *                  <li>3 - View Available Appointment Slots</li>
@@ -49,6 +51,7 @@ public class Patient extends User implements UserMenuInterface {
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
+            case 0 -> UserManagementSystem.updatePassword(getUserId());
             case 1 -> MedicalRecordSystem.showOrCreateMedicalRecord(getUserId());
             case 2 -> MedicalRecordSystem.upsertMedicalRecord(getUserId());
             case 3 -> AppointmentSystem.displayAllDoctorsAvailability();

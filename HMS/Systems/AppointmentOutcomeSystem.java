@@ -10,25 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static HMS.Systems.StockSystem.getStocks;
 
 /**
  * Manages the appointment outcome records within the hospital management system.
  * This class is responsible for loading, storing, and accessing appointment outcome HMS.data.
  */
 public class AppointmentOutcomeSystem {
-    private static final String OUTCOMES_FILE = "data/appointment_outcomes.csv";
+    private static final String OUTCOMES_FILE = "HMS/data/appointment_outcomes.csv";
     private static final List<AppointmentOutcomeRecord> outcomes = new ArrayList<>();
-
-    static {
-        loadOutcomes();
-    }
 
     /**
      * Static initializer block to load appointment outcomes when the class is first accessed.
      * Ensures that the outcomes are loaded into memory at runtime.
      */
-    public AppointmentOutcomeSystem() {
+    static {
         loadOutcomes();
     }
 
@@ -362,7 +357,7 @@ public class AppointmentOutcomeSystem {
 
         while (addMore) {
             // Display available stock in a table format
-            List<Stock> availableStocks = getStocks();
+            List<Stock> availableStocks = StockSystem.getStocks();
             if (availableStocks.isEmpty()) {
                 System.out.println("No available stock found.");
                 return;
@@ -542,7 +537,7 @@ public class AppointmentOutcomeSystem {
      * @return The corresponding Stock object if found, otherwise {@code null}.
      */
     private static Stock findStockByMedicineName(String medicationName) {
-        return getStocks()
+        return StockSystem.getStocks()
                 .stream()
                 .filter(stock -> stock.getMedicineName().equalsIgnoreCase(medicationName))
                 .findFirst()

@@ -10,10 +10,6 @@ import java.util.function.Predicate;
 public class InputHandler {
     private static final Scanner scanner = new Scanner(System.in);
 
-    private InputHandler() {
-        // Private constructor to prevent instantiation
-    }
-
     /**
      * Reads a line of input from the user.
      *

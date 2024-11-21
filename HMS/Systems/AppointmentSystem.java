@@ -13,19 +13,22 @@ import java.util.*;
  */
 public class AppointmentSystem {
 
-    private static final String DOCTOR_AVAILABILITY_FILE = "data/doctor_availability.csv";
-    private static final String APPOINTMENTS_FILE = "data/appointments.csv";
+    private static final String DOCTOR_AVAILABILITY_FILE = "HMS/data/doctor_availability.csv";
+    private static final String APPOINTMENTS_FILE = "HMS/data/appointments.csv";
     private static final List<Appointment> appointments = new ArrayList<>();
     private static final Map<String, List<String>> doctorAvailability = new HashMap<>();
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
+    /**
+     * Static initializer block to load appointment and doctor availabilities when the class is first accessed.
+     * Ensures that the DoctorAvailability and Appointments are loaded into memory at runtime.
+     */
     static {
         initializeFiles();
         loadDoctorAvailability();
         loadAppointments();
     }
 
-    // -- Initialization
     /**
      * Initializes the required files by checking if they exist.
      * If they don't, the files are created with the appropriate header information.
@@ -119,7 +122,7 @@ public class AppointmentSystem {
             if (slots.isEmpty()) {
                 System.out.printf("| %-10s | %-44s |\n", doctorID, "No slots available");
             } else {
-                System.out.printf("| %-10s | %-44s |\n", doctorID, slots.getFirst());
+                System.out.printf("| %-10s | %-44s |\n", doctorID, slots.get(0));
                 for (int i = 1; i < slots.size(); i++) {
                     System.out.printf("| %-10s | %-44s |\n", "", slots.get(i));
                 }
@@ -567,7 +570,7 @@ public class AppointmentSystem {
         String slot = DATE_FORMAT.format(appointmentToCancel.getAppointmentDate());
 
         if (!isSlotAvailable(doctorID, slot)) {
-            doctorAvailability.computeIfAbsent(doctorID, _ -> new ArrayList<>()).add(slot);
+            doctorAvailability.computeIfAbsent(doctorID, any -> new ArrayList<>()).add(slot);
             saveDoctorAvailability();
             System.out.println("Slot " + slot + " has been returned to availability for Doctor ID: " + doctorID);
         }

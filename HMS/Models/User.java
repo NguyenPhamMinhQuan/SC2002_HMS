@@ -1,6 +1,7 @@
 package HMS.Models;
 
 import HMS.Enums.UserRole;
+import HMS.Systems.UserManagementSystem;
 
 /**
  * Represents a user in the hospital management system.
@@ -123,7 +124,7 @@ public class User {
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
-
+    
     /**
      * Placeholder method for functionality based on user menu choice.
      *

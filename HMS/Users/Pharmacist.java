@@ -5,6 +5,7 @@ import HMS.Models.User;
 import HMS.Systems.AppointmentOutcomeSystem;
 import HMS.Systems.InputHandler;
 import HMS.Systems.StockSystem;
+import HMS.Systems.UserManagementSystem;
 
 import static HMS.Systems.AppointmentOutcomeSystem.isValidOutcomeSelection;
 
@@ -32,6 +33,7 @@ public class Pharmacist extends User implements UserMenuInterface {
      *
      * @param feature the feature option to execute.
      *                <ul>
+     *                  <li>0 - Change password</li>
      *                  <li>1 - View Appointment Outcome Record</li>
      *                  <li>2 - Update Prescription Status</li>
      *                  <li>3 - View Medication Inventory</li>
@@ -43,6 +45,7 @@ public class Pharmacist extends User implements UserMenuInterface {
     @Override
     public boolean functionCall(int feature) {
         switch (feature) {
+            case 0 -> UserManagementSystem.updatePassword(getUserId());
             case 1 -> AppointmentOutcomeSystem.displayAllOutcomes();
             case 2 -> handleDispensing();
             case 3 -> StockSystem.printStocks();
