@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class MedicalRecordSystem {
 
-    private static final String MEDICAL_RECORDS_FILE = "data/medical_records.csv";
+    private static final String MEDICAL_RECORDS_FILE = "HMS/data/medical_records.csv";
 
     // Display / Modifiers --
 
