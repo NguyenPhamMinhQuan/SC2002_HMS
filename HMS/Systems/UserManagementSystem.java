@@ -139,7 +139,6 @@ public class UserManagementSystem {
      * Updates an existing user's details.
      */
     public static void updateUser() {
-        System.out.println("Enter the User ID of the user to update: ");
         String userId = InputHandler.getValidatedInput(
                 "Enter the User ID of the user to update: ",
                 "Invalid User ID. Please try again.",
