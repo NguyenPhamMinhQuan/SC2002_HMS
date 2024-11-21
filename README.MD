@@ -88,7 +88,7 @@ The UML class diagram illustrates the structure of the Hospital Management Syste
 - **Class relationships**: Shows inheritance, realization, associations, aggregation, dependencies, and usage.
 - **Class attributes**: Displays all properties of each class, with their default value if any.
 - **Methods**: Shows all methods in each class.
-- **Utitlity classes**: There are utility classes used, mainly in the System package
+- **Utitlity classes**: There are utility classes used, mainly in the System package where all of their attributes and methods are static. This is illustrated by underlines.
 
 ---
 
